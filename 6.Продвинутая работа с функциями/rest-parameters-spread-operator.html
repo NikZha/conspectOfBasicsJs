@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конспект сайта learn.javascript.ru раздел Продвинутая работа с функциями - Остаточные параметры и оператор расширения</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h1><a href="#rest_spred">Остаточные параметры и оператор расширения</a></h1>
+        <h2>
+            <ul>
+                <li><a href="#...">Остаточные параметры (...)</a></li>
+                <li><a href="#arguments">Переменная "arguments"</a></li>
+                <li><a href="#spred">Оператор расширения</a></li>
+                <li><a href="#total">Итого</a></li>
+            </ul>
+        </h2>
+    </div>
+<div class="topic" id="rest_spred">
+    <h1><a href="https://learn.javascript.ru/rest-parameters-spread-operator">Остаточные параметры и оператор расширения</a></h1>
+    <p>
+        Раздел о:
+        <ul>
+            <li>fun(a, b, ..args)</li>
+            <li>arguments</li>
+            <li>Math.max(...args)</li>
+        </ul>
+    </p>
+</div>
+<div class="topic" id="...">
+    <h2>Остаточные параметры (...)</h2>
+    <p>
+        Если вкратце то:
+        <pre>
+            <code class="language-js">
+function argumReturn(a, b, ...arg) {
+    let retArg = {}
+    retArg.array = arg;
+    retArg.lenArray = arg.length
+    retArg.sumAB = a+b
+    return retArg
+}                
+            </code>
+        </pre>
+        То есть a, b это параметры, а ...arg это массив, остаточных параметров. Может быть вообще один:
+        <pre>
+            <code class="language-js">
+function sumAll(...args) { // args — имя массива
+  let sum = 0;
+
+  for (let arg of args) sum += arg;
+
+  return sum;
+}                
+            </code>
+        </pre>
+        <h4>Остаточные параметры должны располагаться в конце</h4>
+        Иначе будет ошибка.
+    </p>
+</div>
+<div class="topic" id="arguments">
+    <h2><a href="https://learn.javascript.ru/rest-parameters-spread-operator#the-arguments-variable">Переменная "arguments"</a></h2>
+<p>Ф-ция может быть вообще без параметров, а все параметры собираются в специальный массив:
+<pre>
+    <code class="language-js">
+function args(){
+    console.log(arguments);
+    console.log(arguments.length)
+}
+    </code>
+</pre>
+<h4>Стрелочные функции не имеют "arguments"</h4>
+Если мы обратимся к arguments из стрелочной функции, то получим аргументы внешней «нормальной» функции
+<pre>
+    <code class="language-js">
+function f() {
+  let showArg = () => alert(arguments[0]);
+  showArg(2);
+}
+
+f(1); // 1        
+    </code>
+</pre>
+</p>
+
+</div>
+<div class="topic" id="spred">
+    <h2>Оператор расширения</h2>
+    <p>
+        <pre>
+            <code class="language-js">
+alert( Math.max(3, 5, 1) ); // 5
+let arr = [3, 5, 1];
+
+alert( Math.max(arr) ); // NaN                
+            </code>
+        </pre>
+        Чтобы обойти это ограничение придумали расширение <code>...</code>
+        <pre>
+            <code class="language-js">
+let arr = [3, 5, 1];
+
+alert( Math.max(...arr) );                 
+            </code>
+        </pre>
+        Массивов может быть несколько, и они могут комбинироваться с обычными переменными:
+        <pre>
+            <code class="language-js">
+let arr1 = [1, -2, 3, 4];
+let arr2 = [8, 3, -8, 1];
+
+alert( Math.max(1, ...arr1, 2, ...arr2, 25) ); // 2                
+            </code>
+        </pre>
+        Так же это можно использовать для слияния массивов:
+        <pre>
+            <code class="language-js">
+let arr = [3, 5, 1];
+let arr2 = [8, 9, 15];
+
+let merged = [0, ...arr, 2, ...arr2];
+
+alert(merged); // 0,3,5,1,2,8,9,15 (0, затем arr, затем 2, в конце arr2)                
+            </code>
+        </pre>
+        Разбития строк на отдельные буквы и помещения этого в массив:
+        <pre>
+            <code class="language-js">
+let str = "Привет";
+
+alert( [...str] ); // П,р,и,в,е,т                
+            </code>
+        </pre>
+        Результат похожий на работу Array.from():
+    <pre>
+        <code class="language-js">
+let str = "Привет";
+
+// Array.from преобразует перебираемый объект в массив
+alert( Array.from(str) ); // П,р,и,в,е,т            
+        </code>
+    </pre>
+    Но между Array.from(obj) и [...obj] есть разница:
+    <ul>
+<li>Array.from работает как с псевдомассивами, так и с итерируемыми объектами</li>
+<li>Оператор расширения работает только с итерируемыми объектами        </li>
+    </ul>
+    Выходит, что если нужно сделать из чего угодно массив, то Array.from — более универсальный метод.
+    </p>
+</div>
+<div class="topic" id="total">
+    <h1>Итого</h1>
+    <p>Когда мы видим "..." в коде, это могут быть как остаточные параметры, так и оператор расширения.
+Как отличить их друг от друга:
+<ul>
+<li>Если ... располагается в конце списка параметров функции, то это «остаточные параметры». Он собирает остальные неуказанные аргументы и делает из них массив.</li>
+<li>Если ... встретился в вызове функции или где-либо ещё, то это «оператор расширения». Он извлекает элементы из массива.    </li>
+</ul>
+Полезно запомнить:
+<ul>
+<li>Остаточные параметры используются, чтобы создавать новые функции с неопределённым числом аргументов.</li>
+<li>С помощью оператора расширения можно вставить массив в функцию, которая по умолчанию работает с обычным списком аргументов.    </li>
+</ul>
+Вместе эти конструкции помогают легко преобразовывать наборы значений в массивы и обратно.
+
+К аргументам функции можно обращаться и по-старому — через псевдомассив arguments.
+
+</p>
+</div>
+
+</body>
+
+
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конспект сайта learn.javascript.ru раздел Типы данных - Рекурсия</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+    </div>
+    <div class="topic" id="commons">
+        <h1><a href="https://learn.javascript.ru/recursion">Общее о разделе</a></h1>
+        <p>Автор даёт общее понимание рекурсии, и односвязанного списка. Из того, на что надо обратить внимание это:
+        <pre>
+            <code class="language-js">
+let company = { // тот же самый объект, сжатый для краткости
+  sales: [{name: 'John', salary: 1000}, {name: 'Alice', salary: 600 }],
+  development: {
+    sites: [{name: 'Peter', salary: 2000}, {name: 'Alex', salary: 1800 }],
+    internals: [{name: 'Jack', salary: 1300}]
+  }
+};
+
+// Функция для подсчёта суммы зарплат
+function sumSalaries(department) {
+  if (Array.isArray(department)) { // случай (1)
+    return department.reduce((prev, current) => prev + current.salary, 0); // сумма элементов массива
+  } else { // случай (2)
+    let sum = 0;
+    for (let subdep of Object.values(department)) {
+      sum += sumSalaries(subdep); // рекурсивно вызывается для подотделов, суммируя результаты
+    }
+    return sum;
+  }
+}
+
+alert(sumSalaries(company)); // 6700                                
+            </code>
+        </pre>
+        Рекурсивный обход крупного объекта с массивами объектов. Так же рассуждает о том, что DOM можно обходить
+        рекурсивно.
+        </p>
+        <h1>Задачи</h1>
+        <p><a href="recursion-working/tasks.js">Решения все находятся тут</a>. Решено так же как у автора, последняя
+            задача лучше без выделения лишнего массива. </p>
+    </div>

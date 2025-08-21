@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конспект сайта learn.javascript.ru раздел Типы данных - Деструктурирующее присваивание</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h1><a href="#destruct_ass">Деструктурирующее присваивание</a></h1>
+        <h2>
+            <ul>
+                <li><a href="#destruct_array">Деструктуризация массива</a>
+
+                    <ul>
+                        <li><a href="#...">Остатки "..."</a></li>
+                        <li><a href="#default_values">Значения по умолчанию</a></li>
+                    </ul>
+                </li>
+
+                <li><a href="#destruct_obj">Деструктуризация объекта</a></li>
+                <ul>
+                    <li><a href="#...obj">Остаток объекта «…»</a></li>
+                </ul>
+                </li>
+                <li><a href="#inside">Вложенная деструктуризация</a></li>
+                <li><a href="#smart">Умные параметры функций</a></li>
+                <li><a href="#total">Итого</a></li>
+                <li><a href="#tasks">Задачи</a></li>
+            </ul>
+        </h2>
+    </div>
+    <div class="total" id="destruct_ass">
+        <h1>Деструктурирующее присваивание</h1>
+        <p>Деструктурирующее присваивание – это специальный синтаксис, который позволяет нам «распаковать» массивы или
+            объекты в несколько переменных, так как иногда они более удобны.
+            <br>Смысл в том, чтобы без цикла или без функций распаковать объект на переменные.
+        </p>
+    </div>
+    <div class="topic" id="destruct_array">
+        <h2><a href="https://learn.javascript.ru/destructuring-assignment#destrukturizatsiya-massiva">Деструктуризация
+                массива</a></h2>
+        <p>
+            Сразу пример использования:
+        <pre>
+                <code class="language-js">
+let arr = ["Ilya", "Kantor"];
+
+// деструктурирующее присваивание
+// записывает firstName = arr[0]
+// и surname = arr[1]
+let [firstName, surname] = arr;
+//Или сразу разбитие текстовой строки на массив и разбитие массива на переменные                    
+let [firstName, surname] = "Ilya Kantor".split(' ');
+                </code>
+            </pre>
+        Разбите на переменные массива <a href="destructuring-assignment-working/arr.js">не уничтожает исходный
+            массив</a>.
+        <br>Нежелательные элементы массива также могут быть отброшены с помощью дополнительной запятой:
+        <pre>
+                <code class="language-js">
+let [firstName, , title] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];                    
+                </code>
+            </pre>
+        Работает с любым перебираемым объектом с правой стороны
+        <pre>
+                <code class="language-js">
+let [one, two, three] = new Set([1, 2, 3]);                    
+                </code>
+            </pre>
+        Присваивайте чему угодно с левой стороны
+        <pre>
+    <code class="language-js">
+let user = {};
+[user.name, user.surname] = "Ilya Kantor".split(' ');        
+    </code>
+</pre>
+        Цикл с .entries()
+        <pre>
+    <code class="language-js">
+let user = {
+  name: "John",
+  age: 30
+};
+
+// цикл по ключам и значениям
+for (let [key, value] of Object.entries(user)) {
+  alert(`${key}:${value}`); // name:John, затем age:30
+}
+let user = new Map();
+user.set("name", "John");
+user.set("age", "30");
+
+// Map перебирает как пары [ключ, значение], что очень удобно для деструктурирования
+for (let [key, value] of user) {
+  alert(`${key}:${value}`); // name:John, затем age:30
+}        
+    </code>
+</pre>
+        Трюк обмена переменных
+        <pre>
+    <code class="language-js">
+let guest = "Jane";
+let admin = "Pete";
+
+// Давайте поменяем местами значения: сделаем guest = "Pete", а admin = "Jane"
+[guest, admin] = [admin, guest];        
+    </code>
+</pre>
+        </p>
+    </div>
+    <div class="topic" id="...">
+        <h3><a href="https://learn.javascript.ru/destructuring-assignment#ostatochnye-parametry">Остаточные параметры
+                «…»</a></h3>
+        <p>Смысл в создании массива на основе переменной <code>...variable</code>:
+        <pre>
+            <code class="language-js">
+let [name1, ...rest] = ["Julius", "Caesar", "Consul", "of the Roman Republic"];
+console.log(`name1 - ${name1} and array rest: ${rest}`)                
+            </code>
+        </pre>
+        </p>
+    </div>
+    <div class="topic" id="default_values">
+        <h3>Значения по умолчанию</h3>
+        <p>Если не инициализированные то undefined:
+        <pre>
+                <code class="language-js">
+let [firstName, surnam] = [];
+console.log(`${firstName} ${surnam}`)                    
+                </code>
+            </pre>
+        Или можно задать умолчания, которые будут переименованы при присваивании:
+        <pre>
+                <code class="language-js">
+// значения по умолчанию
+let [name = "Guest", surname = "Anonymous"] = ["Julius"];                    
+                </code>
+            </pre>
+        Так же можно брать умолчания из функций:
+        <pre>
+                <code class="language-js">
+// prompt запустится только для surname
+let [name = prompt('name?'), surname = prompt('surname?')] = ["Julius"];
+
+alert(name);    // Julius (из массива)
+alert(surname); // результат prompt                    
+                </code>
+            </pre>
+        </p>
+    </div>
+    <div class="topic" id="destruct_obj">
+        <h1><a href="https://learn.javascript.ru/destructuring-assignment#destrukturizatsiya-obekta">Деструктуризация
+                объекта</a></h1>
+        <p>Так же можно разбивать объект на переменные но вместо квадратных скобок используются фигурные:
+
+        <pre>
+                <code class="language-js">
+let options = {
+  title: "Menu",
+  width: 100,
+  height: 200
+};
+
+let {title, width, height} = options;
+
+                </code>
+            </pre>
+        Если мы хотим присвоить свойство объекта переменной с другим названием, например, свойство options.width
+        присвоить переменной w, то мы можем использовать двоеточие:
+        <pre>
+            <code class="language-js">
+let options = {
+  title: "Menu",
+  width: 100,
+  height: 200
+};
+
+// { sourceProperty: targetVariable }
+let {width: w, height: h, title} = options;
+
+// width -> w
+// height -> h
+// title -> title                
+            </code>
+        </pre>
+        Двоеточие показывает «что : куда идёт». В примере выше свойство width сохраняется в переменную w, свойство
+        height сохраняется в h, а title присваивается одноимённой переменной.
+
+        </p>
+        <p>Для потенциально отсутствующих свойств мы можем установить значения по умолчанию, используя "=", как здесь:
+        <pre>
+                <code class="language-js">
+let options = {
+  title: "Menu"
+};
+
+let {width = prompt("width?"), title = prompt("title?")} = options;
+                </code>
+            </pre>
+        Мы также можем совмещать : и =:
+        <pre>
+                <code class="language-js">
+let {width: w = 100, height: h = 200, title} = {title: "Menu"};
+console.log(`${w} ${h} ${title}`)                    
+                </code>
+            </pre>
+        Так же можно выделять только отдельные свойства из объекта:
+        <pre>
+                <code class="language-js">
+let options = {
+  title: "Menu",
+  width: 100,
+  height: 200
+};
+
+// взять только title, игнорировать остальное
+let { title } = options;                    
+                </code>
+            </pre>
+        </p>
+    </div>
+    <div class="topic" id="...obj">
+        <h2>Остаток объекта «…»</h2>
+        <p>По аналогии с массивом при использовании <code>..variable</code> происходит создание нового объекта:
+        <pre>
+            <code class="language-js">
+let options = {
+  title: "Menu",
+  height: 200,
+  width: 100
+};
+
+// title = свойство с именем title
+// rest = объект с остальными свойствами
+let {title, ...rest} = options;                
+            </code>
+        </pre>
+        Есть один подвох, если сначала создать переменные, а только потом использовать их, то будет ошибка, надо
+        использовать скобки:
+        <pre>
+    <code class="language-js">
+let title, width, height;
+
+// сейчас всё работает
+({title, width, height} = {title: "Menu", width: 200, height: 100});        
+    </code>
+</pre>
+        </p>
+    </div>
+    <div class="topic" id="inside">
+        <h1><a href="https://learn.javascript.ru/destructuring-assignment#vlozhennaya-destrukturizatsiya">Вложенная
+                деструктуризация</a></h1>
+        <p>
+            Если объект или массив содержит другие вложенные объекты или массивы, то мы можем использовать более сложные
+            шаблоны с левой стороны, чтобы извлечь более глубокие свойства.
+        <pre>
+                <code class="language-js">
+let options = {
+  size: {
+    width: 100,
+    height: 200
+  },
+  items: ["Cake", "Donut"],
+  extra: true
+};
+
+// деструктуризация разбита на несколько строк для ясности
+let {
+  size: { // положим size сюда
+    width,
+    height
+  },
+  items: [item1, item2], // добавим элементы к items
+  title = "Menu" // отсутствует в объекте (используется значение по умолчанию)
+} = options;
+
+alert(title);  // Menu
+alert(width);  // 100
+alert(height); // 200
+alert(item1);  // Cake
+alert(item2);  // Donut                    
+                </code>
+            </pre>
+        Получившееся не объект, а отдельные переменные.
+        </p>
+    </div>
+    <div class="topic" id="smart">
+        <h1>Умные параметры функций</h1>
+        <p>Деструктуризация используется в параметрах фукнциий:
+        <pre>
+                <code class="language-js">
+// мы передаём объект в функцию
+let options = {
+  title: "My menu",
+  items: ["Item1", "Item2"]
+};
+
+// ...и она немедленно извлекает свойства в переменные
+function showMenu({title = "Untitled", width = 200, height = 100, items = []}) {
+  // title, items – взято из options,
+  // width, height – используются значения по умолчанию
+  alert( `${title} ${width} ${height}` ); // My Menu 200 100
+  alert( items ); // Item1, Item2
+}
+
+showMenu(options);                    
+                </code>
+            </pre>
+        </p>
+        <p>Мы также можем использовать более сложное деструктурирование с вложенными объектами и двоеточием:
+        <pre>
+                <code class="language-js">
+let options = {
+  title: "My menu",
+  items: ["Item1", "Item2"]
+};
+
+function showMenu({
+  title = "Untitled",
+  width: w = 100,  // width присваиваем в w
+  height: h = 200, // height присваиваем в h
+  items: [item1, item2] // первый элемент items присваивается в item1, второй в item2
+}) {
+  alert( `${title} ${w} ${h}` ); // My Menu 100 200
+  alert( item1 ); // Item1
+  alert( item2 ); // Item2
+}
+
+showMenu(options);                    
+                </code>
+            </pre>
+        </p>
+        <p>Полный синтаксис – такой же, как для деструктурирующего присваивания:
+        <pre>
+                <code class="language-js">
+function showMenu({
+  incomingProperty: varName = defaultValue
+  ...
+})                    
+                </code>
+            </pre>
+        Тогда для объекта с параметрами будет создана переменная varName для свойства с именем incomingProperty по
+        умолчанию равная defaultValue.
+        </p>
+        <p>Пожалуйста, обратите внимание, что такое деструктурирование подразумевает, что в showMenu() будет обязательно
+            передан аргумент.
+            Если нам нужны все значения по умолчанию, то нам следует передать пустой объект:
+        <pre>
+                <code class="language-js">
+showMenu({}); // ок, все значения - по умолчанию
+
+showMenu(); // так была бы ошибка                    
+                </code>
+            </pre>
+        Мы можем исправить это, сделав {} значением по умолчанию для всего объекта параметров:
+        <pre>
+    <code class="language-js">
+function showMenu({ title = "Menu", width = 100, height = 200 } = {}) {
+  alert( `${title} ${width} ${height}` );
+}
+
+showMenu(); // Menu 100 200        
+    </code>
+</pre>
+
+        </p>
+    </div>
+    <div class="topic" id="total">
+        <h1><a href="https://learn.javascript.ru/destructuring-assignment#itogo">Итого</a></h1>
+        <p>
+            Полный синтаксис для объекта:
+        <pre>
+                <code class="language-js">
+let {prop : varName = defaultValue, ...rest} = object                    
+                </code>
+            </pre>
+        </p>
+        <p>Полный синтаксис для массива:
+        <pre>
+                <code class="language-js">
+let [item1 = defaultValue, item2, ...rest] = array                    
+                </code>
+            </pre>
+        </p>
+        <p>Можно извлекать данные из вложенных объектов и массивов, для этого левая сторона должна иметь ту же
+            структуру, что и правая.</p>
+    </div>
+    <div class="topic" id="tasks">
+        <h1>Задачи</h1>
+        <p><a href="destructuring-assignment-working/task1.js">Решение 1 задачи</a>, так же как и у автора</p>
+        <p><a href="destructuring-assignment-working/task2.js">Решение второй задачи</a> думал минут 15, прежде чем
+            увидел, что он предлагает использовать <code>Object.entries(salaries)</code></p>
+    </div>
+</body>
+
+</html>

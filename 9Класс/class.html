@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Классы</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#base">Класс: базовый синтаксис</a></h2>
+        <ul>
+            <li><a href="#syntax">Синтаксис «class»</a></li>
+            <li><a href="#watisclass">Что такое класс?</a></li>
+            <li><a href="#notshugar">Не просто синтаксический сахар</a></li>
+            <li><a href="#ClassExpression">Class Expression</a></li>
+            <li><a href="#getset">Геттеры/сеттеры, другие сокращения</a></li>
+            <li><a href="#prop">Свойства классов</a></li>
+            <li><a href="#total">Итого</a></li>
+            <li><a href="#tasks">Задача</a></li>
+        </ul>
+
+    </div>
+    <div class="topic" id="base">
+        <h2><a href="https://learn.javascript.ru/class">Класс: базовый синтаксис</a></h2>
+        <p>Как мы уже знаем из главы Конструктор, оператор "new", с этим может помочь new function.
+
+            Но в современном JavaScript есть и более продвинутая конструкция «class», которая предоставляет новые
+            возможности, полезные для объектно-ориентированного программирования.</p>
+    </div>
+    <div class="topic" id="syntax">
+        <h3>Синтаксис «class»</h3>
+        <p>Базовый синтаксис выглядит так:
+        <pre>
+    <code class="language-js">
+class MyClass {
+  // методы класса
+  constructor() { ... }
+  method1() { ... }
+  method2() { ... }
+  method3() { ... }
+  ...
+}        
+    </code>
+</pre>
+        Объект класса создаётся только с испльзованием new, а метод constructor - есть конструктор. Например:
+        <script>
+            function exp1(params) {
+                class User {
+
+                    constructor(name) {
+                        this.name = name;
+                    }
+
+                    sayHi() {
+                        return this.name;
+                    }
+
+                }
+
+                // Использование:
+                let user = new User("Иван");
+                alert(user.sayHi());
+            }
+        </script>
+        <pre><button onclick="exp1()">Тест функции</button>
+    <code class="language-js">
+class User {
+
+  constructor(name) {
+    this.name = name;
+  }
+
+  sayHi() {
+    alert(this.name);
+  }
+
+}
+
+// Использование:
+let user = new User("Иван");
+user.sayHi();
+    </code>
+</pre>
+        Конструктор создаёт объект, и сохраняет входящюю переменную в this.name. user.sayHi() вызывает метод объекта.
+        </p>
+        <h4>Методы в классе не разделяются запятой</h4>
+    </div>
+    <div class="topic" id="watisclass">
+        <h3>Что такое класс?</h3>
+        <p>В языке JavaScript class вписан в уже существующие спецификации языка, так:
+        <pre>
+    <code class="language-js">
+class User {
+  constructor(name) { this.name = name; }
+  sayHi() { alert(this.name); }
+}
+
+// доказательство: User - это функция
+alert(typeof User); // function        
+    </code>
+</pre>
+        Что на самом деле происходит:
+        <ol>
+            <li>Создаётся функция с именем User, код функции берётся из constructor.</li>
+            <li>Сохраняет все методы, такие как sayHi, в User.prototype.</li>
+            <li>При вызове метода объекта new User он будет взят из прототипа, как описано в главе F.prototype. Таким
+                образом, объекты new User имеют доступ к методам класса.</li>
+        </ol>
+        </p>
+    </div>
+    <div class="topic" id="notshugar">
+        <h3>Не просто синтаксический сахар</h3>
+        <p>Главные отличия от просто функции:
+        <ol>
+            <li>Не возможно создать объект без <code>new</code>, не возможно вызвать код из самого класса.</li>
+            <li>Методы класса являются неперечислимыми, enumerable: false. Таким образом цикл for...in не будет их
+                отображать</li>
+            <li>Код внутри класса всегда в строгом режиме - <code>use strict</code></li>
+        </ol>
+
+        </p>
+    </div>
+    <div class="topic" id="ClassExpression">
+        <h3>Class Expression</h3>
+        <p>
+            Варианты создания Class Expression:
+        <pre>
+                <code class="language-js">
+let User = class {
+  sayHi() {
+    alert("Привет");
+  }
+};                    
+                </code>
+            </pre>
+        Можно задать имя, которое будет видно только в классе:
+        <pre>
+                <code class="language-js">
+// "Named Class Expression"
+// (в спецификации нет такого термина, но происходящее похоже на Named Function Expression)
+let User = class MyClass {
+  sayHi() {
+    alert(MyClass); // имя MyClass видно только внутри класса
+  }
+};
+
+new User().sayHi(); // работает, выводит определение MyClass
+
+alert(MyClass); // ошибка, имя MyClass не видно за пределами класса                    
+                </code>
+            </pre>
+        Так же можно создавать классы по запросу (шаблон Билдер):
+        <pre>
+    <code class="language-js">
+function makeClass(phrase) {
+  // объявляем класс и возвращаем его
+  return class {
+    sayHi() {
+      alert(phrase);
+    };
+  };
+}
+
+// Создаём новый класс
+let User = makeClass("Привет");
+
+new User().sayHi(); // Привет        
+    </code>
+</pre>
+
+        </p>
+    </div>
+    <div class="topic" id="getset">
+        <h3>Геттеры/сеттеры, другие сокращения</h3>
+        <p>Сразу перейдём к коду:
+        <pre>
+    <code class="language-js">
+class User {
+
+  constructor(name) {
+    // вызывает сеттер
+    this.name = name;
+  }
+
+  get name() {
+    return this._name;
+  }
+
+  set name(value) {
+    if (value.length < 4) {
+      alert("Имя слишком короткое.");
+      return;
+    }
+    this._name = value;
+  }
+
+}
+
+let user = new User("Иван");
+alert(user.name); // Иван
+
+user = new User(""); // Имя слишком короткое.        
+    </code>
+</pre>
+        Конструктор тут &#8593;, вызывает сеттер при создании.
+        </p>
+
+        <p>При объявлении класса геттеры/сеттеры создаются на User.prototype, вот так:
+        <pre>
+                <code class="language-js">
+Object.defineProperties(User.prototype, {
+  name: {
+    get() {
+      return this._name
+    },
+    set(name) {
+      // ...
+    }
+  }
+});                    
+                </code>
+            </pre>
+        Тут надо обратить внимание на саму возможность задавать сеттер и геттер.
+        </p>
+        <p>Пример с вычисляемым свойством в скобках [...], может быть полезно для динамического определения имени
+            функции:
+        <pre>
+    <code class="language-js">
+class User {
+
+  ['say' + 'Hi']() {
+    alert("Привет");
+  }
+
+}
+
+new User().sayHi();        
+    </code>
+</pre>
+
+        </p>
+    </div>
+    <div class="topic" id="prop">
+        <h3>Свойства классов</h3>
+        <p>
+        <pre>
+                <code class="language-js">
+class User {
+  name = "Аноним";
+
+  sayHi() {
+    alert(`Привет, ${this.name}!`);
+  }
+}
+
+new User().sayHi();                    
+                </code>
+            </pre>
+        Свойство name не устанавливается в User.prototype. Вместо этого оно создаётся оператором new перед запуском
+        конструктора, это именно свойство объекта.
+        </p>
+    </div>
+    <div class="topic" id="total">
+        <h3>Итого</h3>
+        <p>Базовый синтаксис:
+        <pre>
+    <code class="language-js">
+class MyClass {
+  prop = value; // свойство
+  constructor(...) { // конструктор
+    // ...
+  }
+  method(...) {} // метод
+  get something(...) {} // геттер
+  set something(...) {} // сеттер
+  [Symbol.iterator]() {} // метод с вычисляемым именем (здесь - символом)
+  // ...
+}        
+    </code>
+</pre>
+        MyClass технически является функцией (той, которую мы определяем как constructor), в то время как методы,
+        геттеры и сеттеры записываются в MyClass.prototype.
+        </p>
+    </div>
+    <div class="topic" id="tasks">
+        <h3>Задача</h3>
+        <script id="function">
+            function task1func() {
+                function Clock({ template }) {
+
+                    let timer;
+
+                    function render() {
+                        let date = new Date();
+
+                        let hours = date.getHours();
+                        if (hours < 10) hours = '0' + hours;
+
+                        let mins = date.getMinutes();
+                        if (mins < 10) mins = '0' + mins;
+
+                        let secs = date.getSeconds();
+                        if (secs < 10) secs = '0' + secs;
+
+                        let output = template
+                            .replace('h', hours)
+                            .replace('m', mins)
+                            .replace('s', secs);
+
+                        console.log(output);
+                    }
+
+                    this.stop = function () {
+                        clearInterval(timer);
+                    };
+
+                    this.start = function () {
+                        render();
+                        timer = setInterval(render, 1000);
+                    };
+
+                }
+
+                let clock = new Clock({ template: 'h:m:s' });
+                clock.start();
+            }
+        </script>
+        <script id="class">
+            function task1class(params) {
+                class Clock {
+                    timer;
+                    template;
+                    constructor({ template }) {
+                        this.template = template;
+                    }
+
+                    render() {
+                        let date = new Date();
+
+                        let hours = date.getHours();
+                        if (hours < 10) hours = '0' + hours;
+
+                        let mins = date.getMinutes();
+                        if (mins < 10) mins = '0' + mins;
+
+                        let secs = date.getSeconds();
+                        if (secs < 10) secs = '0' + secs;
+
+                        let output = this.template
+                            .replace('h', hours)
+                            .replace('m', mins)
+                            .replace('s', secs);
+
+                        console.log(output);
+                    }
+
+                    stop() {
+                        clearInterval(this.timer);
+                    }
+
+                    start() {
+                        let render = this.render.bind(this)
+                        render();
+                        this.timer = setInterval(render, 1000);
+                    }
+
+                }
+                let clock = new Clock({ template: 'h:m:s' });
+                
+                setTimeout(() => clock.stop(), 10000)
+                clock.start();
+            }
+        </script>
+        <p><button onclick="task1func()">тест функции</button> <button onclick="task1class()">тест класс</button>
+        Я написал такой код:
+    <pre>
+        <code class="language-js">
+                class Clock {
+                    timer;
+                    template;
+                    constructor({ template }) {
+                        this.template = template;
+                    }
+
+                    render() {
+                        let date = new Date();
+
+                        let hours = date.getHours();
+                        if (hours < 10) hours = '0' + hours;
+
+                        let mins = date.getMinutes();
+                        if (mins < 10) mins = '0' + mins;
+
+                        let secs = date.getSeconds();
+                        if (secs < 10) secs = '0' + secs;
+
+                        let output = this.template
+                            .replace('h', hours)
+                            .replace('m', mins)
+                            .replace('s', secs);
+
+                        console.log(output);
+                    }
+
+                    stop() {
+                        clearInterval(this.timer);
+                    }
+
+                    start() {
+                        let render = this.render.bind(this)
+                        render();
+                        this.timer = setInterval(render, 1000);
+                    }
+
+                }            
+        </code>
+    </pre>
+    Дипсик говорит можно улучшить, инициализировав поля по умолчанию:
+<pre>
+    <code class="language-js">
+  timer = null;
+  template = '';        
+    </code>
+</pre>
+и добавив bind в тело конструктора:
+<pre>
+    <code class="language-js">
+  constructor({ template }) {
+    this.template = template;
+    this.render = this.render.bind(this); // однократная привязка
+  }        
+    </code>
+</pre>
+    </p>
+    <p>Код автора:
+<pre>
+    <code class="language-js">
+class Clock {
+  constructor({ template }) {
+    this.template = template;
+  }
+
+  render() {
+    let date = new Date();
+
+    let hours = date.getHours();
+    if (hours < 10) hours = '0' + hours;
+
+    let mins = date.getMinutes();
+    if (mins < 10) mins = '0' + mins;
+
+    let secs = date.getSeconds();
+    if (secs < 10) secs = '0' + secs;
+
+    let output = this.template
+      .replace('h', hours)
+      .replace('m', mins)
+      .replace('s', secs);
+
+    console.log(output);
+  }
+
+  stop() {
+    clearInterval(this.timer);
+  }
+
+  start() {
+    this.render();
+    this.timer = setInterval(() => this.render(), 1000);
+  }
+}        
+    </code>
+</pre>        
+У автора тут тоже самое, кроме bind и this.timer виден вне члена класса(?)
+    </p>
+    </div>
+    <div class="topic" id="tests">
+        <h3>Разные тесты</h3>
+        <p><button onclick="testPole()">Тест поля которое задаётся через конструтор</button></p>
+        <script>
+            function testPole(params) {
+                class TestPole{
+                    constructor(param=6){
+                        this.param = param
+                    }
+                    getParam(){
+                        alert(this.param)
+                    }
+                }
+                const obj = new TestPole("Тут что-то")
+                obj.getParam()
+            }
+        </script>
+    </div>
+</body>
+
+</html>

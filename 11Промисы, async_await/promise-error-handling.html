@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Промисы: обработка ошибок</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#error">Промисы: обработка ошибок</a></h2>
+        <ul>
+            <li><a href="#notshow">Неявный try…catch</a></li>
+            <li><a href="#throw">Пробрасывание ошибок</a></li>
+            <li><a href="#nothandle">Необработанные ошибки</a></li>
+            <li><a href="#total">Итого</a></li>
+            <li><a href="#tasks">Задача</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="error">
+        <h2><a href="https://learn.javascript.ru/promise-error-handling">Промисы: обработка ошибок</a></h2>
+        <p>Самый лёгкий путь перехватить все ошибки – это добавить .catch в конец цепочки:
+        <pre>
+    <code class="language-js">
+fetch('/article/promise-chaining/user.json')
+  .then(response => response.json())
+  .then(user => fetch(`https://api.github.com/users/${user.name}`))
+  .then(response => response.json())
+  .then(githubUser => new Promise((resolve, reject) => {
+    let img = document.createElement('img');
+    img.src = githubUser.avatar_url;
+    img.className = "promise-avatar-example";
+    document.body.append(img);
+
+    setTimeout(() => {
+      img.remove();
+      resolve(githubUser);
+    }, 3000);
+  }))
+  .catch(error => alert(error.message));        
+    </code>
+</pre>
+        Если все в порядке, то такой .catch вообще не выполнится. Но если любой из промисов будет отклонён (проблемы с
+        сетью или некорректная json-строка, или что угодно другое), то ошибка будет перехвачена.
+        </p>
+    </div>
+    <div class="topic" id="notshow">
+        <h3>Неявный try…catch</h3>
+        <p>Вокруг функции промиса и обработчиков находится «невидимый try..catch». Если происходит исключение, то оно
+            перехватывается, и промис считается отклонённым с этой ошибкой.</p>
+        <pre>
+    <code class="language-js">
+new Promise((resolve, reject) => {
+  throw new Error("Ошибка!");
+}).catch(alert); // Error: Ошибка!        
+    </code>
+</pre>
+        <p>Перехватываются ошибки не только внутри промиса, но и внутри then:
+        <pre>
+    <code class="language-js">
+new Promise((resolve, reject) => {
+  resolve("ок");
+}).then((result) => {
+  blabla(); // нет такой функции
+}).catch(alert); // ReferenceError: blabla is not defin
+
+new Promise((resolve, reject) => {
+  resolve("ок");
+}).then((result) => {
+  throw new Error("Ошибка!"); // генерируем ошибку
+}).catch(alert); // Error: Ошибка!
+    </code>
+</pre>
+
+        </p>
+    </div>
+    <div class="topic" id="throw">
+        <h3>Пробрасывание ошибок</h3>
+        <p>
+            <script>
+                function expl1(params) {
+                    // the execution: catch -> then
+                    new Promise((resolve, reject) => {
+
+                        throw new Error("Ошибка!");
+
+                    }).catch(function (error) {
+
+                        alert("Ошибка обработана, продолжить работу");
+
+                    }).then(() => alert("Управление перейдёт в следующий then"));
+                }
+            </script>
+            Если ошибка будет обработана в блоке .catch, то дальше пойдёт обычное выполнение:
+        <pre><button onclick="expl1()">Тест кода</button>
+    <code class="language-js">
+// the execution: catch -> then
+new Promise((resolve, reject) => {
+
+  throw new Error("Ошибка!");
+
+}).catch(function(error) {
+
+  alert("Ошибка обработана, продолжить работу");
+
+}).then(() => alert("Управление перейдёт в следующий then"));    
+    </code>
+</pre>
+        А если нет и произойдёт проброс куда-то дальше, то блоки обработаны не будут:
+        <script>
+            function expl2(params) {
+                // the execution: catch -> catch -> then
+                new Promise((resolve, reject) => {
+
+                    throw new Error("Ошибка!");
+
+                }).catch(function (error) { // (*)
+
+                    if (error instanceof URIError) {
+                        // обрабатываем ошибку
+                    } else {
+                        alert("Не могу обработать ошибку");
+
+                        throw error; // пробрасывает эту или другую ошибку в следующий catch
+                    }
+
+                }).then(function () {
+                    /* не выполнится */
+                }).catch(error => { // (**)
+
+                    alert(`Неизвестная ошибка: ${error}`);
+                    // ничего не возвращаем => выполнение продолжается в нормальном режиме
+
+                });
+            }
+        </script>
+        <pre><button onclick="expl2()">Тест кода</button>
+    <code class="language-js">
+// the execution: catch -> catch -> then
+new Promise((resolve, reject) => {
+
+  throw new Error("Ошибка!");
+
+}).catch(function(error) { // (*)
+
+  if (error instanceof URIError) {
+    // обрабатываем ошибку
+  } else {
+    alert("Не могу обработать ошибку");
+
+    throw error; // пробрасывает эту или другую ошибку в следующий catch
+  }
+
+}).then(function() {
+  /* не выполнится */
+}).catch(error => { // (**)
+
+  alert(`Неизвестная ошибка: ${error}`);
+  // ничего не возвращаем => выполнение продолжается в нормальном режиме
+
+});        
+    </code>
+</pre>
+
+        </p>
+    </div>
+    <div class="topic" id="nothandle">
+        <h3>Необработанные ошибки</h3>
+        <script>
+            function expl3(params) {
+                new Promise(function () {
+                    noSuchFunction(); // Ошибка (нет такой функции)
+                })
+                    .then(() => {
+                        alert("test") // обработчики .then, один или более
+                    })
+            }
+        </script>
+        <p>Если возникнет ошибка, которую некому перехватить, то она просто повиснет оставив сообщение в консоли
+            браузера.
+        <pre><button onclick="expl3()">Тест кода</button>
+            <code class="language-js">
+new Promise(function() {
+  noSuchFunction(); // Ошибка (нет такой функции)
+})
+  .then(() => {
+   alert("test") // обработчики .then, один или более
+  })                            
+            </code>
+        </pre>
+        В браузере мы можем поймать такие ошибки, используя событие <code>unhandledrejection</code>:
+        <script>
+            function expl4(params) {
+                window.addEventListener('unhandledrejection', function (event) {
+                    // объект события имеет два специальных свойства:
+                    alert(event.promise); // [object Promise] - промис, который сгенерировал ошибку
+                    alert(event.reason); // Error: Ошибка! - объект ошибки, которая не была обработана
+                });
+
+                new Promise(function () {
+                    throw new Error("Ошибка!");
+                }); // нет обработчика ошибок        
+            }
+        </script>
+        <pre><button onclick="expl4()">Тест функции</button>
+    <code class="language-js">
+window.addEventListener('unhandledrejection', function(event) {
+  // объект события имеет два специальных свойства:
+  alert(event.promise); // [object Promise] - промис, который сгенерировал ошибку
+  alert(event.reason); // Error: Ошибка! - объект ошибки, которая не была обработана
+});
+
+new Promise(function() {
+  throw new Error("Ошибка!");
+}); // нет обработчика ошибок        
+    </code>
+</pre>
+        </p>
+
+        <p>Это событие является частью стандарта HTML.</p>
+
+        <p>Если происходит ошибка, и отсутствует её обработчик, то генерируется событие unhandledrejection, и
+            соответствующий объект event содержит информацию об ошибке.</p>
+
+        <p>Обычно такие ошибки неустранимы, поэтому лучше всего – информировать пользователя о проблеме и, возможно,
+            отправить информацию об ошибке на сервер.</p>
+
+        <p>В не-браузерных средах, таких как Node.js, есть другие способы отслеживания необработанных ошибок. </p>
+
+    </div>
+    <div class="topic" id="total">
+        <h3>Итого</h3>
+        <p>
+        <ul>
+            <li>.catch перехватывает все виды ошибок в промисах: будь то вызов reject() или ошибка, брошенная в
+                обработчике при помощи throw.</li>
+            <li>.then также перехватывает ошибки таким же образом, если задан второй аргумент (который является
+                обработчиком ошибок).</li>
+            <li>Необходимо размещать .catch там, где мы хотим обработать ошибки и знаем, как это сделать. Обработчик
+                может проанализировать ошибку (могут быть полезны пользовательские классы ошибок) и пробросить её, если
+                ничего не знает о ней (возможно, это программная ошибка).</li>
+            <li>Можно и совсем не использовать .catch, если нет нормального способа восстановиться после ошибки.</li>
+            <li>В любом случае нам следует использовать обработчик события unhandledrejection (для браузеров и аналог
+                для других окружений), чтобы отслеживать необработанные ошибки и информировать о них пользователя (и,
+                возможно, наш сервер), благодаря чему наше приложение никогда не будет «просто умирать».</li>
+
+        </ul>
+
+        </p>
+
+    </div>
+<div class="topic" id="tasks">
+    <h3>Задача</h3>
+    <script id="task1">
+function task1(params) {
+new Promise(function(resolve, reject) {
+  setTimeout(() => {
+    throw new Error("Whoops!");
+  }, 1000);
+}).catch(reason => alert(reason));    
+}        
+    </script>
+    <button onclick="task1()">Выполнится catch</button>
+    <p>.catch не перехватил потому что: В данном примере ошибка генерируется не по ходу выполнения кода, а позже. Поэтому промис не может обработать её.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>

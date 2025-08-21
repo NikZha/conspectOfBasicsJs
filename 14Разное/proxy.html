@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxy и Reflect</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#ProxyReflect">Proxy и Reflect</a></h2>
+        <ul>
+            <li><a href="#defaultget">Значение по умолчанию с ловушкой «get»</a></li>
+            <li><a href="#validset">Валидация с ловушкой «set»</a></li>
+            <li><a href="#ownkeys">Перебор при помощи «ownKeys» и «getOwnPropertyDescriptor»</a></li>
+            <li><a href="#protect">Защищённые свойства с ловушкой «deleteProperty» и другими</a></li>
+            <li><a href="#into">«В диапазоне» с ловушкой «has»</a></li>
+            <li><a href="#apply">Оборачиваем функции: «apply»</a></li>
+            <li><a href="#Reflect">Reflect</a></li>
+            <li><a href="#restrictions">Ограничения прокси</a></li>
+            <li><a href="#off">Отключаемые прокси</a></li>
+            <li><a href="#links">Ссылки</a></li>
+            <li><a href="#total">Итого</a></li>
+            <li><a href="#tasks">Задачи</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="ProxyReflect">
+        <h2><a href="https://learn.javascript.ru/proxy">Proxy и Reflect</a></h2>
+        <p>
+            Объект Proxy «оборачивается» вокруг другого объекта и может перехватывать (и, при желании, самостоятельно
+            обрабатывать) разные действия с ним, например чтение/запись свойств и другие. Далее мы будем называть такие
+            объекты «прокси».
+        <pre>
+                <code class="language-js">
+let proxy = new Proxy(target, handler);                    
+                </code>
+            </pre>
+        <ul>
+            <li>target – это объект, для которого нужно сделать прокси, может быть чем угодно, включая функции.</li>
+            <li>handler – конфигурация прокси: объект с «ловушками» («traps»): методами, которые перехватывают разные
+                операции, например, ловушка get – для чтения свойства из target, ловушка set – для записи свойства в
+                target и так далее.</li>
+        </ul>
+        </p>
+        <p>Простой пример:
+        <pre>
+    <code class="language-js">
+let target = {};
+let proxy = new Proxy(target, {}); // пустой handler
+
+proxy.test = 5; // записываем в прокси (1)
+alert(target.test); // 5, свойство появилось в target!
+
+alert(proxy.test); // 5, мы также можем прочитать его из прокси (2)
+
+for(let key in proxy) alert(key); // test, итерация работает (3)        
+    </code>
+</pre>
+        </p>
+        <p>
+            Для каждого внутреннего метода в этой таблице указана ловушка, то есть имя метода, который мы можем добавить
+            в параметр handler при создании new Proxy, чтобы перехватывать данную операцию:
+        <table>
+            <thead>
+                <tr>
+                    <th>Внутренний метод</th>
+                    <th>Ловушка</th>
+                    <th>Что вызывает</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>[[Get]]</td>
+                    <td>get</td>
+                    <td>чтение свойства</td>
+                </tr>
+                <tr>
+                    <td>[[Set]]</td>
+                    <td>set</td>
+                    <td>запись свойства</td>
+                </tr>
+                <tr>
+                    <td>[[HasProperty]]</td>
+                    <td>has</td>
+                    <td>оператор in</td>
+                </tr>
+                <tr>
+                    <td>[[Delete]]</td>
+                    <td>deleteProperty</td>
+                    <td>оператор delete</td>
+                </tr>
+                <tr>
+                    <td>[[Call]]</td>
+                    <td>apply</td>
+                    <td>вызов функции</td>
+                </tr>
+                <tr>
+                    <td>[[Construct]]</td>
+                    <td>construct</td>
+                    <td>оператор new</td>
+                </tr>
+                <tr>
+                    <td>[[GetPrototypeOf]]</td>
+                    <td>getPrototypeOf</td>
+                    <td>Object.getPrototypeOf</td>
+                </tr>
+                <tr>
+                    <td>[[SetPrototypeOf]]</td>
+                    <td>setPrototypeOf</td>
+                    <td>Object.setPrototypeOf</td>
+                </tr>
+                <tr>
+                    <td>[[IsExtensible]]</td>
+                    <td>isExtensible</td>
+                    <td>Object.isExtensible</td>
+                </tr>
+                <tr>
+                    <td>[[PreventExtensions]]</td>
+                    <td>preventExtensions</td>
+                    <td>Object.preventExtensions</td>
+                </tr>
+                <tr>
+                    <td>[[DefineOwnProperty]</td>
+                    <td>defineProperty</td>
+                    <td>Object.defineProperty, Object.defineProperties</td>
+                </tr>
+                <tr>
+                    <td>[[GetOwnProperty]]</td>
+                    <td>getOwnPropertyDescriptor</td>
+                    <td>Object.getOwnPropertyDescriptor, for..in, Object.keys/values/entries</td>
+                </tr>
+                <tr>
+                    <td>[[OwnPropertyKeys]]</td>
+                    <td>ownKeys</td>
+                    <td> Object.getOwnPropertyNames, Object.getOwnPropertySymbols, for..in, Object.keys/values/entries
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        Ряд ловушек-свойств будет рассмотрен ниже.
+        </p>
+
+    </div>
+    <div class="topic" id="defaultget">
+        <h3>Значение по умолчанию с ловушкой «get»</h3>
+        <p>Чтобы перехватить операцию чтения, handler должен иметь метод get(target, property, receiver).
+        <ul>
+            <li>target – это оригинальный объект, который передавался первым аргументом в конструктор new Proxy,</li>
+            <li>property – имя свойства,</li>
+            <li>receiver – если свойство объекта является геттером, то receiver – это объект, который будет использован
+                как this при его вызове. Обычно это сам объект прокси (или наследующий от него объект). Прямо сейчас нам
+                не понадобится этот аргумент, подробнее разберём его позже.</li>
+        </ul>
+        </p>
+        <p>Пример:
+        <pre>
+                <code class="language-js">
+let numbers = [0, 1, 2];
+
+numbers = new Proxy(numbers, {
+  get(target, prop) {
+    if (prop in target) {
+      return target[prop];
+    } else {
+      return 0; // значение по умолчанию
+    }
+  }
+});
+
+alert( numbers[1] ); // 1
+alert( numbers[123] ); // 0 (нет такого элемента)                    
+                </code>
+            </pre>
+        Или обход undefined:
+        <pre>
+                <code class="language-js">
+let dictionary = {
+  'Hello': 'Hola',
+  'Bye': 'Adiós'
+};
+
+alert( dictionary['Hello'] ); // Hola
+alert( dictionary['Welcome'] ); // undefined
+
+dictionary = new Proxy(dictionary, {
+  get(target, phrase) { // перехватываем чтение свойства в dictionary
+    if (phrase in target) { // если перевод для фразы есть в словаре
+      return target[phrase]; // возвращаем его
+    } else {
+      // иначе возвращаем непереведённую фразу
+      return phrase;
+    }
+  }
+});
+
+// Запросим перевод произвольного выражения в словаре!
+// В худшем случае оно не будет переведено
+alert( dictionary['Hello'] ); // Hola
+alert( dictionary['Welcome to Proxy']); // Welcome to Proxy (нет перевода)
+                </code>
+            </pre>
+        </p>
+    </div>
+    <div class="topic" id="validset">
+        <h3>Валидация с ловушкой «set»</h3>
+        <p>
+            set(target, property, value, receiver):
+        <ul>
+            <li>target – это оригинальный объект, который передавался первым аргументом в конструктор new Proxy,</li>
+            <li>property – имя свойства,</li>
+            <li>value – значение свойства,</li>
+            <li>receiver – аналогично ловушке get, этот аргумент имеет значение, только если свойство – сеттер.</li>
+        </ul>
+        Ловушка set должна вернуть true, если запись прошла успешно, и false в противном случае (будет сгенерирована
+        ошибка TypeError).
+        <pre>
+    <code class="language-js">
+let numbers = [];
+
+numbers = new Proxy(numbers, { // (*)
+  set(target, prop, val) { // для перехвата записи свойства
+    if (typeof val == 'number') {
+      target[prop] = val;
+      return true;
+    } else {
+      return false;
+    }
+  }
+});
+
+numbers.push(1); // добавилось успешно
+numbers.push(2); // добавилось успешно
+alert("Длина: " + numbers.length); // 2
+
+numbers.push("тест"); // TypeError (ловушка set на прокси вернула false)
+
+alert("Интерпретатор никогда не доходит до этой строки (из-за ошибки в строке выше)");        
+    </code>
+</pre>
+        <blockquote>
+            <strong>Не забывайте вернуть true</strong>
+
+            <br>Как сказано ранее, нужно соблюдать инварианты.
+
+            <br>Для set реализация ловушки должна возвращать true в случае успешной записи свойства.
+
+            <br>Если забыть это сделать или возвратить любое ложное значение, это приведёт к ошибке TypeError
+        </blockquote>
+        </p>
+    </div>
+    <div class="topic" id="ownkeys">
+        <h3>Перебор при помощи «ownKeys» и «getOwnPropertyDescriptor»</h3>
+        <p>Object.keys, цикл for..in и большинство других методов, которые работают со списком свойств объекта,
+            используют внутренний метод [[OwnPropertyKeys]] (перехватываемый ловушкой ownKeys) для их получения.</p>
+        <p>
+        <ul>
+            <li>Object.getOwnPropertyNames(obj) возвращает не-символьные ключи.</li>
+            <li>Object.getOwnPropertySymbols(obj) возвращает символьные ключи.</li>
+            <li>Object.keys/values() возвращает не-символьные ключи/значения с флагом enumerable (подробнее про флаги
+                свойств было в главе Флаги и дескрипторы свойств).</li>
+            <li>for..in перебирает не-символьные ключи с флагом enumerable, а также ключи прототипов.</li>
+        </ul>
+        <pre>
+                    <code class="language-js">
+let user = {
+  name: "Вася",
+  age: 30,
+  _password: "***"
+};
+
+user = new Proxy(user, {
+  ownKeys(target) {
+    return Object.keys(target).filter(key => !key.startsWith('_'));
+  }
+});
+
+// ownKeys исключил _password
+for(let key in user) alert(key); // name, затем: age
+
+// аналогичный эффект для этих методов:
+alert( Object.keys(user) ); // name,age
+alert( Object.values(user) ); // Вася,30                        
+                    </code>
+                </pre>
+        <pre>
+                    <code class="language-js">
+let user = { };
+
+user = new Proxy(user, {
+  ownKeys(target) { // вызывается 1 раз для получения списка свойств
+    return ['a', 'b', 'c'];
+  },
+
+  getOwnPropertyDescriptor(target, prop) { // вызывается для каждого свойства
+    return {
+      enumerable: true,
+      configurable: true
+      /* ...другие флаги, возможно, "value: ..." */
+    };
+  }
+
+});
+
+alert( Object.keys(user) ); // a, b, c                        
+                    </code>
+                </pre>
+        </p>
+    </div>
+    <div class="topic" id="protect">
+        <h3>Защищённые свойства с ловушкой «deleteProperty» и другими</h3>
+        <p>Это кастыль который нужен, для того чтобы скрывать свойства начинающиеся на <code>_</code>.
+        <pre>
+            <code class="language-js">
+	
+let user = {
+  name: "Вася",
+  _password: "***"
+};
+
+user = new Proxy(user, {
+  get(target, prop) {
+    if (prop.startsWith('_')) {
+      throw new Error("Отказано в доступе");
+    } else {
+      let value = target[prop];
+      return (typeof value === 'function') ? value.bind(target) : value; // (*)
+    }
+  },
+  set(target, prop, val) { // перехватываем запись свойства
+    if (prop.startsWith('_')) {
+      throw new Error("Отказано в доступе");
+    } else {
+      target[prop] = val;
+      return true;
+    }
+  },
+  deleteProperty(target, prop) { // перехватываем удаление свойства
+    if (prop.startsWith('_')) {
+      throw new Error("Отказано в доступе");
+    } else {
+      delete target[prop];
+      return true;
+    }
+  },
+  ownKeys(target) { // перехватываем попытку итерации
+    return Object.keys(target).filter(key => !key.startsWith('_'));
+  }
+});
+
+// "get" не позволяет прочитать _password
+try {
+  alert(user._password); // Error: Отказано в доступе
+} catch(e) { alert(e.message); }
+
+// "set" не позволяет записать _password
+try {
+  user._password = "test"; // Error: Отказано в доступе
+} catch(e) { alert(e.message); }
+
+// "deleteProperty" не позволяет удалить _password
+try {
+  delete user._password; // Error: Отказано в доступе
+} catch(e) { alert(e.message); }
+
+// "ownKeys" исключает _password из списка видимых для итерации свойств
+for(let key in user) alert(key); // name
+                
+            </code>
+        </pre>
+        </p>
+    </div>
+    <div class="topic" id="into">
+        <h3>«В диапазоне» с ловушкой «has»</h3>
+        <pre>
+        <code class="language-js">
+let range = {
+  start: 1,
+  end: 10
+};
+
+range = new Proxy(range, {
+  has(target, prop) {
+    return prop >= target.start && prop <= target.end
+  }
+});
+
+alert(5 in range); // true
+alert(50 in range); // false            
+        </code>
+    </pre>
+    </div>
+    <div class="topic" id="apply">
+        <h3>Оборачиваем функции: «apply»</h3>
+        <p>Ловушка apply(target, thisArg, args) активируется при вызове прокси как функции:
+        <ul>
+            <li>target – это оригинальный объект (как мы помним, функция – это объект в языке JavaScript),</li>
+            <li>thisArg – это контекст this.</li>
+            <li>args – список аргументов.</li>
+        </ul>
+        Таким образом:
+        <pre>
+            <code class="language-js">
+function delay(f, ms) {
+  return new Proxy(f, {
+    apply(target, thisArg, args) {
+      setTimeout(() => target.apply(thisArg, args), ms);
+    }
+  });
+}
+
+function sayHi(user) {
+  alert(`Привет, ${user}!`);
+}
+
+sayHi = delay(sayHi, 3000);
+
+alert(sayHi.length); // 1 (*) прокси перенаправляет чтение свойства length на исходную функцию
+
+sayHi("Вася"); // Привет, Вася! (через 3 секунды)                
+            </code>
+        </pre>
+        То есть Proxy позволяет прознрачно вызывать функцию, в тоже обернув её другой функцией
+        </p>
+    </div>
+    <div class="topic" id="Reflect">
+        <h3>Reflect</h3>
+        <p>
+            Reflect – встроенный объект, упрощающий создание прокси.
+        </p>
+        <p>
+            Вот примеры операций и вызовы Reflect, которые делают то же самое:
+        <table>
+            <thead>
+                <tr>
+                    <th>Операция</th>
+                    <th>Вызов Reflect</th>
+                    <th>Внутренний метод</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>obj[prop]</td>
+                    <td>Reflect.get(obj, prop)</td>
+                    <td>[[Get]]</td>
+                </tr>
+                <tr>
+                    <td>obj[prop] = value</td>
+                    <td>Reflect.set(obj, prop, value)</td>
+                    <td>[[Set]]</td>
+                </tr>
+                <tr>
+                    <td>delete obj[prop]</td>
+                    <td>Reflect.deleteProperty(obj, prop)</td>
+                    <td>[[Delete]]</td>
+                </tr>
+                <tr>
+                    <td>new F(value)</td>
+                    <td>Reflect.construct(F, value)</td>
+                    <td>[[Construct]]</td>
+                </tr>
+            </tbody>
+        </table>
+        И так далее, например:
+        <pre>
+    <code class="language-js">
+let user = {};
+
+Reflect.set(user, 'name', 'Вася');
+
+alert(user.name); // Вася        
+    </code>
+</pre>
+        Или вот пример посложнее:
+        <pre>
+    <code class="language-js">
+let user = {
+  name: "Вася",
+};
+
+user = new Proxy(user, {
+  get(target, prop, receiver) {
+    alert(`GET ${prop}`);
+    return Reflect.get(target, prop, receiver); // (1)
+  },
+  set(target, prop, val, receiver) {
+    alert(`SET ${prop}=${val}`);
+    return Reflect.set(target, prop, val, receiver); // (2)
+  }
+});
+
+let name = user.name; // выводит "GET name"
+user.name = "Петя"; // выводит "SET name=Петя"        
+    </code>
+</pre>
+        </p>
+        <h4>Прокси для геттера</h4>
+        <p>
+        <pre>
+            <code class="language-js">
+let user = {
+  _name: "Гость",
+  get name() {
+    return this._name;
+  }
+};
+
+let userProxy = new Proxy(user, {
+  get(target, prop, receiver) { // receiver = admin
+    return Reflect.get(target, prop, receiver); // (*)
+  }
+});
+
+
+let admin = {
+  __proto__: userProxy,
+  _name: "Админ"
+};
+
+alert(admin.name); // Админ                
+            </code>
+        </pre>
+        </p>
+    </div>
+    <div class="topic" id="restrictions">
+        <h3>Ограничения прокси</h3>
+        <p>Многие встроенные объекты, например Map, Set, Date, Promise и другие используют так называемые «внутренние
+            слоты».</p>
+        <p>Приватные поля</p>
+        <p>Прокси != оригинальный объект</p>
+
+    </div>
+    <div class="topic" id="off">
+        <h3>Отключаемые прокси</h3>
+        <p>Отключаемый (revocable) прокси – это прокси, который может быть отключён вызовом специальной функции.</p>
+        <pre>
+        <code class="language-js">
+let {proxy, revoke} = Proxy.revocable(target, handler)            
+        </code>
+    </pre>
+        <p>Пример:
+        <pre>
+    <code class="language-js">
+let revokes = new WeakMap();
+
+let object = {
+  data: "Важные данные"
+};
+
+let {proxy, revoke} = Proxy.revocable(object, {});
+
+revokes.set(proxy, revoke);
+
+// ..позже в коде..
+revoke = revokes.get(proxy);
+revoke();
+
+alert(proxy.data); // Ошибка (прокси отключён)        
+    </code>
+</pre>
+        Преимущество такого подхода в том, что мы не должны таскать функцию revoke повсюду. Мы получаем её при
+        необходимости из revokes по объекту прокси.
+
+        <br>Мы использовали WeakMap вместо Map, чтобы не блокировать сборку мусора. Если прокси объект становится
+        недостижимым (то есть на него больше нет ссылок), то WeakMap позволяет сборщику мусора удалить его из памяти
+        вместе с соответствующей функцией revoke, которая в этом случае больше не нужна.
+        </p>
+    </div>
+<div class="topic" id="links">
+    <h3>Ссылки на доку</h3>
+    <p>
+<a href="https://learn.javascript.ru/proxy#ssylki">Ссылка</a>
+    </p>
+</div>
+<div class="topic" id="total">
+    <h3>Итого</h3>
+    <p>Имхо не самое востребованное в языке, просто оставляю до какого-то раза, если понадобится.</p>
+</div>
+<div class="topic" id="tasks">
+    <h3>Задачи</h3>
+    <div id="task1">
+        <h4>Задача 1</h4>
+        <script>
+            function task1(params) {
+let user = {
+  name: "John"
+};
+
+function wrap(target) {
+  return new Proxy(target, {
+      get (target, prop){
+        if(prop in target) return target[prop]
+        return new Error('Has no this prop')
+      }
+  });
+}
+
+user = wrap(user);
+
+alert(user.name); // John
+alert(user.age); // Ошибка: такого свойства не существует                
+            }
+        </script>
+        <button onclick="task1()">Тест код</button>
+        <p>Как сделал я:
+<pre>
+    <code class="language-js">
+function wrap(target) {
+  return new Proxy(target, {
+      get (target, prop){
+        if(prop in target) return target[prop]
+        return new Error('Has no this prop')
+      }
+  });
+}        
+    </code>
+</pre>
+Как предлагает дядя:
+<pre>
+    <code class="language-js">
+function wrap(target) {
+  return new Proxy(target, {
+    get(target, prop, receiver) {
+      if (prop in target) {
+        return Reflect.get(target, prop, receiver);
+      } else {
+        throw new ReferenceError(`Свойство не существует: "${prop}"`)
+      }
+    }
+  });
+}        
+    </code>
+</pre>
+        </p>
+    </div>
+    <p><a href="https://learn.javascript.ru/proxy#poluchenie-elementa-massiva-s-otritsatelnoy-pozitsii">Отсюда и далее я подзабил на 2 задачи.</a></p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>

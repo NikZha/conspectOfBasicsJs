@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статические свойства и методы</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#static">Статические свойства и методы</a></h2>
+        <ul>
+            <li><a href="#prop">Статические свойства</a></li>
+            <li><a href="#inh">Наследование статических свойств и методов</a></li>
+            <li><a href="#total">Итого</a></li>
+            <li><a href="#tasks">Задача</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="static">
+        <h2><a href="https://learn.javascript.ru/static-properties-methods">Статические свойства и методы</a></h2>
+        <p>Методы существующие в единственно экземляре на все объекты. По автору используются для сравнения объектов:
+        <pre>
+    <code class="language-js">
+class Article {
+  constructor(title, date) {
+    this.title = title;
+    this.date = date;
+  }
+
+  static compare(articleA, articleB) {
+    return articleA.date - articleB.date;
+  }
+}
+
+// использование
+let articles = [
+  new Article("HTML", new Date(2019, 1, 1)),
+  new Article("CSS", new Date(2019, 0, 1)),
+  new Article("JavaScript", new Date(2019, 11, 1))
+];
+
+articles.sort(Article.compare);
+
+alert( articles[0].title ); // CSS        
+    </code>
+</pre>
+        Как фабричные методы:
+        <pre>
+    <code class="language-js">
+class Article {
+  constructor(title, date) {
+    this.title = title;
+    this.date = date;
+  }
+
+  static createTodays() {
+    // помним, что this = Article
+    return new this("Сегодняшний дайджест", new Date());
+  }
+}
+
+let article = Article.createTodays();
+
+alert( article.title ); // Сегодняшний дайджест        
+    </code>
+</pre>
+        </p>
+        <p>Два вида объявления статических методов в JavaScript 1:
+        <pre>
+    <code class="language-js">
+class User {
+  static staticMethod() {
+    alert(this === User);
+  }
+}
+
+User.staticMethod(); // true        
+    </code>
+</pre>
+        2:
+        <pre>
+    <code class="language-js">
+class User { }
+
+User.staticMethod = function() {
+  alert(this === User);
+};        
+    </code>
+</pre>
+        </p>
+        <p>С одиночного объекта вызвать нельзя:
+        <pre><button onclick="exampl1()">Тест кода</button>
+    <code class="language-js">
+            class TestClass {
+                constructor(parameters) {
+                    
+                }
+                static testStatic(){
+                    return true;
+                }
+            }
+            const obj = new TestClass()
+           // alert(obj.testStatic()) //Не cработает, хотя
+            alert(TestClass.testStatic())        
+    </code>
+</pre>
+
+        </p>
+        <script>
+            function exampl1(params) {
+                class TestClass {
+                    constructor(parameters) {
+
+                    }
+                    static testStatic() {
+                        return true;
+                    }
+                }
+                const obj = new TestClass()
+                // alert(obj.testStatic()) //Не cработает, хотя
+                alert(TestClass.testStatic())
+            }
+        </script>
+    </div>
+    <div class="topic" id="prop">
+        <h3>Статические свойства</h3>
+        <p>То же ничего нового:
+        <pre>
+    <code class="language-js">
+class Article {
+  static publisher = "Илья Кантор";
+}
+
+alert( Article.publisher ); // Илья Кантор        
+    </code>
+</pre>
+        Можно менять если есть доступ:
+        <pre>
+    <code class="language-js">
+Article.publisher = "Илья Кантор";        
+    </code>
+</pre>
+        </p>
+    </div>
+    <div class="topic" id="inh">
+        <h3>Наследование статических свойств и методов</h3>
+        <p>Статические свойства и методы наследуются.
+
+            Например, метод Animal.compare в коде ниже наследуется и доступен как Rabbit.compare:
+        <pre>
+    <code class="language-js">
+class Animal {
+
+  constructor(name, speed) {
+    this.speed = speed;
+    this.name = name;
+  }
+
+  run(speed = 0) {
+    this.speed += speed;
+    alert(`${this.name} бежит со скоростью ${this.speed}.`);
+  }
+
+  static compare(animalA, animalB) {
+    return animalA.speed - animalB.speed;
+  }
+
+}
+
+// Наследует от Animal
+class Rabbit extends Animal {
+  hide() {
+    alert(`${this.name} прячется!`);
+  }
+}
+
+let rabbits = [
+  new Rabbit("Белый кролик", 10),
+  new Rabbit("Чёрный кролик", 5)
+];
+
+rabbits.sort(Rabbit.compare);
+
+rabbits[0].run(); // Чёрный кролик бежит со скоростью 5.        
+    </code>
+</pre>
+        </p>
+
+    </div>
+    <div class="topic" id="total">
+        <h3>Итого</h3>
+        <p>Статические методы используются для функциональности, принадлежат классу «в целом», а не относятся к
+            конкретному объекту класса.
+
+            <br>Например, метод для сравнения двух статей Article.compare(article1, article2) или фабричный метод
+            Article.createTodays().
+
+            <br>В объявлении класса они помечаются ключевым словом static.
+
+            <br>Статические свойства используются в тех случаях, когда мы хотели бы сохранить данные на уровне класса, а
+            не какого-то одного объекта.
+        </p>
+        <p>Статические свойства и методы наследуются.
+
+        </p>
+    </div>
+    <div class="topic" id="tasks">
+        <h3>Задача</h3>
+        <script id="broken">
+            function task1broken(params) {
+                class Rabbit extends Object {
+                    constructor(name) {
+                        super(name)
+                        this.name = name;
+                       // this.__proto__ = Object
+                    }
+                }
+
+                let rabbit = new Rabbit("Кроль");
+
+                alert(rabbit.hasOwnProperty('name')); // Ошибка
+            }
+        </script>
+        <p><button onclick="task1broken()">Test broken code</button>
+        <pre>
+            <code class="language-js">
+                class Rabbit extends Object {
+                    constructor(name) {
+                        super(name)
+                        this.name = name;
+                       // this.__proto__ = Object
+                    }
+                }
+
+                let rabbit = new Rabbit("Кроль");
+
+                alert(rabbit.hasOwnProperty('name')); // Заработало                
+            </code>
+        </pre>
+    
+    </p>
+    </div>
+
+</body>
+
+</html>

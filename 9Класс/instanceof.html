@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проверка класса: "instanceof"</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#check">Проверка класса: "instanceof"</a></h2>
+        <ul>
+            <li><a href="#operator">Оператор instanceof</a></li>
+            <li><a href="#bonus">Бонус: Object.prototype.toString возвращает тип</a></li>
+            <li><a href="#total">Итого</a></li>
+            <li><a href="#tasks">Задача</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="check">
+        <h2><a href="https://learn.javascript.ru/instanceof">Проверка класса: "instanceof"</a></h2>
+        <p>Проверка чей объект.</p>
+        <p>Такая проверка может потребоваться во многих случаях. Здесь мы используем её для создания полиморфной
+            функции, которая интерпретирует аргументы по-разному в зависимости от их типа.</p>
+    </div>
+    <div class="topic" id="operator">
+        <h3>Оператор instanceof</h3>
+        <p>Синтаксис
+        <pre>
+            <code class="language-js">
+obj instanceof Class                
+            </code>
+        </pre>
+        Возвращает Boolen, работает так же и для встроенных классов:
+        <pre><button onclick="expml1()">Тест кода</button>
+            <code class="language-js">
+let arr = [1, 2, 3];
+alert( arr instanceof Array ); // true
+alert( arr instanceof Object ); // true                
+            </code>
+        </pre>
+        <script>
+            function expml1(params) {
+                let arr = [1, 2, 3];
+                alert(arr instanceof Array); // true
+                alert(arr instanceof Object); // true
+            }
+        </script>
+        Пожалуйста, обратите внимание, что arr также принадлежит классу Object, потому что Array наследует от Object.
+
+        <br>Обычно оператор instanceof просматривает для проверки цепочку прототипов. Но это поведение может быть
+        изменено при помощи статического метода Symbol.hasInstance.
+        </p>
+        <p>Схема работы:
+        <ol>
+            <li>Или операется на статических метод <code>Symbol.hasInstance</code>
+                <pre>
+                    <code class="language-js">
+// проверка instanceof будет полагать,
+// что всё со свойством canEat - животное Animal
+class Animal {
+  static [Symbol.hasInstance](obj) {
+    if (obj.canEat) return true;
+  }
+}
+
+let obj = { canEat: true };
+alert(obj instanceof Animal); // true: вызван Animal[Symbol.hasInstance](obj)                        
+                    </code>
+                </pre>
+            </li>
+            <li>
+                Или если этого метода нет, проверяется, равен ли Class.prototype одному из прототипов в прототипной
+                цепочке obj.
+                <pre>
+    <code class="language-js">
+obj.__proto__ === Class.prototype?
+obj.__proto__.__proto__ === Class.prototype?
+obj.__proto__.__proto__.__proto__ === Class.prototype?
+...
+// если какой-то из ответов true - возвратить true
+// если дошли до конца цепочки - false        
+    </code>
+</pre>
+                Например:
+                <pre>
+    <code class="language-js">
+class Animal {}
+class Rabbit extends Animal {}
+
+let rabbit = new Rabbit();
+alert(rabbit instanceof Animal); // true
+
+// rabbit.__proto__ === Animal.prototype (нет совпадения)
+// rabbit.__proto__.__proto__ === Animal.prototype (совпадение!)        
+    </code>
+</pre>
+            </li>
+        </ol>
+        </p>
+        <p>Это может приводить к интересным последствиям при изменении свойства prototype после создания объекта.
+        <pre>
+                <code class="language-js">
+function Rabbit() {}
+let rabbit = new Rabbit();
+
+// заменяем прототип
+Rabbit.prototype = {};
+
+// ...больше не rabbit!
+alert( rabbit instanceof Rabbit ); // false                    
+                </code>
+            </pre>
+        </p>
+    </div>
+    <div class="topic" id="bonus">
+        <h3>Бонус: Object.prototype.toString возвращает тип</h3>
+        <p>
+        <pre><button onclick="expml2()">Тест кода</button>
+        <code class="language-js">
+// скопируем метод toString в переменную для удобства
+let objectToString = Object.prototype.toString;
+
+// какой это тип?
+let arr = [];
+
+alert( objectToString.call(arr) ); // [object Array]
+let s = Object.prototype.toString;
+
+alert( s.call(123) ); // [object Number]
+alert( s.call(null) ); // [object Null]
+alert( s.call(alert) ); // [object Function]            
+        </code>
+    </pre>
+        </p>
+        <script>
+            function expml2(params) {
+                // скопируем метод toString в переменную для удобства
+                let objectToString = Object.prototype.toString;
+
+                // какой это тип?
+                let arr = [];
+
+                alert(objectToString.call(arr)); // [object Array]
+                let s = Object.prototype.toString;
+
+                alert(s.call(123)); // [object Number]
+                alert(s.call(null)); // [object Null]
+                alert(s.call(alert)); // [object Function]             
+            }
+        </script>
+        <div id="SymboltoStringTag">
+            <h3>Symbol.toStringTag</h3>
+            <p>Поведение метода объектов toString можно настраивать, используя специальное свойство объекта
+                Symbol.toStringTag.
+
+                Например:
+            <pre>
+    <code class="language-js">
+let user = {
+  [Symbol.toStringTag]: "User"
+};
+
+alert( {}.toString.call(user) ); // [object User]        
+    </code>
+</pre>
+            </p>
+        </div>
+    </div>
+    <div class="topic" id="total">
+        <h3>Итого</h3>
+        <p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Метод</th>
+                    <th>работает для</th>
+                    <th>возвращает</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>typeof</code></td>
+                    <td>примитивов</td>
+                    <td>строка</td>
+                </tr>
+                <tr>
+                    <td><code>{}.toString</code> или точнее <br><code>let s = Object.prototype.toString</code></td>
+                    <td>примитивов, встроенных объектов, объектов с Symbol.toStringTag</td>
+                    <td>строка</td>
+                </tr>
+                <tr>
+                    <td><code>instanceof</code></td>
+                    <td>объектов</td>
+                    <td><code>true/false</code></td>
+                </tr>
+
+            </tbody>
+        </table>
+        <code>{}.toString</code> или точнее <code>let s = Object.prototype.toString</code> позволяет работать с большим
+        числом типов чем <code>typeof</code>.
+        <br>А оператор instanceof – отличный выбор, когда мы работаем с иерархией классов и хотим делать проверки с
+        учётом наследования.
+        </p>
+    </div>
+    <div class="topic" id="tasks">
+        <h3>Задача</h3>
+        <p><button onclick="task1()">Проверка кода</button>
+        <pre>
+            <code class="language-js">
+                function A() { }
+                function B() { }
+
+                A.prototype = B.prototype = {};
+
+                let a = new A();
+
+                alert(a instanceof B); // true                
+            </code>
+        </pre>
+        Равны они, потому что их прототипы равны, по правилу проверки означенной в <a href="#operator">этом разделе</a>.
+        </p>
+        <script>
+            function task1(params) {
+                function A() { }
+                function B() { }
+
+                //A.prototype = B.prototype = {};
+
+                let a = new A();
+
+                alert(a instanceof B); // true
+            }
+        </script>
+    </div>
+
+
+</body>
+
+</html>

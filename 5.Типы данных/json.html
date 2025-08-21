@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конспект сайта learn.javascript.ru раздел Типы данных - Дата и Время</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h1><a href="#json">Формат JSON, метод toJSON</a></h1>
+        <h2>
+            <ul>
+                <li><a href="#JSON.stringify">JSON.stringify</a></li>
+                <li><a href="#replacer">Исключаем и преобразуем: replacer</a></li>
+                <li><a href="#space">Форматирование: space</a></li>
+                <li><a href="#users_tojson">Пользовательский «toJSON»</a></li>
+                <li><a href="#JSON.parse">JSON.parse</a></li>
+                <li><a href="#reviver">Использование reviver</a></li>
+                <li><a href="#total">Итого</a></li>
+                <li><a href="#tasks">Задачи</a></li>
+            </ul>
+        </h2>
+    </div>
+
+
+</body>
+
+</html>
+
+<div class="topic" id="json">
+    <h1>Формат JSON, метод toJSON</h1>
+    <p>JSON как замена toString(), которая автоматически включает в себя все св-ва объекта.</p>
+</div>
+<div class="topic" id="JSON.stringify">
+    <h2><a href="https://learn.javascript.ru/json#json-stringify">JSON.stringify</a></h2>
+    <p>JSON (JavaScript Object Notation) – это общий формат для представления значений и объектов. Сейчас это
+        универсальный формат обмена данными</p>
+    <p>JavaScript предоставляет методы:
+    <ul>
+        <li>JSON.stringify для преобразования объектов в JSON.</li>
+        <li>JSON.parse для преобразования JSON обратно в объект. </li>
+    </ul>
+    <a href="json-working/json.js">Например</a>:
+    <pre>
+        <code class="language-js">
+let obj = {
+    name: "Peter",
+    age: 30,
+    isAdmin: true,
+    courses: ['html', 'css', 'js'],
+    wife: null
+}
+
+let str = JSON.stringify(obj);
+
+console.log(`type str: ${typeof str}\n type obj: ${typeof obj}\n str is: ${str}`)            
+        </code>
+    </pre>
+    Полученная строка str называется JSON-форматированным или сериализованным объектом. Мы можем отправить его по сети
+    или поместить в обычное хранилище данных.
+    </p>
+    <p>Отличия от объекта:
+    <ul>
+        <li>Строки используют двойные кавычки. Никаких одинарных кавычек или обратных кавычек в JSON. Так 'John'
+            становится "John".</li>
+        <li>Имена свойств объекта также заключаются в двойные кавычки. Это обязательно. Так age:30 становится "age":30.
+        </li>
+    </ul>
+    </p>
+    <p>JSON поддерживает следующие типы данных:
+    <ul>
+        <li>Объекты { ... }</li>
+        <li>Массивы [ ... ]</li>
+        <li>Примитивы: строки, числа, логические значения <code>false/true, null</code>. </li>
+    </ul>
+    Например:
+    <pre>
+    <code class="language-js">
+// число в JSON остаётся числом
+alert( JSON.stringify(1) ) // 1
+
+// строка в JSON по-прежнему остаётся строкой, но в двойных кавычках
+alert( JSON.stringify('test') ) // "test"
+
+alert( JSON.stringify(true) ); // true
+
+alert( JSON.stringify([1, 2, 3]) ); // [1,2,3]        
+    </code>
+</pre>
+    </p>
+    <p>JSON является независимой от языка спецификацией для данных, поэтому JSON.stringify пропускает некоторые
+        специфические свойства объектов JavaScript:
+    <ul>
+        <li>Свойства-функции (методы).</li>
+        <li>Символьные ключи и значения.</li>
+        <li>Свойства, содержащие undefined. </li>
+    </ul>
+    <pre>
+        <code class="language-js">
+let user = {
+  sayHi() { // будет пропущено
+    alert("Hello");
+  },
+  [Symbol("id")]: 123, // также будет пропущено
+  something: undefined // как и это - пропущено
+};
+
+alert( JSON.stringify(user) ); // {} (пустой объект)            
+        </code>
+    </pre>
+    </p>
+    <p>Самое замечательное, что вложенные объекты поддерживаются и конвертируются автоматически.
+    <pre>
+    <code class="language-js">
+let meetup = {
+  title: "Conference",
+  room: {
+    number: 23,
+    participants: ["john", "ann"]
+  }
+};
+
+alert( JSON.stringify(meetup) );
+/* вся структура преобразована в строку:
+{
+  "title":"Conference",
+  "room":{"number":23,"participants":["john","ann"]},
+}
+*/        
+    </code>
+</pre>
+    Важное ограничение: не должно быть циклических ссылок.
+
+    <pre>
+    <code class="language-js">
+let room = {
+  number: 23
+};
+
+let meetup = {
+  title: "Conference",
+  participants: ["john", "ann"]
+};
+
+meetup.place = room;       // meetup ссылается на room
+room.occupiedBy = meetup; // room ссылается на meetup
+
+JSON.stringify(meetup); // Ошибка: Преобразование цикличной структуры в JSON       
+
+    </code>
+</pre>
+    В целом я вижу решение проблемы в создании копии объекта путём:
+    <pre>
+    <code class="language-js">
+meetup.place = Object.fromEntries(Object.entries(room));         
+    </code>
+</pre>
+    Но дипсик утверждает, что это не решение проблемы. Посмотрим что там во второй задаче предлагает автор.
+    </p>
+</div>
+<div class="topic" id="replacer">
+    <h2><a href="https://learn.javascript.ru/json#isklyuchaem-i-preobrazuem-replacer">Исключаем и преобразуем:
+            replacer</a></h2>
+    <p>Полная ф-ция JSON.stringify:
+    <pre>
+            <code class="language-js">
+let json = JSON.stringify(value[, replacer, space])              
+            </code>
+        </pre>
+    где, value - это объект, replacer это ф-ция для кодирования или массив, space отступы для форматирования в
+    колличественном выражении.
+    </p>
+    <p>В этом примере автор предлагает обойти свойства которые являются перекрёстными ссылками:
+    <pre>
+            <code class="language-js">
+let room = {
+  number: 23
+};
+
+let meetup = {
+  title: "Conference",
+  participants: [{name: "John"}, {name: "Alice"}],
+  place: room // meetup ссылается на room
+};
+
+room.occupiedBy = meetup; // room ссылается на meetup
+
+alert( JSON.stringify(meetup, ['title', 'participants']) );                
+            </code>
+        </pre>
+    Но потом начинает торговаться, что хотелось бы побольше св-в, и так приходит к написанию нормальной ф-ции которая
+    оставляет св-во undefined:
+    <pre>
+            <code class="language-js">
+let room = {
+  number: 23
+};
+
+let meetup = {
+  title: "Conference",
+  participants: [{name: "John"}, {name: "Alice"}],
+  place: room // meetup ссылается на room
+};
+
+room.occupiedBy = meetup; // room ссылается на meetup
+
+alert( JSON.stringify(meetup, function replacer(key, value) {
+  alert(`${key}: ${value}`);
+  return (key == 'occupiedBy') ? undefined : value;
+}));                
+            </code>
+        </pre>
+    Причём реализация сразу наивная, по названию св-ва мы прописывает undefined.
+    </p>
+</div>
+<div class="topic" id="space">
+    <h2>Форматирование: space</h2>
+    <p>Третий параметр в ф-ции <code>JSON.stringify(obj)</code> это параметр форматирующих пробелов. Применяется он для
+        логгирования и красивого вывода</p>
+</div>
+<div class="topic" id="users_tojson">
+    <h2><a href="https://learn.javascript.ru/json#polzovatelskiy-tojson">Пользовательский «toJSON»</a></h2>
+    <p>
+        <pre>
+            <code class="language-js">
+let room = {
+  number: 23,
+  toJSON() {
+    return this.number;
+  }
+};
+
+let meetup = {
+  title: "Conference",
+  room
+};                
+            </code>
+        </pre>
+        Теперь вывод будет следующим:
+        <pre>
+            <code class="language-js">
+alert( JSON.stringify(room) ); // 23
+
+alert( JSON.stringify(meetup) );
+/*
+  {
+    "title":"Conference",
+    "room": 23
+  }
+*/                
+            </code>
+        </pre>
+    </p>
+</div>
+<div class="topic" id="JSON.parse">
+    <h2>JSON.parse</h2>
+    <p>Перевод JSON to obj. Синтаксис:
+        <pre>
+            <code class="language-js">
+let value = JSON.parse(str[, reviver]);                
+            </code>
+        </pre>
+        где str - JSON, a reviver необязательная ф-ция которая будет вызываться  для каждой пары ключ-значение.
+    </p>
+</div>
+<div class="topic" id="reviver">
+    <h2><a href="https://learn.javascript.ru/json#ispolzovanie-reviver">Использование reviver</a></h2>
+    <p>
+<pre>
+    <code class="language-js">
+let str = '{"title":"Conference","date":"2017-11-30T12:00:00.000Z"}';
+
+ meetup = JSON.parse(str);
+
+// console.log(meetup.date.getDate()) //Ошибка так как дата в текстовом формате
+
+meetup = JSON.parse(str, function(key, value) {
+  if (key == 'date') return new Date(value);
+  return value;
+});
+
+console.log(meetup.date.getDate())        
+    </code>
+</pre>
+Вся суть этой ф-ции, обрабатывать пару ключ-значение. <strong>Работает и для вложенных значений.</strong>
+    </p>
+</div>
+<div class="topic" id="total">
+    <h1>Итого</h1>
+    <p>
+        <ul>
+<li>JSON – это формат данных, который имеет собственный независимый стандарт и библиотеки для большинства языков программирования.</li>
+<li>JSON поддерживает простые объекты, массивы, строки, числа, логические значения и null.</li>
+<li>JavaScript предоставляет методы JSON.stringify для сериализации в JSON и JSON.parse для чтения из JSON.</li>
+<li>Оба метода поддерживают функции преобразования для интеллектуального чтения/записи.</li>
+<li>Если объект имеет метод toJSON, то он вызывается через JSON.stringify.            </li>
+        </ul>
+    </p>
+</div>
+<div class="topic" id="tasks">
+    <h1>Задачи</h1>
+    <p><a href="json-working/tasks,js">1 задача решена вторая нет</a>. Мудацкий автор подсунул ещё одну перекрёстную ссылку на room:
+<pre>
+    <code class="language-js">
+let room = {
+  number: 23
+};
+
+let meetup = {
+  title: "Совещание",
+  occupiedBy: [{name: "Иванов"}, {name: "Петров"}],
+  place: room
+};
+
+room.occupiedBy = meetup;
+meetup.self = meetup;
+
+alert( JSON.stringify(meetup, function replacer(key, value) {
+  return (key != "" && value == meetup) ? undefined : value;
+}));        
+    </code>
+</pre>    
+Что характерно нихуя толком не объяснил. Хотя по сути удаляет .self удаляет перекрёстную ссылку. Мудак бля. 
+    </p>
+</div>

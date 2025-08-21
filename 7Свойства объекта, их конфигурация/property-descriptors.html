@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Флаги и дескрипторы свойств</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#flag">Флаги и дескрипторы свойств</a></h2>
+        <ul>
+            <li><a href="#flag_propert">Флаги свойств</a></li>
+            <li><a href="#onlyread">Только для чтения</a></li>
+            <li><a href="#notiter">Неперечислимое свойство</a></li>
+            <li><a href="#notconfig">Неконфигурируемое свойство</a></li>
+            <li><a href="#Object.defineProperties">Метод Object.defineProperties</a></li>
+            <li><a href="#Object.getOwnPropertyDescriptors">Object.getOwnPropertyDescriptors</a></li>
+            <li><a href="#globalseal">Глобальное запечатывание объекта</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="flag">
+        <h1><a href="https://learn.javascript.ru/property-descriptors">Флаги и дескрипторы свойств</a></h1>
+        <p>К свойствам объекта можно установить флаги и дескрипторы. Об этом речь пойдёт в этой главе.</p>
+    </div>
+    <div class="topic" id="flag_propert">
+        <h2>Флаги свойств</h2>
+        <script id="testDecsriptor">
+            function testDecsriptor() {
+                let obj = {
+                    id: 1,
+                    name: "Jo Baden"
+                }
+                let decr = Object.getOwnPropertyDescriptor(obj, 'name')
+                alert(JSON.stringify(decr))
+            }
+
+        </script>
+        <script id="testDefine">
+            function testDefine() {
+                let obj = {
+                    id: 1,
+                    name: "Jo Baden"
+                }
+                alert(`Объект до: ${JSON.stringify(obj)}`)
+                Object.defineProperty(obj, "name", { value: "Test" });
+                let decr = Object.getOwnPropertyDescriptor(obj, 'name')
+                alert(`Объект после: ${JSON.stringify(obj)}`)
+                alert(`Флаги свойств: ${JSON.stringify(decr)}`)
+            }
+        </script>
+        <p>Как уже было написано выше помимо значения (value) свойства есть флаги его определяющие это:
+        <ul>
+            <li>writable – если true, свойство можно изменить, иначе оно только для чтения.</li>
+            <li>enumerable – если true, свойство перечисляется в циклах, в противном случае циклы его игнорируют.</li>
+            <li>configurable – если true, свойство можно удалить, а эти атрибуты можно изменять, иначе этого делать
+                нельзя </li>
+        </ul>
+        <details>
+            <summary>Посмотреть и потестить код</summary>
+            <button onclick="testDecsriptor()">Тест дескриптора</button>
+            <pre>
+    <code class="language-js">
+                let obj = {
+                    id: 1,
+                    name: "Jo Baden"
+                }
+                let decr = Object.getOwnPropertyDescriptor(obj, 'name')
+                alert(JSON.stringify(decr))        
+    </code>
+</pre>
+        </details>
+        Как видно из примера - дескриптор возвращается в качестве объекта с пакетом этих свойств и установленных к ним
+        значений
+        </p>
+        <p>Чтобы изменить значения свойств, используется метод Object.defineProperty. Его синтаксис:
+        <pre>
+    <code class="language-js">
+Object.defineProperty(obj, propertyName, descriptor)        
+    </code>
+</pre>
+        В качестве примера: <button onclick="testDefine()">Тест изменения свойства через value</button>
+        <pre>
+    <code class="language-js">
+                let obj = {
+                    id: 1,
+                    name: "Jo Baden"
+                }
+                alert(`Объект до: ${JSON.stringify(obj)}`)
+                Object.defineProperty(obj, "name", {value: "Test"});
+                let decr = Object.getOwnPropertyDescriptor(obj, 'name')
+                alert(`Объект после: ${JSON.stringify(obj)}`)
+                alert(`Флаги свойств: ${JSON.stringify(decr)}`)     
+    </code>
+</pre>
+        Однако стоит заметить, что если задавать с нуля свойство то значения его свойств по умолчанию будет false:
+        <button onclick="testNullObj()">Тест создания свойства</button>
+        <pre>
+    <code class="language-js">
+        let obj ={};
+        Object.defineProperty(obj, "name", {value: "Barak Obmana"});
+        let descr = Object.getOwnPropertyDescriptor(obj, "name")
+        alert(`Properties afet:\n${JSON.stringify(descr)}`)        
+    </code>
+</pre>
+        Тут следует отметить, что есть два метода <code>Object.defineProperty</code> и
+        <code>Object.defineProperties</code>. Через последнее не задаётся одно свойство.
+        Потратил на это полчаса.
+        </p>
+        <script>
+            function testNullObj() {
+                let obj = {};
+                Object.defineProperty(obj, "name", { value: "Barak Obmana" });
+                let descr = Object.getOwnPropertyDescriptor(obj, "name")
+                alert(`Properties afet:\n${JSON.stringify(descr)}`)
+            }
+        </script>
+    </div>
+    <div class="topic" id="onlyread">
+        <script>
+
+            function onlyRead() {
+
+                let obj = { name: "John" }
+                Object.defineProperty(obj, "name", { writable: false })
+                alert(`Пытаемся obj.name = "Pete"${obj.name = "Pete"}\nПолучаем: ${obj.name}`)
+            }
+        </script>
+        <h2>Только для чтения</h2>
+        <p>Как было показано выше свойство можно сделать доступным только для чтения: <button
+                onclick="onlyRead()">Тестировать</button>
+        <pre>
+    <code class="language-js">
+             
+            let obj = {name: "John"}
+            Object.defineProperty(obj, "name", {writable: false})
+            alert(`Пытаемся obj.name = "Pete"${obj.name = "Pete"}\nПолучаем: ${obj.name}`)        
+    </code>
+</pre>
+        Автор пишет что получаем мы ошибки только в строгом режиме <code>use strict</code> и это действительно так: с
+        этой строкой скрипт не запускается, а падает в ошибку.
+        Как было написано выше - свойство изначально false при создании их Object.defineProperty(), даже если какие-то
+        свойства устанновить в true, другие будут по умолчанию в false.
+        </p>
+    </div>
+    <div class="topic" id="notiter">
+        <h2>Неперечислимое свойство</h2>
+        <script>
+            function testEnum() {
+                let usr = {
+                    name: "Ivan",
+                    toString() {
+                        return this.name
+                    }
+                }
+                for (const key in usr) alert(key);
+                Object.defineProperty(usr, "toString", { enumerable: false })
+                for (const key in usr) alert(key);
+                alert(Object.keys(usr)); // name
+            }
+        </script>
+        <p>Иногда возникает необходимость отключить итерирование свойства:
+
+        <pre>  <button onclick="testEnum()">Тест неперечислимого</button>
+                <code class="language-js">
+                let usr = {
+                    name: "Ivan",
+                    toString() {
+                        return this.name
+                    }
+                }
+                for (const key in usr) alert(key);
+                Object.defineProperty(usr, "toString", {enumerable: false})
+                for (const key in usr) alert(key);
+                </code>
+            </pre>
+        </p>
+        Неперечислимые свойства также не возвращаются Object.keys:
+        <pre>
+           <code class="language-js">
+alert(Object.keys(usr)); // name               
+           </code>
+       </pre>
+    </div>
+    <div class="topic" id="notconfig">
+        <h2>Неконфигурируемое свойство</h2>
+        <p>Флаг неконфигурируемого свойства (configurable:false) иногда предустановлен для некоторых встроенных объектов
+            и свойств.
+
+            Неконфигурируемое свойство не может быть удалено, его атрибуты не могут быть изменены.
+
+            Например, свойство Math.PI – только для чтения, неперечислимое и неконфигурируемое:
+        <pre>
+            <code class="language-js">
+let descriptor = Object.getOwnPropertyDescriptor(Math, 'PI');
+
+alert( JSON.stringify(descriptor, null, 2 ) );
+Math.PI = 3; // Ошибка, потому что writable: false
+
+// delete Math.PI тоже не сработает                
+            </code>
+        </pre>
+        Изменить тоже нельзя:
+<pre>
+    <code class="language-js">
+// Ошибка, из-за configurable: false
+Object.defineProperty(Math, "PI", { writable: true });        
+    </code>
+</pre>
+Определение свойства как неконфигурируемого – это дорога в один конец. Мы не можем изменить его обратно с помощью defineProperty.
+
+<br><strong>Обратите внимание: configurable: false не даст изменить флаги свойства, а также не даст его удалить. При этом можно изменить значение свойства.</strong>
+можно изменить если изначально так сконфигурировать:
+<pre>
+    <code class="language-js">
+let user = {
+  name: "John"
+};
+
+Object.defineProperty(user, "name", {
+  configurable: false
+});
+
+user.name = "Pete"; // работает
+delete user.name; // Ошибка
+    </code>
+</pre>
+То есть в данном примере изначально было writable: true, оно же им же и осталось.
+Если изменить вместо с:
+<pre>
+    <code class="language-js">
+let user = {
+  name: "John"
+};
+
+Object.defineProperty(user, "name", {
+  writable: false,
+  configurable: false
+});
+    </code>
+</pre>
+То свойство останется навечно запечатанным как Math.PI        </p>
+    </div>
+    <div class="topic" id="Object.defineProperties">
+        <h2>Метод Object.defineProperties</h2>
+        <p>Существует метод Object.defineProperties(obj, descriptors), который позволяет определять множество свойств сразу.
+<pre>
+    <code class="language-js">
+Object.defineProperties(obj, {
+  prop1: descriptor1,
+  prop2: descriptor2
+  // ...
+})        
+    </code>
+</pre>
+Пример:
+<pre>
+    <code class="language-js">
+Object.defineProperties(user, {
+  name: { value: "John", writable: false },
+  surname: { value: "Smith", writable: false },
+  // ...
+});        
+    </code>
+</pre>
+Таким образом определяется сразу несколько свойств одной операцией.
+        </p>
+    </div>
+    <div class="topic" id="Object.getOwnPropertyDescriptors">
+        <h2>Object.getOwnPropertyDescriptors</h2>
+        <p>Получит все свойства сразу можно при помощи <code>Object.getOwnPropertyDescriptors(obj)</code>
+        На этом основании можно сделать копирование объекта:
+        <pre>
+            <code class="language-js">
+let clone = Object.defineProperties({}, Object.getOwnPropertyDescriptors(obj));
+            </code>
+        </pre>
+        Особенностью данного метода является  то, что он возвращает все флаги всех свойств, а так же те свойства который не войдут в цикл <code>for...in</code>
+        </p>
+    </div>
+    <div class="topic" id="globalseal">
+        <h2>Глобальное запечатывание объекта</h2>
+        <p>есть методы, которые ограничивают доступ ко всему объекту:
+<ul>
+<li>Object.preventExtensions(obj)
+<br>Запрещает добавлять новые свойства в объект.</li>
+<li>Object.seal(obj)
+<br>Запрещает добавлять/удалять свойства. Устанавливает configurable: false для всех существующих свойств.</li>
+<li>Object.freeze(obj)
+<br>Запрещает добавлять/удалять/изменять свойства. Устанавливает configurable: false, writable: false для всех существующих свойств.</li>
+</ul>
+А также есть методы для их проверки:
+<ul>
+<li>Object.isExtensible(obj)
+<br>Возвращает false, если добавление свойств запрещено, иначе true.</li>
+<li>Object.isSealed(obj)
+<br>Возвращает true, если добавление/удаление свойств запрещено и для всех существующих свойств установлено configurable: false.</li>
+<li>Object.isFrozen(obj)
+<br>Возвращает true, если добавление/удаление/изменение свойств запрещено, и для всех текущих свойств установлено configurable: false, writable: false.    </li>
+</ul>
+Но эти методы применяются редко.
+        </p>
+    </div>
+</body>
+
+</html>

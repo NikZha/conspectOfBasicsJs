@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обработка ошибок, "try..catch"</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#prepare">Обработка ошибок, "try..catch"</a></h2>
+        <ul>
+            <li><a href="#syntax">Синтаксис «try…catch»</a></li>
+            <li><a href="#obj">Объект ошибки</a></li>
+            <li><a href="#whitout">Блок «catch» без переменной</a></li>
+            <li><a href="#use">Использование «try…catch»</a></li>
+            <li><a href="#make">Генерация собственных ошибок</a></li>
+            <li><a href="#throw">Проброс исключения</a></li>
+            <li><a href="#try…catch…finally">try…catch…finally</a></li>
+            <li><a href="#global">Глобальный catch</a></li>
+            <li><a href="#total">Итого</a></li>
+            <li><a href="#tasks">Задачи</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="prepare">
+        <h2><a href="https://learn.javascript.ru/try-catch">Обработка ошибок, "try..catch"</a></h2>
+        <p>Судя по топику система обработки ошибок весьма похожа на java, в отсутствии try with resorses, а так же
+            возможности в javascript пустого catch.</p>
+    </div>
+    <div class="topic" id="syntax">
+        <script>
+            function expl1(params) {
+                try {
+
+                    alert('Начало блока try');  // (1) <--
+
+                    lalala; // ошибка, переменная не определена!
+
+                    alert('Конец блока try (никогда не выполнится)');  // (2)
+
+                } catch (err) {
+
+                    alert(`Возникла ошибка!`); // (3) <--
+
+                }
+            }
+        </script>
+        <h3>Синтаксис «try…catch»</h3>
+        <p>
+        <pre>
+            <code class="language-js">
+try {
+
+  // код...
+
+} catch (err) {
+
+  // обработка ошибки
+
+}                
+            </code>
+        </pre>
+        В учебных целях он не пишет тут о finally
+        </p>
+        <p>Порядок выполнения наглядно можно продемострировать:
+        <pre><button onclick="expl1()">Тест кода</button>
+    <code class="language-js">
+try {
+
+  alert('Начало блока try');  // (1) <--
+
+  lalala; // ошибка, переменная не определена!
+
+  alert('Конец блока try (никогда не выполнится)');  // (2)
+
+} catch(err) {
+
+  alert(`Возникла ошибка!`); // (3) <--
+
+}       
+    </code>
+</pre>
+        Опять же помним о блоке finally.
+        </p>
+        <script>
+            function expl2(params) {
+                try {
+                    setTimeout(function () {
+                        noSuchVariable; // скрипт упадёт тут
+                    }, 1000);
+                } catch (e) {
+                    alert("не сработает");
+                }
+                alert("try-catch не работает")
+            }
+        </script>
+        <p>Так же важно понимать, что try-catch работает синхронно, а потому такой код не сработает:
+        <pre><button onclick="expl2()">Тест кода</button>
+    <code class="language-js">
+try {
+  setTimeout(function() {
+    noSuchVariable; // скрипт упадёт тут
+  }, 1000);
+} catch (e) {
+  alert( "не сработает" );
+}        
+alert("try-catch не работает")
+    </code>
+</pre>
+        Отрабатывает последний алерт и в консоль вылетает ошибка.
+        </p>
+    </div>
+    <div class="topic" id="obj">
+        <h3>Объект ошибки</h3>
+        <p>
+        <pre>
+    <code class="language-js">
+try {
+  // ...
+} catch(err) { // <-- объект ошибки, можно использовать другое название вместо err
+  // ...
+}        
+    </code>
+</pre>
+        <code>err</code> и есть объект ошибки, название ни на что не влияет, а позволяет работать с этой переменной в
+        фигурных скобках catch.
+        </p>
+        <h4>Основные свойства встроенного объекта ошибки:</h4>
+        <p>
+        <ul>
+            <li><code>name</code> <br>Имя ошибки. Например, для неопределённой переменной это "ReferenceError".
+            </li>
+            <li><code>message</code><br>Текстовое сообщение о деталях ошибки.
+            </li>
+            <li><code>stack</code><br>Текущий стек вызова: строка, содержащая информацию о последовательности вложенных
+                вызовов, которые привели к ошибке. Используется в целях отладки.
+            </li>
+        </ul>
+        Пример:
+        <pre><button onclick="expl3()">Тест кода</button>
+            <code class="language-js">
+try {
+  lalala; // ошибка, переменная не определена!
+} catch(err) {
+  alert(err.name); // ReferenceError
+  alert(err.message); // lalala is not defined
+  alert(err.stack); // ReferenceError: lalala is not defined at (...стек вызовов)
+
+  // Можем также просто вывести ошибку целиком
+  // Ошибка приводится к строке вида "name: message"
+  alert(err); // ReferenceError: lalala is not defined
+}                
+            </code>
+        </pre>
+        </p>
+        <script>
+            function expl3(params) {
+                try {
+                    lalala; // ошибка, переменная не определена!
+                } catch (err) {
+                    alert(err.name); // ReferenceError
+                    alert(err.message); // lalala is not defined
+                    alert(err.stack); // ReferenceError: lalala is not defined at (...стек вызовов)
+
+                    // Можем также просто вывести ошибку целиком
+                    // Ошибка приводится к строке вида "name: message"
+                    alert(err); // ReferenceError: lalala is not defined
+                }
+            }
+        </script>
+    </div>
+    <div class="topic" id="whitout">
+        <h3>Блок «catch» без переменной</h3>
+        <pre>
+        <code class="language-js">
+try {
+  // ...
+} catch { //  <-- без (err)
+  // ...
+}            
+        </code>
+    </pre>
+        <p>По сути скип ошибки.</p>
+    </div>
+    <div class="topic" id="use">
+        <h3>Использование «try…catch»</h3>
+        <script>
+            function expl4(params) {
+                let json = "{ некорректный JSON }";
+
+                try {
+
+                    let user = JSON.parse(json); // <-- тут возникает ошибка...
+                    alert(user.name); // не сработает
+
+                } catch (e) {
+                    // ...выполнение прыгает сюда
+                    alert("Извините, в данных ошибка, мы попробуем получить их ещё раз.");
+                    alert(e.name);
+                    alert(e.message);
+                }
+            }
+        </script>
+        <p>Как пример:
+        <pre><button onclick="expl4()">Тест кода</button>
+    <code class="language-js">
+let json = "{ некорректный JSON }";
+
+try {
+
+  let user = JSON.parse(json); // <-- тут возникает ошибка...
+  alert( user.name ); // не сработает
+
+} catch (e) {
+  // ...выполнение прыгает сюда
+  alert( "Извините, в данных ошибка, мы попробуем получить их ещё раз." );
+  alert( e.name );
+  alert( e.message );
+}        
+    </code>
+</pre>
+        Здесь мы используем блок catch только для вывода сообщения, но мы также можем сделать гораздо больше: отправить
+        новый сетевой запрос, предложить посетителю альтернативный способ, отослать информацию об ошибке на сервер для
+        логирования, … Всё лучше, чем просто «падение».
+        </p>
+    </div>
+    <div class="topic" id="make">
+        <h3>Генерация собственных ошибок</h3>
+        <pre>
+        <code class="language-js">
+let json = '{ "age": 30 }'; // данные неполны
+
+try {
+
+  let user = JSON.parse(json); // <-- выполнится без ошибок
+  alert( user.name ); // нет свойства name!
+
+} catch (e) {
+  alert( "не выполнится" );
+}            
+        </code>
+    </pre>
+        <p>Для того чтобы генерировать ошибки используем оператор</p>
+        <h4>throw:</h4>
+        <p><code>throw &lt;объект ошибки></code></p>
+        <p>Теоретически можно пробрасывать что угодно, а можно создавать свои ошибки:
+        <pre>
+    <code class="language-js">
+let error = new Error(message);
+// или
+let error = new SyntaxError(message);
+let error = new ReferenceError(message);        
+    </code>
+</pre>
+        Таким образом можно создавать конкретные ошибки:
+        <pre><button onclick="expl5()">Тест кода</button>
+    <code class="language-js">
+let json = '{ "age": 30 }'; // данные неполны
+
+try {
+
+  let user = JSON.parse(json); // <-- выполнится без ошибок
+
+  if (!user.name) {
+    throw new SyntaxError("Данные неполны: нет имени"); // (*)
+  }
+
+  alert( user.name );
+
+} catch(e) {
+  alert( "JSON Error: " + e.message ); // JSON Error: Данные неполны: нет имени
+}        
+    </code>
+</pre>
+        </p>
+        <script>
+            function expl5(params) {
+                let json = '{ "age": 30 }'; // данные неполны
+
+                try {
+
+                    let user = JSON.parse(json); // <-- выполнится без ошибок
+
+                    if (!user.name) {
+                        throw new SyntaxError("Данные неполны: нет имени"); // (*)
+                    }
+
+                    alert(user.name);
+
+                } catch (e) {
+                    alert("JSON Error: " + e.message); // JSON Error: Данные неполны: нет имени
+                }
+            }
+        </script>
+    </div>
+    <div class="topic" id="throw">
+        <script>
+            function expl6(params) {
+                function readData() {
+                    let json = '{ "age": 30 }';
+
+                    try {
+                        // ...
+                        blabla(); // ошибка!
+                    } catch (e) {
+                        // ...
+                        if (e.name != 'SyntaxError') {
+                            throw e; // проброс исключения (не знаю как это обработать)
+                        }
+                    }
+                }
+
+                try {
+                    readData();
+                } catch (e) {
+                    alert("Внешний catch поймал: " + e); // поймал!
+                }
+            }
+        </script>
+        <h3>Проброс исключения</h3>
+        <p>
+            Идея состоит в том, чтобы прокидывать исключения дальше по стеку, чтобы ошибку обрабатывал вызывающий:
+        <pre><button onclick="expl6()">Тест кода</button>
+            <code class="language-js">
+function readData() {
+  let json = '{ "age": 30 }';
+
+  try {
+    // ...
+    blabla(); // ошибка!
+  } catch (e) {
+    // ...
+    if (e.name != 'SyntaxError') {
+      throw e; // проброс исключения (не знаю как это обработать)
+    }
+  }
+}
+
+try {
+  readData();
+} catch (e) {
+  alert( "Внешний catch поймал: " + e ); // поймал!
+}                
+            </code>
+        </pre>
+        </p>
+    </div>
+    <div class="topic" id="try…catch…finally">
+        <script>
+            function expl7(params) {
+                function func() {
+
+                    try {
+                        return 1;
+
+                    } catch (e) {
+                        /* ... */
+                    } finally {
+                        alert('finally');
+                    }
+                }
+
+                alert(func()); // сначала срабатывает alert из finally, а затем этот код            
+            }
+        </script>
+        <h3>try…catch…finally</h3>
+        <p>Ничего нового выполняется finally в любом случае:
+        <pre><button onclick="expl7()">Тест кода</button>
+    <code class="language-js">
+function func() {
+
+  try {
+    return 1;
+
+  } catch (e) {
+    /* ... */
+  } finally {
+    alert( 'finally' );
+  }
+}
+
+alert( func() ); // сначала срабатывает alert из finally, а затем этот код        
+    </code>
+</pre>
+
+        </p>
+    </div>
+    <div class="topic" id="global">
+        <h3>Глобальный catch</h3>
+        <p>Информация из данной секции не является частью языка JavaScript.</p>
+        <p>Например, в Node.js для этого есть process.on("uncaughtException").</p>
+        <p>Это возможность поймать глобальную ошибку в браузере:
+        <pre>
+    <code class="language-js">
+window.onerror = function(message, url, line, col, error) {
+  // ...
+};        
+    </code>
+</pre>
+        <br><code>message</code>
+        Сообщение об ошибке.
+        <br><code>url</code>
+        URL скрипта, в котором произошла ошибка.
+        <br><code>line, col</code>
+        Номера строки и столбца, в которых произошла ошибка.
+        <br><code>error</code>
+        Объект ошибки.
+        </p>
+        <p>Например:
+        <pre><button onclick="expl8()">Тест кода</button>
+    <code class="language-js">
+
+  window.onerror = function(message, url, line, col, error) {
+    alert(`${message}\n В ${line}:${col} на ${url}`);
+  };
+
+  function readData() {
+    badFunc(); // Ой, что-то пошло не так!
+  }
+
+  readData();
+      
+    </code>
+</pre>
+        Роль глобального обработчика window.onerror обычно заключается не в восстановлении выполнения скрипта – это
+        скорее всего невозможно в случае программной ошибки, а в отправке сообщения об ошибке разработчикам.
+        </p>
+        <p>Существуют также веб-сервисы, которые предоставляют логирование ошибок для таких случаев, такие как https://www.muscula.com.
+
+<br>Они работают так:
+<ol>
+<li>Мы регистрируемся в сервисе и получаем небольшой JS-скрипт (или URL скрипта) от них для вставки на страницы.</li>
+<li>Этот JS-скрипт ставит свою функцию window.onerror.</li>
+<li>Когда возникает ошибка, она выполняется и отправляет сетевой запрос с информацией о ней в сервис.</li>
+<li>Мы можем войти в веб-интерфейс сервиса и увидеть ошибки.    </li>
+</ol>
+</p>
+        <script>
+            function expl8(params) {
+
+                window.onerror = function (message, url, line, col, error) {
+                    alert(`${message}\n В ${line}:${col} на ${url}`);
+                };
+
+                function readData() {
+                    badFunc(); // Ой, что-то пошло не так!
+                }
+
+                readData();
+
+            }
+        </script>
+    </div>
+<div class="topic" id="total">
+    <h2>Итого</h2>
+    <p>
+        <pre>
+            <code class="language-js">
+try {
+  // исполняем код
+} catch(err) {
+  // если случилась ошибка, прыгаем сюда
+  // err - это объект ошибки
+} finally {
+  // выполняется всегда после try/catch
+}                
+            </code>
+        </pre>
+        Объекты ошибок содержат следующие свойства:
+<ul>
+<li>message – понятное человеку сообщение.</li>
+<li>name – строка с именем ошибки (имя конструктора ошибки).</li>
+<li>stack (нестандартное, но хорошо поддерживается) – стек на момент ошибки.    </li>
+</ul>
+<p>Если объект ошибки не нужен, мы можем пропустить его, используя catch { вместо catch(err) {.</p>
+
+<p>Мы можем также генерировать собственные ошибки, используя оператор throw. Аргументом throw может быть что угодно, но обычно это объект ошибки, наследуемый от встроенного класса Error. Подробнее о расширении ошибок см. в следующей главе.</p>
+
+<p>Проброс исключения – это очень важный приём обработки ошибок: блок catch обычно ожидает и знает, как обработать определённый тип ошибок, поэтому он должен пробрасывать дальше ошибки, о которых он не знает.</p>
+
+<p>Даже если у нас нет try..catch, большинство сред позволяют настроить «глобальный» обработчик ошибок, чтобы ловить ошибки, которые «выпадают наружу». В браузере это window.onerror.</p>
+    </p>
+</div>
+<div class="topic" id="tasks">
+    <h3>Задачи</h3>
+    <p><pre>
+        <code class="language-js">
+try {
+  начать работу
+  работать
+} catch (e) {
+  обработать ошибку
+} finally {
+  очистить рабочее пространство
+}            
+        </code>
+    </pre>
+Этот метод  эффективнее, так как очистка произойдёт в любом  случае.
+</p>
+</div>
+</body>
+
+</html>

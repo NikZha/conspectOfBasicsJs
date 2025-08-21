@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модули, введение</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#intro">Модули, введение</a></h2>
+        <ul>
+            <li><a href="#what">Что такое модуль?</a></li>
+            <li><a href="#basic">Основные возможности модулей</a></li>
+            <li><a href="#browser">Особенности в браузерах</a></li>
+            <li><a href="#tools">Инструменты сборки</a></li>
+            <li><a href="#total">Итого</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="intro">
+        <h2><a href="https://learn.javascript.ru/modules-intro">Модули, введение</a></h2>
+        <p>Модули это система с помощью которой можно экспортировать в рабочее пространство или файл двугие значимые
+            символы языка.</p>
+    </div>
+    <div class="topic" id="what">
+        <h3>Что такое модуль?</h3>
+        <p>
+        <ul>
+            <li>export отмечает переменные и функции, которые должны быть доступны вне текущего модуля.</li>
+            <li>import позволяет импортировать функциональность из других модулей. </li>
+        </ul>
+        например:
+        <pre>
+            <code class="language-js">
+// 📁 sayHi.js
+export function sayHi(user) {
+  alert(`Hello, ${user}!`);
+}
+            </code>
+        </pre>
+        в другом файле:
+        <pre>
+            <code class="language-js">
+// 📁 main.js
+import {sayHi} from './sayHi.js';
+
+alert(sayHi); // function...
+sayHi('John'); // Hello, John!                
+            </code>
+        </pre>
+        Нюансом является то что модули не работают локально, только через http(s):
+        <script type="module">
+            import { helloWorld } from './helloworld.js';
+
+            //    alert(helloWorld)
+            helloWorld()
+        </script>
+        <button onclick="">Заработает только в https</button> и выполнится только один раз в live server.
+        </p>
+    </div>
+    <div class="topic" id="basic">
+        <h3>Основные возможности модулей</h3>
+        <p>
+        <ul>
+            <li>Всегда «use strict»</li>
+            <li>Своя область видимости переменных<br>Каждый модуль имеет свою собственную область видимости. Другими
+                словами, переменные и функции, объявленные в модуле, не видны в других скриптах.</li>
+            <li>Код в модуле выполняется только один раз при импорте</li>
+            <li>import.meta <br>Объект import.meta содержит информацию о текущем модуле.
+                <pre>
+                    <code class="language-js">
+ &lt;script type="module">
+    alert(import.meta.url); // ссылка на html страницу для встроенного скрипта
+ &lt;/script>                        
+                    </code>
+                </pre>
+
+            </li>
+            <li>В модуле «this» не определён
+                <pre>
+    <code class="language-js">
+&lt;script>
+  alert(this); // window
+&lt;/script>
+
+&lt;script type="module">
+  alert(this); // undefined
+&lt;/script>        
+    </code>
+</pre>
+
+            </li>
+        </ul>
+        </p>
+    </div>
+    <div class="topic" id="browser">
+        <h3><a href="https://learn.javascript.ru/modules-intro#osobennosti-v-brauzerah">Особенности в браузерах</a></h3>
+        <p>Пропустаю эту херню, в данный момент в ней нет нужды</p>
+    </div>
+    <div class="topic" id="tools">
+        <h3>Инструменты сборки</h3>
+        <p>В реальной жизни модули в браузерах редко используются в «сыром» виде. Обычно, мы объединяем модули вместе,
+            используя специальный инструмент, например Webpack и после выкладываем код на рабочий сервер.</p>
+            <p>Сборщик проводит манипуляции по сборке, удалению неиспользуемого кода, собирает все в один файл.</p>
+            <p>По итогу собранный файл можно использовать и как обычный скрипт.</p>
+    </div>
+    <div class="topic" id="total">
+        <h3>Итого</h3>
+        <p>
+        <ol>
+            <li>Модуль – это файл. Чтобы работал import/export, нужно для браузеров указывать атрибут &lt;script
+                type="module">. У модулей есть ряд особенностей:</li>
+            <ul>
+                <li>Отложенное (deferred) выполнение по умолчанию.</li>
+                <li>Атрибут async работает во встроенных скриптах.</li>
+                <li>Для загрузки внешних модулей с другого источника, он должен ставить заголовки CORS.</li>
+                <li>Дублирующиеся внешние скрипты игнорируются.</li>
+            </ul>
+            <li>У модулей есть своя область видимости, обмениваться функциональностью можно через import/export.</li>
+            <li>В модулях всегда включена директива use strict.</li>
+            <li>Код в модулях выполняется только один раз. Экспортируемая функциональность создаётся один раз и
+                передаётся всем импортёрам.</li>
+
+        </ol>
+
+        </p>
+        <p>Когда мы используем модули, каждый модуль реализует свою функциональность и экспортирует её. Затем мы
+            используем import, чтобы напрямую импортировать её туда, куда необходимо. Браузер загружает и анализирует
+            скрипты автоматически.</p>
+
+        <p>В реальной жизни часто используется сборщик Webpack, чтобы объединить модули: для производительности и других
+            «плюшек».</p>
+
+        <p>В следующей главе мы увидим больше примеров и вариантов импорта/экспорта. </p>
+    </div>
+
+
+
+
+</body>
+
+</html>

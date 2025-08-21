@@ -1,0 +1,34 @@
+let user = {
+  name: "Василий Иванович",
+  age: 35
+};
+
+let json = JSON.stringify(user)
+
+let userFromJson = JSON.parse(json)
+
+console.log(userFromJson == user)
+
+/**
+ * Task 2
+ */
+
+let room = {
+  number: 23
+};
+
+let meetup = {
+  title: "Совещание",
+  occupiedBy: [{name: "Иванов"}, {name: "Петров"}],
+  place: room
+};
+
+// цикличные ссылки
+room.occupiedBy = meetup;
+meetup.self = meetup;
+
+console.log( JSON.stringify(meetup, function replacer(key, value) {
+    if(key == 'place') return value.number
+    if(key == 'self') return undefined;
+    return value;
+}));

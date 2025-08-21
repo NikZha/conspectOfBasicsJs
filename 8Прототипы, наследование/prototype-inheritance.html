@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Прототипное наследование</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#inh">Прототипное наследование</a></h2>
+        <ul>
+            <li><a href="#proti">[[Prototype]]</a></li>
+            <li><a href="#write">Операция записи не использует прототип</a></li>
+            <li><a href="#this">Значение «this»</a></li>
+            <li><a href="#forin">Цикл for…in</a></li>
+            <li><a href="#total">Итого</a></li>
+            <li><a href="#tasks">Задачи</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="inh">
+        <h2><a href="https://learn.javascript.ru/prototype-inheritance">Прототипное наследование</a></h2>
+        <p>В разделе речь пойдёт об особенностях наследования в javascript.</p>
+    </div>
+    <div class="topic" id="proti">
+        <script>
+            function testProto1(params) {
+                let animal = {
+                    eats: true
+                }
+                let dog = {
+                    bark() {
+                        alert("Bark!")
+                    }
+                }
+                dog.__proto__ = animal
+                alert(`Dog eat: ${dog.eats}`)
+            }
+        </script>
+        <script>
+            function testProto2(params) {
+                let animal = {
+                    eats: true
+                }
+                let dog = {
+                    food: "meat",
+                    __proto__: animal
+                }
+                alert(`Dog eat: ${dog.eats}`)
+            }
+        </script>
+        <h3>[[Prototype]]</h3>
+        <p>Есть два варианта наследования:
+        <pre><button onclick="testProto1()">Тест вариант наследования 1</button>
+    <code class="language-js">
+            let animal = {
+                eats: true
+            }
+            let dog = {
+                bark(){
+                   alert("Bark!") 
+                }
+            }
+            dog.__proto__ = animal
+            alert(`Dog eat: ${dog.eats}`)        
+    </code>
+</pre>
+        И:
+        <pre><button onclick="testProto2()">Тест вариант наследования 2</button>
+    <code class="language-js">
+        function testProto2(params) {
+            let animal = {
+                eats: true
+            }
+            let dog = {
+                food: "meat",
+                __proto__: animal
+            }
+            alert(`Dog eat: ${dog.eats}`)
+        }        
+    </code>
+</pre>
+        Надо заметить что <code>__proto__</code> это геттер/сеттер к свойству объекта <code>[[Prototype]]</code>, причём
+        вариант с <code>__proto__</code> устаревший. JavaScript предполагает, что мы должны использовать функции
+        Object.getPrototypeOf/Object.setPrototypeOf вместо того, чтобы получать/устанавливать прототип. Мы также
+        рассмотрим эти функции позже.
+        </p>
+        <p>Как понятно из вышесказанного, наследование от одного предка, так же возникает иерархия наследования на
+            вершине который стоит встроенный Object.</p>
+        <p>Так же из родительского объекта можно вызвать функции</p>
+
+    </div>
+    <div class="topic" id="write">
+        <h3>Операция записи не использует прототип</h3>
+        <p>Автор приводит функцию из объекта и показывает, что для этого объекта вызывается именно она, а не функция
+            родителя. При чём тут операции записи удаления, когда это обычный полиморфизм:
+        <pre>
+            <code class="language-js">
+let animal = {
+  eats: true,
+  walk() {
+    /* этот метод не будет использоваться в rabbit */
+  }
+};
+
+let rabbit = {
+  __proto__: animal
+};
+
+rabbit.walk = function() {
+  alert("Rabbit! Bounce-bounce!");
+};
+
+rabbit.walk(); // Rabbit! Bounce-bounce!                
+            </code>
+        </pre>
+        Судя по объяснению дипсика в объекте потомке создаются свойства с именами объекта родителя и они же изменяются,
+        при этом свойства родителя остаются не тронутыми.
+        </p>
+        <p>Реакция дипсика:
+            <br>При обращении к свойству, которого нет в объекте-потомке, JavaScript ищет его в прототипе (родителе).
+            Если же мы записываем такое свойство в потомка — создаётся собственное свойство с тем же именем, которое
+            "перекрывает" свойство прототипа. При этом оригинальное свойство родителя остаётся неизменным.»
+
+        </p>
+        <p> Короткий вариант для записи:
+            <br>«Свойства прототипа доступны для чтения, но запись создаёт собственное свойство в потомке, не затрагивая
+            прототип.»
+        <pre>
+                <code class="language-js">
+let animal = { eats: true }; // Родитель
+let rabbit = { __proto__: animal }; // Потомок
+
+// 1. Чтение (из прототипа)
+console.log(rabbit.eats); // true (из animal)
+
+// 2. Запись (создаётся своё свойство)
+rabbit.eats = false; 
+console.log(rabbit.eats); // false (собственное свойство)
+console.log(animal.eats); // true (прототип не изменился)
+
+// 3. Проверка наличия свойства
+console.log(rabbit.hasOwnProperty('eats')); // true (теперь eats есть прямо в rabbit)                    
+                </code>
+            </pre>
+        </p>
+
+    </div>
+    <div class="topic" id="this">
+        <h3>Значение «this»</h3>
+        <p>При возникновении значения this всегда идёт вызов конкретного объекта из которого возник этот вызов, если из
+            объекта потомка - то вызывается объект потомка.</p>
+        <p>Дипсик предложил чуть другую формулировку: this всегда ссылается на объект, из которого был вызван метод,
+            независимо от того, где этот метод объявлен (в родителе или потомке).</p>
+    </div>
+    <div class="topic" id="forin">
+        <h3>Цикл for…in</h3>
+        <p>Цикл проходит по собственным свойствам объекта и по унаследованным (с учётом, того, что если унаследованное
+            св-во изменяется, оно становится своим).</p>
+        <p>Свои и чужие свойства и методы можно отфильтровать при помощи встроенного метода
+            obj.hasOwnProperty(key): он возвращает true, если у obj есть собственное, не унаследованное, свойство с
+            именем key.</p>
+        <p>Свойства появляются в цикле если их значение enumerable - true</p>
+    </div>
+    <div class="topic" id="total">
+        <h3>Итого</h3>
+        <ul>
+            <li>В JavaScript все объекты имеют скрытое свойство [[Prototype]], которое является либо другим объектом,
+                либо null.</li>
+            <li>Мы можем использовать obj.__proto__ для доступа к нему (исторически обусловленный геттер/сеттер, есть
+                другие способы, которые скоро будут рассмотрены).</li>
+            <li>Объект, на который ссылается [[Prototype]], называется «прототипом».</li>
+            <li>Если мы хотим прочитать свойство obj или вызвать метод, которого не существует у obj, тогда JavaScript
+                попытается найти его в прототипе.</li>
+            <li>Операции записи/удаления работают непосредственно с объектом, они не используют прототип (если это
+                обычное свойство, а не сеттер).</li>
+            <li>Если мы вызываем obj.method(), а метод при этом взят из прототипа, то this всё равно ссылается на obj.
+                Таким образом, методы всегда работают с текущим объектом, даже если они наследуются.</li>
+            <li>Цикл for..in перебирает как свои, так и унаследованные свойства. Остальные методы получения
+                ключей/значений работают только с собственными свойствами объекта. </li>
+        </ul>
+    </div>
+    <div class="topic" id="tasks">
+        <h3>Задачи</h3>
+        <div id="task1">
+            <script id="task1">
+                function task1(params) {
+                    let animal = {
+                        jumps: null
+                    };
+
+                    let rabbit = {
+                        __proto__: animal,
+                        jumps: true
+                    };
+
+                    alert(rabbit.jumps); // ? (1)
+
+                    delete rabbit.jumps;
+
+                    alert(rabbit.jumps); // ? (2)
+
+                    delete animal.jumps;
+
+                    alert(rabbit.jumps); // ? (3)  
+                }
+            </script>
+            <h4>Задача 1</h4>
+            <p>
+            <pre><button onclick="task1()">тест задача 1</button>
+                <code class="language-js">
+let animal = {
+  jumps: null
+};
+
+let rabbit = {
+  __proto__: animal,
+  jumps: true
+};
+
+alert( rabbit.jumps ); // ? (1) true
+
+delete rabbit.jumps;
+
+alert( rabbit.jumps ); // ? (2) null
+
+delete animal.jumps;
+
+alert( rabbit.jumps ); // ? (3) undefined                   
+                </code>
+            </pre>
+            </p>
+            <p class="yes">Задача решена.</p>
+        </div>
+        <div id="task2">
+            <script id="task2">
+                function task2(params) {
+                    let head = {
+                        glasses: 1
+                    };
+
+                    let table = {
+                        pen: 3
+                    };
+
+                    let bed = {
+                        sheet: 1,
+                        pillow: 2
+                    };
+
+                    let pockets = {
+                        money: 2000
+                    };
+                    table.__proto__ = head;
+                    bed.__proto__ = table;
+                    pockets.__proto__ = bed
+                    alert(pockets.glasses)
+                }
+
+            </script>
+            <h4>Задача 2</h4>
+            <p><button onclick="task2()">Задача 2</button></p>
+        </div>
+        <div id="task4">
+            <script id="task4">
+                function task4(params) {
+                    let hamster = {
+                        stomach: [],
+
+                        eat(food) {
+                            this.stomach.push(food);
+                        }
+                    };
+
+                    let speedy = {
+                        stomach: [],
+                        __proto__: hamster
+                    };
+
+                    let lazy = {
+                        stomach: [],
+                        __proto__: hamster
+                    };
+
+                    // Этот хомяк нашёл еду
+                    speedy.eat("apple");
+                    alert(speedy.stomach); // apple
+
+                    // У этого хомяка тоже есть еда. Почему? Исправьте
+                    alert(lazy.stomach); // apple
+                }
+            </script>
+            <h4>Задача 4</h4>
+            <p><button onclick="task4()">Тест задачи</button></p>
+            <p class="yes">Задача решена.</p>
+        </div>
+    </div>
+
+
+
+
+
+
+
+</body>
+
+</html>

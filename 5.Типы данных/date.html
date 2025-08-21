@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конспект сайта learn.javascript.ru раздел Типы данных - Дата и Время</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h1><a href="#date_and_time">Дата и Время</a></h1>
+        <h2>
+            <ul>
+                <li><a href="#making">Создание</a></li>
+                <li><a href="#getdate">Получение компонентов даты</a></li>
+                <li><a href="#setdate">Установка компонентов даты</a></li>
+                <li><a href="#autocorrect">Автоисправление даты</a></li>
+                <li><a href="#transdate">Преобразование к числу, разность дат</a></li>
+                <li><a href="#Date.now()">Date.now()</a></li>
+                <li><a href="#benchnark">Бенчмаркинг</a></li>
+                <li><a href="#dissdate">Разбор строки с датой</a></li>
+                <li><a href="#total">Итого</a></li>
+                <li><a href="#tasks">Задачи</a></li>
+            </ul>
+        </h2>
+    </div>
+    <div class="topic" id="date_and_time">
+        <h1>Дата и время</h1>
+        <p>Объект <code>Date</code> содержит дату и время, а так же методы которые управляют этим объектом</p>
+    </div>
+    <div class="topic" id="making">
+        <h2><a href="https://learn.javascript.ru/date#sozdanie">Создание</a></h2>
+        <p>Без аргументов – создать объект Date с текущими датой и временем:
+        <pre>
+            <code class="language-js">
+let now = new Date();                
+            </code>
+        </pre>
+        <code>new Date(milliseconds)</code> создать объект Date с временем, равным количеству миллисекунд (тысячная доля
+        секунды), прошедших с 1 января 1970 года UTC+0.
+        Отрицательные значения, это минусы к этой дате.
+        <br><code>new Date(datestring)</code>
+        <pre>
+            <code class="language-js">
+let date = new Date("2017-01-26");                
+            </code>
+        </pre>
+        Так же есть метод Date.parse
+        <br><code>new Date(year, month, date, hours, minutes, seconds, ms)</code>
+        Создать объект Date с заданными компонентами в местном часовом поясе. <em>Обязательны только первые два
+            аргумента.</em>
+        <ul>
+            <li>year должен состоять из четырёх цифр. Для совместимости также принимаются 2 цифры и рассматриваются как
+                19xx, к примеру, 98 здесь это тоже самое, что и 1998, но настоятельно рекомендуется всегда использовать
+                4 цифры.</li>
+            <li><strong>month начинается с 0 (январь) по 11 (декабрь).</strong></li>
+            <li>Параметр date здесь представляет собой день месяца. Если параметр не задан, то принимается значение 1.
+            </li>
+            <li>Если параметры hours/minutes/seconds/ms отсутствуют, их значением становится 0.</li>
+        </ul>
+        </p>
+    </div>
+    <div class="topic" id="getdate">
+        <h2>Получение компонентов даты</h2>
+        <p>Существуют методы получения года, месяца и т.д. из объекта Date:</p>
+        <p>getFullYear()
+            <br>Получить год (4 цифры). Толковый только этот метод. getYear() отдаёт 2 цифры и потому не используется
+        </p>
+        <p>getMonth()
+            <br>Получить месяц, от 0 до 11.
+        </p>
+        <p>getDate()
+            <br>Получить день месяца, от 1 до 31, что несколько противоречит названию метода.
+        </p>
+        <p>getHours(), getMinutes(), getSeconds(), getMilliseconds()
+            <br>Получить, соответственно, часы, минуты, секунды или миллисекунды.
+        </p>
+        <p>getDay()
+            <br>Вернуть день недели от 0 (воскресенье) до 6 (суббота). Несмотря на то, что в ряде стран за первый день
+            недели принят понедельник, в JavaScript начало недели приходится на воскресенье.
+        </p>
+        <h4>Все вышеперечисленные методы возвращают значения в соответствии с местным часовым поясом.</h4>
+        <p>Однако существуют и их UTC-варианты, возвращающие день, месяц, год для временной зоны UTC+0:
+            getUTCFullYear(), getUTCMonth(), getUTCDay(). Для их использования требуется после "get" подставить "UTC".
+        </p>
+        <p>getTime()
+            <br>Для заданной даты возвращает таймстамп – количество миллисекунд, прошедших с 1 января 1970 года
+        </p>
+        <p>getTimezoneOffset()
+            <br>Возвращает разницу в минутах между UTC и местным часовым поясом:
+        </p>
+    </div>
+    <div class="topic" id="setdate">
+        <h1><a href="https://learn.javascript.ru/date#ustanovka-komponentov-daty">Установка компонентов даты</a></h1>
+        <p>Следующие методы позволяют установить компоненты даты и времени:
+        <ul>
+            <code>
+<li> setFullYear(year, [month], [date]) </li>
+<li> setMonth(month, [date]) </li>
+<li> setDate(date) </li>
+<li> setHours(hour, [min], [sec], [ms]) </li>
+<li> setMinutes(min, [sec], [ms]) </li>
+<li> setSeconds(sec, [ms]) </li>
+<li> setMilliseconds(ms) </li>
+<li> setTime(milliseconds) (устанавливает дату в виде целого количества миллисекунд, прошедших с 01.01.1970 UTC)      </li>
+</code>
+        </ul>
+        <pre>
+    <code class="language-js">
+let today = new Date();
+
+today.setHours(0);
+alert(today); // выводится сегодняшняя дата, но значение часа будет 0
+
+today.setHours(0, 0, 0, 0);
+alert(today); // всё ещё выводится сегодняшняя дата, но время будет ровно 00:00:00        
+    </code>
+</pre>
+        </p>
+    </div>
+    <div class="topic" id="autocorrect">
+        <h2><a href="https://learn.javascript.ru/date#avtoispravlenie-daty">Автоисправление даты</a></h2>
+        <p>Автоисправление – это очень полезная особенность объектов Date. Можно устанавливать компоненты даты вне
+            обычного диапазона значений, а объект сам себя исправит.
+        <pre>
+            <code class="language-js">
+let date = new Date(2013, 0, 32); // 32 Jan 2013 ?!?
+alert(date); // ...1st Feb 2013!                
+            </code>
+        </pre>
+        </p>
+    </div>
+    <div class="topic" id="transdate">
+        <h2><a href="https://learn.javascript.ru/date#preobrazovanie-k-chislu-raznost-dat">Преобразование к числу,
+                разность дат</a></h2>
+        <p>
+        <pre>
+                <code class="language-js">
+let date = new Date();
+alert(+date); // количество миллисекунд, то же самое, что date.getTime()                    
+                </code>
+            </pre>
+        Важный побочный эффект: даты можно вычитать, в результате получаем разность в миллисекундах.
+        <a href="date-working/date.js">Как пример</a>.
+
+        </p>
+    </div>
+    <div class="topic" id="Date.now()">
+        <h2>Date.now()</h2>
+        <p>Статический метод возвращает количество миллисекунд с 1.01.1970. Аналог <code>new Date().getTime()</code>.
+        <pre>
+                <code class="language-js">
+let start = Date.now(); // количество миллисекунд с 1 января 1970 года
+
+// выполняем некоторые действия
+for (let i = 0; i < 100000; i++) {
+  let doSomething = i * i * i;
+}
+
+let end = Date.now(); // заканчиваем отсчёт времени
+
+alert( `Цикл отработал за ${end - start} миллисекунд` );                     
+                </code>
+            </pre>
+        </p>
+    </div>
+    <div class="topic" id="benchnark">
+        <h2>Бенчмарк</h2>
+        <p>
+        <pre>
+                <code class="language-js">
+function diffSubtract(date1, date2) {
+  return date2 - date1;
+}
+
+function diffGetTime(date1, date2) {
+  return date2.getTime() - date1.getTime();
+}
+
+function bench(f) {
+  let date1 = new Date(0);
+  let date2 = new Date();
+
+  let start = Date.now();
+  for (let i = 0; i < 100000; i++) f(date1, date2);
+  return Date.now() - start;
+}
+
+let time1 = 0;
+let time2 = 0;
+
+// bench(diffSubtract) и bench(diffGetTime) поочерёдно запускаются 10 раз
+for (let i = 0; i < 10; i++) {
+  time1 += bench(diffSubtract);
+  time2 += bench(diffGetTime);
+}
+
+console.log( 'Итоговое время diffSubtract: ' + time1 ); //Итоговое время diffSubtract: 92
+console.log( 'Итоговое время diffGetTime: ' + time2 );  //Итоговое время diffGetTime: 6                  
+                </code>
+            </pre>
+        Как по мне почему такая разница надо смотреть лезь в код, но очевидно она тратится на преобразовании объекта к
+        числу.
+        </p>
+    </div>
+    <div class="topic" id="dissdate">
+        <h2><a href="https://learn.javascript.ru/date#razbor-stroki-s-datoy">Разбор строки с датой</a></h2>
+        <p>Формат строки должен быть следующим: YYYY-MM-DDTHH:mm:ss.sssZ
+            <br>Необязательная часть 'Z' обозначает часовой пояс в формате +-hh:mm. Если указать просто букву Z, то
+            получим UTC+0.
+        </p>
+        <p>Возможны и более короткие варианты, например, YYYY-MM-DD или YYYY-MM, или даже YYYY.
+
+        </p>
+        <p>Вызов Date.parse(str) обрабатывает строку в заданном формате и возвращает таймстамп (количество миллисекунд
+            с 1 января 1970 года UTC+0). Если формат неправильный, возвращается NaN.
+        <pre>
+            <code class="language-js">
+let ms = Date.parse('2012-01-26T13:51:50.417-07:00');                
+            </code>
+        </pre>
+        Можно тут же создать объект new Date из таймстампа:
+        <pre>
+    <code class="language-js">
+let date = new Date( Date.parse('2012-01-26T13:51:50.417-07:00') );        
+    </code>
+</pre>
+
+        </p>
+    </div>
+    <div class="topic" id="total">
+        <h1><a href="https://learn.javascript.ru/date#itogo">Итого</a></h1>
+        <p>
+        <ul>
+            <li>Дата и время в JavaScript представлены объектом Date. Нельзя создать «только дату» или «только время»:
+                объекты Date всегда содержат и то, и другое.</li>
+            <li>Счёт месяцев начинается с нуля (да, январь – это нулевой месяц).</li>
+            <li>Дни недели в getDay() также отсчитываются с нуля, что соответствует воскресенью.</li>
+            <li>Объект Date самостоятельно корректируется при введении значений, выходящих за рамки допустимых. Это
+                полезно для сложения/вычитания дней/месяцев/недель.</li>
+            <li>Даты можно вычитать, их разность возвращается в миллисекундах. Так происходит, потому что при
+                преобразовании в число объект Date становится таймстампом.</li>
+            <li>Используйте Date.now() для быстрого получения текущего времени в формате таймстампа. </li>
+        </ul>
+        Для большей точности: в браузерах есть метод performance.now(), возвращающий количество миллисекунд с начала
+        загрузки страницы с точностью до микросекунд (3 цифры после точки). В Node.js для этого предусмотрен модуль
+        microtime и ряд других способов. Технически почти любое устройство или среда позволяет добиться большей
+        точности, просто её нет в объекте Date.
+        </p>
+    </div>
+    <div class="topic" id="tasks">
+        <h1>Задачи</h1>
+        <p>Все задачи решены в <a href="date-working/task.js">этом файле</a>.</p>
+    </div>
+
+
+</body>
+
+</html>

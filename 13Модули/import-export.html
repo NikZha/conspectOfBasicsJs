@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Экспорт и импорт</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#expandimp">Экспорт и импорт</a></h2>
+        <ul>
+            <li><a href="#befor">Экспорт до объявления</a></li>
+            <li><a href="#after">Экспорт отдельно от объявления</a></li>
+            <li><a href="#import">Импорт *</a></li>
+            <li><a href="#how">Импорт «как»</a></li>
+            <li><a href="#exhow">Экспортировать «как»</a></li>
+            <li><a href="#default">Экспорт по умолчанию</a></li>
+            <li><a href="#reexp">Реэкспорт</a></li>
+            <li><a href="#total">Итого</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="expandimp">
+        <h2><a href="https://learn.javascript.ru/import-export">Экспорт и импорт</a></h2>
+        <p>Директивы экспорт и импорт имеют несколько вариантов вызова в этом разделе будут рассматриваться эти
+            варианты.
+        </p>
+    </div>
+    <div class="topic" id="befor">
+        <h3>Экспорт до объявления</h3>
+        <p>Любое объявление можно сделать экспортируемым:
+        <pre>
+            <code class="language-js">
+// экспорт массива
+export let months = ['Jan', 'Feb', 'Mar', 'Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+// экспорт константы
+export const MODULES_BECAME_STANDARD_YEAR = 2015;
+
+// экспорт класса
+export class User {
+  constructor(name) {
+    this.name = name;
+  }
+}                   
+            </code>
+        </pre>
+        </p>
+    </div>
+    <div class="topic" id="after">
+        <h3>Экспорт отдельно от объявления</h3>
+        <p>Также можно написать export отдельно, после объявления:
+        <pre>
+    <code class="language-js">
+// 📁 say.js
+function sayHi(user) {
+  alert(`Hello, ${user}!`);
+}
+
+function sayBye(user) {
+  alert(`Bye, ${user}!`);
+}
+
+export {sayHi, sayBye}; // список экспортируемых переменных        
+    </code>
+</pre>
+        …Или, технически, мы также можем расположить export выше функций.
+        </p>
+    </div>
+    <div class="topic" id="import">
+        <h3>Импорт *</h3>
+        <script type="module">
+            import * as say from './say.js'
+            //  say.sayHi('Pete')
+            //  say.sayBye('Pete')
+        </script>
+        <p>Импортировать можно как:
+        <pre>
+    <code class="language-js">
+// 📁 main.js
+import {sayHi, sayBye} from './say.js';
+
+sayHi('John'); // Hello, John!
+sayBye('John'); // Bye, John!        
+    </code>
+</pre>
+        Но если импортировать нужно много чего, мы можем импортировать всё сразу в виде объекта, используя import * as
+        <obj>. Например:
+            <pre>
+        <code class="language-js">
+// 📁 main.js
+import * as say from './say.js';
+
+say.sayHi('John');
+say.sayBye('John');            
+        </code>
+    </pre>
+            </p>
+            <p>Есть несколько причин по которомы возможно не надо импортировать все как объект:
+            <ol>
+                <li>Современные инструменты сборки (webpack и другие) собирают модули вместе и оптимизируют их, ускоряя
+                    загрузку и удаляя неиспользуемый код. И оптимизатор будет удалять неиспозуемый код из библиотеки.
+                </li>
+                <li>Явно перечисляя то, что хотим импортировать, мы получаем более короткие имена функций: sayHi()
+                    вместо say.sayHi().
+
+                </li>
+                <li>Явное перечисление импортов делает код более понятным, позволяет увидеть, что именно и где
+                    используется. Это упрощает поддержку и рефакторинг кода.</li>
+            </ol>
+            </p>
+    </div>
+<div class="topic" id="how">
+    <h3>Импорт «как»</h3>
+    <p>Импортировать можно под другим именем используя конструкцию as:
+<pre>
+    <code class="language-js">
+// 📁 main.js
+import {sayHi as hi, sayBye as bye} from './say.js';
+
+hi('John'); // Hello, John!
+bye('John'); // Bye, John!        
+    </code>
+</pre>
+
+    </p>
+</div>
+<div class="topic" id="exhow">
+    <h3>Экспортировать «как»</h3>
+    <p>Соотвественно можно так же и экспортировать:
+<pre>
+    <code class="language-js">
+// 📁 say.js
+...
+export {sayHi as hi, sayBye as bye};        
+    </code>
+</pre>        
+    </p>
+</div>
+<div class="topic" id="default">
+    <h3>Экспорт по умолчанию</h3>
+    <p>Синтаксис и пример export default:
+<pre>
+    <code class="language-js">
+// 📁 user.js
+export default class User { // просто добавьте "default"
+  constructor(name) {
+    this.name = name;
+  }
+}        
+    </code>
+</pre>
+Тогда импорт будет без фигурных скобок:
+<pre>
+    <code class="language-js">
+// 📁 main.js
+import User from './user.js'; // не {User}, просто User
+
+new User('John');        
+    </code>
+</pre>
+    </p>
+<p>
+<table>
+    <thead>
+        <tr>
+            <th>Именованный экспорт</th> <th>Экспорт по умолчанию</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>export class User {...}</td> <td>export default class User {...}</td>
+        </tr>
+        <tr>
+            <td>import {User} from ...</td> <td>import User from ...</td>
+        </tr>
+    </tbody>
+</table>
+Технически в файле может быть экспорт по умолчанию и обычный экспорт. Но обычно их не смешивают.    
+</p>    
+<p>У экспортируемой по умолчанию сущности может не быть имени:
+<pre>
+    <code class="language-js">
+export default class { // у класса нет имени
+  constructor() { ... }
+}
+export default function(user) { // у функции нет имени
+  alert(`Hello, ${user}!`);
+}
+// экспортируем значение, не создавая переменную
+export default ['Jan', 'Feb', 'Mar','Apr', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];        
+    </code>
+</pre>
+Это нормально, потому что может быть только один export default на файл, так что import без фигурных скобок всегда знает, что импортировать.
+
+</p>
+<p>При экспорте без default такой фокус не прокатит, там обязательно нужно имя.  </p>
+<div id="namedefault">
+    <h4>Имя «default»</h4>
+    <p>Можно экспортировать как default вне объявления:
+<pre>
+    <code class="language-js">
+function sayHi(user) {
+  alert(`Hello, ${user}!`);
+}
+
+// то же самое, как если бы мы добавили "export default" перед функцией
+export {sayHi as default};        
+    </code>
+</pre>        
+Так же если в файле есть несколько экспортов и один из них default:
+<pre>
+    <code class="language-js">
+// 📁 user.js
+export default class User {
+  constructor(name) {
+    this.name = name;
+  }
+}
+
+export function sayHi(user) {
+  alert(`Hello, ${user}!`);
+}        
+    </code>
+</pre>
+То импортировать их можно, как:
+<pre>
+    <code class="language-js">
+// 📁 main.js
+import {default as User, sayHi} from './user.js';
+
+new User('John');        
+    </code>
+</pre>
+И, наконец, если мы импортируем всё как объект import *, тогда его свойство default – как раз и будет экспортом по умолчанию:
+<pre>
+    <code class="language-js">
+// 📁 main.js
+import * as user from './user.js';
+
+let User = user.default; // экспорт по умолчанию
+new User('John');        
+    </code>
+</pre>
+    </p>
+</div>
+<div id="aganist">
+    <h4>Довод против экспортов по умолчанию</h4>
+    <p>Это также немного упрощает реэкспорт (смотрите ниже).</p>
+</div>
+</div>
+<div class="topic" id="reexp">
+    <h3>Реэкспорт</h3>
+    <p>Синтаксис «реэкспорта» export ... from ... позволяет импортировать что-то и тут же экспортировать, возможно под другим именем, вот так:
+        <pre>
+            <code class="language-js">
+export {sayHi} from './say.js'; // реэкспортировать sayHi
+
+export {default as User} from './user.js'; // реэкспортировать default                
+            </code>
+        </pre>
+        Это нужно чтобы сделать функционал модуля доступным как единое целое при работе с ним.
+        <pre>
+            <code class="language-js">
+// 📁 auth/index.js
+
+// импортировать login/logout и тут же экспортировать
+export {login, logout} from './helpers.js';
+
+// импортировать экспорт по умолчанию как User и тут же экспортировать
+export {default as User} from './user.js';
+...                
+            </code>
+        </pre>
+<div id="expbydefault">
+    <h4>Реэкспорт экспорта по умолчанию</h4>
+    <p>
+        <pre>
+            <code class="language-js">
+export * from './user.js'; // для реэкспорта именованных экспортов
+export {default} from './user.js'; // для реэкспорта по умолчанию                
+            </code>
+        </pre>
+        Такое особое поведение реэкспорта с экспортом по умолчанию – одна из причин того, почему некоторые разработчики их не любят.
+    </p>
+</div>        
+    </p>
+</div>
+<div class="topic" id="total">
+    <h3>Итого</h3>
+    <p>Не вижу смысл повторять все эти инструкции, оставляю этот раздел на потом, если коснётся.</p>
+</div>
+
+</body>
+
+</html>

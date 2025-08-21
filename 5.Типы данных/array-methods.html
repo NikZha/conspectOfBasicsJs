@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конспект сайта learn.javascript.ru раздел Типы данных - Методы массивов</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h1>
+            <span id="#method">Методы массивов</span>
+            <ul>
+                <li><a href="#addremove">Добавление и удаление элементов</a></li>
+                <li><a href="#splice">splice</a></li>
+                <li><a href="#concat">concat</a></li>
+                <li><a href="#forEach">forEach</a></li>
+                <li><a href="#search">Поиск в массиве</a></li>
+        </h1>
+        <h3>
+            <li><a href="#indexOf">indexOf/lastIndexOf и includes</a></li>
+            <li><a href="#find">find и findIndex/findLastIndex</a></li>
+            <li><a href="#filter">filter</a></li>
+        </h3>
+        </ul>
+        <h1><a href="#change">Преобразование массива</a></h1>
+        <h3>
+            <ul>
+                <li><a href="#map">map</a></li>
+                <li><a href="#sort">sort(fn)</a></li>
+                <li><a href="#closure">Коротко о замыканиях?</a></li>
+                <li><a href="#localeCompare">localeCompare для строк</a></li>
+                <li><a href="#reverse">reverse</a></li>
+                <li><a href="#split">split и join</a></li>
+                <li><a href="#reduce">reduce/reduceRight</a></li>
+            </ul>
+        </h3>
+        <h1>
+            <ul>
+                <li><a href="#isArray">Array.isArray</a></li>
+                <li><a href="#thisArg">Большинство методов поддерживают «thisArg»</a></li>
+                <li><a href="#total">Итого</a></li>
+                <li><a href="#tasks">Задачи</a></li>
+                <li><a href="#hash">Объект это хештаблица</a></li>
+            </ul>
+        </h1>
+    </div>
+    <div class="topic" id="addremove">
+        <h1><a href="https://learn.javascript.ru/array-methods#dobavlenie-udalenie-elementov">Добавление и удаление
+                элементов</a></h1>
+        <p>
+        <ul>
+            <li><code>arr.push(...items)</code> – добавляет элементы в конец,</li>
+            <li><code>arr.pop()</code> – извлекает элемент из конца,</li>
+            <li><code>arr.shift()</code> – извлекает элемент из начала,</li>
+            <li><code>arr.unshift(...items)</code> – добавляет элементы в начало.</li>
+        </ul>
+        </p>
+    </div>
+    <div class="topic" id="splice">
+        <h1><a href="https://learn.javascript.ru/array-methods#splice">splice</a></h1>
+        <p>Если удалять при помощи <code>delete</code> остаются дырки в массиве:
+        <pre>
+    <code class="language-js">
+let arr = ["I", "go", "home"];
+delete arr[1]; // удалить "go"
+alert( arr[1] ); // undefined
+// теперь arr = ["I",  , "home"];
+alert( arr.length ); // 3
+    </code>
+</pre>
+        Выход - заменить <code>splice</code>:
+        <pre>
+    <code class="language-js">
+arr.splice(start[, deleteCount, elem1, ..., elemN])
+
+let arr = ["Я", "изучаю", "JavaScript"];
+arr.splice(1, 1); // начиная с индекса 1, удалить 1 элемент
+alert( arr ); // осталось ["Я", "JavaScript"]
+
+let arr = ["Я", "изучаю", "JavaScript", "прямо", "сейчас"];
+// удалить 3 первых элемента и заменить их другими
+arr.splice(0, 3, "Давай", "танцевать");
+alert( arr ) // теперь ["Давай", "танцевать", "прямо", "сейчас"]
+    </code>
+</pre>
+        Эта ф-ция возвращает удалённый массив:
+        <pre>
+    <code class="language-js">
+let arr = ["Я", "изучаю", "JavaScript", "прямо", "сейчас"];
+// удалить 2 первых элемента
+let removed = arr.splice(0, 2);
+alert( removed ); // "Я", "изучаю" <-- массив из удалённых элементов        
+    </code>
+</pre>
+        Так же можно не удалять оставить второй агрумент в 0:
+        <pre>
+    <code class="language-js">
+let arr = ["Я", "изучаю", "JavaScript"];
+// с индекса 2
+// удалить 0 элементов
+// вставить "сложный", "язык"
+arr.splice(2, 0, "сложный", "язык");
+alert( arr ); // "Я", "изучаю", "сложный", "язык", "JavaScript"        
+    </code>
+</pre>
+        В этом и в других методах массива допускается использование отрицательных индексов. Они определяют позицию с
+        конца массива, как тут:
+        <pre>
+    <code class="language-js">
+let arr = [1, 2, 5];
+// начиная с индекса -1 (перед последним элементом)
+// удалить 0 элементов,
+// затем вставить числа 3 и 4
+arr.splice(-1, 0, 3, 4);
+alert( arr ); // 1,2,3,4,5        
+    </code>
+</pre>
+        </p>
+
+    </div>
+    <div class="topic" id="slice">
+        <h1><a href="https://learn.javascript.ru/array-methods#slice">slice</a></h1>
+        <p>Ф-ция <code>slice</code> просто возвращает массив между двумя аргументами:
+        <pre>
+            <code class="language-js">
+let arr = ["t", "e", "s", "t"];
+
+alert( arr.slice(1, 3) ); // e,s (копирует с 1 до 3)
+
+alert( arr.slice(-2) ); // s,t (копирует с -2 до конца)                
+            </code>
+        </pre>
+        </p>
+    </div>
+    <div class="topic" id="concat">
+        <h1><a href="https://learn.javascript.ru/array-methods#concat">concat</a></h1>
+        <p>Ф-ция сливает массивы:
+        <pre>
+    <code class="language-js">
+let arr = [1, 2];
+
+// создать массив из: arr и [3,4]
+alert( arr.concat([3, 4]) ); // 1,2,3,4
+
+// создать массив из: arr и [3,4] и [5,6]
+alert( arr.concat([3, 4], [5, 6]) ); // 1,2,3,4,5,6
+
+// создать массив из: arr и [3,4], потом добавить значения 5 и 6
+alert( arr.concat([3, 4], 5, 6) ); // 1,2,3,4,5,6        
+    </code>
+</pre>
+        Так же добавляет объекты к массивам:
+        <br>Но если массивоподобный объект имеет специальное свойство Symbol.isConcatSpreadable, то он обрабатывается
+        как массив, с помощью concat: вместо него добавляются его элементы:
+        <pre>
+    <code class="language-js">
+let arr = [1, 2];
+
+let arrayLike = {
+  0: "что-то",
+  1: "ещё",
+  [Symbol.isConcatSpreadable]: true,
+  length: 2
+};
+
+alert( arr.concat(arrayLike) ); // 1,2,что-то,ещё        
+    </code>
+</pre>
+        </p>
+    </div>
+    <div class="topic" id="forEach">
+        <h1>forEach</h1>
+        <p>Ф-ция имеет вид:
+        <pre>
+                <code class="language-js">
+arr.forEach(function(item, index, array) {
+  // ... делать что-то с item
+});                    
+                </code>
+            </pre>
+        Например:
+        <pre>
+                <code class="language-js">
+// Вызов alert для каждого элемента
+["Бильбо", "Гэндальф", "Назгул"].forEach(alert);
+
+["Бильбо", "Гэндальф", "Назгул"].forEach((item, index, array) => {
+  alert(`У ${item} индекс ${index} в ${array}`);
+});                    
+                </code>
+            </pre>
+        </p>
+    </div>
+    <div class="topic" id="search">
+        <h1><a href="https://learn.javascript.ru/array-methods#poisk-v-massive">Поиск в массиве</a></h1>
+        <p>Теперь рассмотрим методы поиска в массиве.</p>
+        <div id="indexOf">
+            <h3><a href="https://learn.javascript.ru/array-methods#indexof-lastindexof-i-includes">indexOf/lastIndexOf и
+                    includes</a></h3>
+            <p>
+            <ul>
+                <li><code>arr.indexOf(item, from) </code>ищет item начиная с индекса from и возвращает номер индекса, на
+                    котором был найден
+                    искомый элемент, в противном случае -1.
+                <li><code>arr.includes(item, from)</code> ищет item начиная с индекса from и возвращает true, если поиск
+                    успешен.
+            </ul>
+            Обычно не указывают позицию поиска, например:
+            <pre>
+            <code class="language-js">
+let arr = [1, 0, false];
+alert( arr.indexOf(0) ); // 1
+alert( arr.indexOf(false) ); // 2
+alert( arr.indexOf(null) ); // -1
+alert( arr.includes(1) ); // true                
+            </code>
+        </pre>
+            Методы используют строгое сравнние <code>===</code> а следовательно ищеи 0, а не false и наоборот.
+            <br>Метод arr.lastIndexOf похож на indexOf, но ищет справа налево. То бишь с конца.
+            <h4>Метод includes правильно обрабатывает NaN</h4>
+            <pre>
+            <code class="language-js">
+const arr = [NaN];
+alert( arr.indexOf(NaN) ); // -1 (неверно, должен быть 0)
+alert( arr.includes(NaN) );// true (верно)                
+            </code>
+        </pre>
+            </p>
+        </div>
+        <div id="find">
+            <h3><a href="https://learn.javascript.ru/array-methods#find-i-findindex-findlastindex">find и
+                    findIndex/findLastIndex</a></h3>
+            <p>
+                Синтаксис:
+            <pre>
+            <code class="language-js">
+let result = arr.find(function(item, index, array) {
+  // если true - возвращается текущий элемент и перебор прерывается
+  // если все итерации оказались ложными, возвращается undefined
+});                
+            </code>
+        </pre>
+            В реале используется с одним аргументом:
+            <pre>
+            <code class="language-js">
+let users = [
+  {id: 1, name: "Вася"},
+  {id: 2, name: "Петя"},
+  {id: 3, name: "Маша"}
+];
+
+let user = users.find(item => item.id == 1);                
+            </code>
+        </pre>
+            У метода arr.findIndex такой же синтаксис, но он возвращает индекс, на котором был найден элемент, а не сам
+            элемент. Значение -1 возвращается, если ничего не найдено.
+
+            <br>Метод arr.findLastIndex похож на findIndex, но ищет справа налево, наподобие lastIndexOf.
+            </p>
+        </div>
+        <div id="filter">
+            <h3><a href="https://learn.javascript.ru/array-methods#filter">filter</a></h3>
+            <p>Возвращает массив отфильтрованный по каким-то критериям. Синтаксис:
+            <pre>
+                    <code class="language-js">
+let results = arr.filter(function(item, index, array) {
+  // если `true` -- элемент добавляется к results и перебор продолжается
+  // возвращается пустой массив в случае, если ничего не найдено
+});                        
+                    </code>
+                </pre>
+            Работает примерно так же:
+            <pre>
+    <code class="language-js">
+let users = [
+  {id: 1, name: "Вася"},
+  {id: 2, name: "Петя"},
+  {id: 3, name: "Маша"}
+];
+
+// возвращает массив, состоящий из двух первых пользователей
+let someUsers = users.filter(item => item.id < 3);
+    </code>
+</pre>
+            </p>
+        </div>
+    </div>
+    <div class="topic" id="change">
+        <h1><a href="https://learn.javascript.ru/array-methods#preobrazovanie-massiva">Преобразование массива</a></h1>
+        <p>Методы преобразования массива:</p>
+        <div id="map">
+            <h3>map</h3>
+            <p>map один из методов преобразования множества о котором ты читал в Грокаем алгоритмы.
+                Преобразует каждый элемент множетства, синтаксис:
+            <pre>
+                    <code class="language-js">
+let result = arr.map(function(item, index, array) {
+  // возвращается новое значение вместо элемента
+});
+//Например преобразование массива стрингов в массив интов на основе длинны стрингов:
+let lengths = ["Бильбо", "Гэндальф", "Назгул"].map(item => item.length);
+                    </code>
+                </pre>
+            </p>
+        </div>
+        <div id="sort">
+            <h3>sort</h3>
+            <p><code>sort</code> сортировка массива на основе быстрой сортировки. Сортирует массив в лексикографическом
+                порядке, то есть:
+            <pre>
+                <code class="language-js">
+let arr = [ 1, 2, 15 ];
+// метод сортирует содержимое arr
+arr.sort(); // 1, 15, 2                    
+                </code>
+            </pre>
+            Для нормальной работы надо сделать ф-цию на основе которой идёт сравнение, например:
+            <pre>
+            <code class="language-js">
+function compareNumeric(a, b) {
+  if (a > b) return 1;
+  if (a == b) return 0;
+  if (a < b) return -1;
+}
+
+let arr = [ 1, 2, 15 ];
+
+arr.sort(compareNumeric); 
+alert(arr);  // 1, 2, 15                
+            </code>
+        </pre>
+            Но можно ещё упросить ф-цию:
+            <pre>
+    <code class="language-js">
+let arr = [ 1, 2, 15 ];
+
+arr.sort(function(a, b) { return a - b; });        
+    </code>
+</pre>
+            Автор учебника предлагает стрелочную функцию:
+            <pre>
+    <code class="language-js">
+arr.sort( (a, b) => a - b );        
+    </code>
+</pre>
+            Судя по дипсику - стрелочная ф-ция это буквально официальное название.
+            <div id="closure">
+                <br>Второй момент - стрелочная функция не всегда замыкание - эта например не замыкание потому что не
+                использует внешнего контекста, то есть не запоминает никаких переменных.
+                Например замыканиями были бы:
+                <pre>
+    <code class="language-js">
+const arr = [1, 2, 3];        
+let threshold = 0;
+
+arr.sort((a, b) => {
+  threshold++; // Изменяет внешнюю переменную → замыкание!
+  return a - b - threshold;
+});        
+//Или такой случай:
+const compareWithThreshold = (threshold) => {
+  return (a, b) => a - b - threshold; // Использует внешний `threshold` → замыкание!
+};
+arr.sort(compareWithThreshold(10));
+    </code>
+</pre>
+                То есть в приведённых выше примерах есть использование внешних данных, а
+                <code>arr.sort( (a, b) => a - b );</code> просто колбек.
+            </div>
+            <div id="localeCompare"></div>
+            Для сортировки строк лучше использовать <code>localeCompare</code>, синтаксис такой:
+            <pre>
+    <code class="language-js">
+let countries = ['Österreich', 'Andorra', 'Vietnam'];
+alert( countries.sort( (a, b) => a.localeCompare(b) ) ); // Andorra,Österreich,Vietnam (правильно!)
+         </code>
+</pre>
+            </p>
+        </div>
+        <div id="reverse">
+            <h3><a href="https://learn.javascript.ru/array-methods#reverse">reverse</a></h3>
+            <p>Меняет порядок на обратный:
+            <pre>
+                    <code class="language-js">
+let arr = [1, 2, 3, 4, 5];
+arr.reverse(); // 5,4,3,2,1                        
+                    </code>
+                </pre>
+            </p>
+        </div>
+        <div id="split">
+            <h3><a href="https://learn.javascript.ru/array-methods#split-i-join">split and join</a></h3>
+            <p>Весьма интересные ф-ции которые позволяют преобразовать sting to array и наоборот, рассматрим примеры:
+            <pre>
+                    <code class="language-js">
+let names = 'Вася, Петя, Маша';
+
+let arr = names.split(', '); //разделение имён по вставленным в кавычки символам. В итоге получился массив                         
+                    </code>
+                </pre>
+            У метода split есть необязательный второй числовой аргумент – ограничение на количество элементов в массиве.
+            Если их больше, чем указано, то остаток массива будет отброшен. На практике это редко используется:
+            <pre>
+                <code class="language-js">
+let arr = 'Вася, Петя, Маша, Саша'.split(', ', 2); // Вася, Петя                    
+                </code>
+            </pre>
+            Если будет ничто в кавычках, то произойдёт создание массива посимвольно:
+            <pre>
+    <code class="language-js">
+let str = "тест"; // т,е,с,т        
+    </code>
+</pre>
+            </p>
+        </div>
+        <div id="join">
+            <h3><code>join</code></h3>
+            <p>Метод <code>join</code> создаёт из массива строку, например:
+            <pre>
+                <code class="language-js">
+let arr = ['Вася', 'Петя', 'Маша'];
+
+let str = arr.join(';'); // объединить массив в строку через ;                    
+                </code>
+            </pre>
+            </p>
+        </div>
+        <div id="reduce">
+            <h3><a href="https://learn.javascript.ru/array-methods#reduce-reduceright">reduce/reduceRight</a></h3>
+            <p>Как уже упоминалось ранее - классический метод, который упоминался в книге грокаем алгоритмы. Вычисляет
+                одно значение на основе массива:
+            <pre>
+                    <code class="language-js">
+let value = arr.reduce(function(accumulator, item, index, array) {
+  // ...
+}, [initial]);                        
+                    </code>
+                </pre>
+            Аргументы:
+            <ul>
+                <li><code>accumulator</code> – результат предыдущего вызова этой функции, равен initial при первом
+                    вызове (если передан initial),</li>
+                <li><code>item</code> – очередной элемент массива,</li>
+                <li><code>index</code> – его позиция,</li>
+                <li><code>array</code> – сам массив.</li>
+            </ul>
+            В целом не очевидная ф-ция:
+            <pre>
+    <code class="language-js">
+let arr = [1, 2, 3, 4, 5];
+let result = arr.reduce((sum, current) => sum + current, 0);
+alert(result); // 15        
+    </code>
+</pre>
+            Мы также можем опустить начальное значение:
+            <pre>
+    <code class="language-js">
+let arr = [1, 2, 3, 4, 5];
+// убрано начальное значение (нет 0 в конце)
+let result = arr.reduce((sum, current) => sum + current);
+alert( result ); // 15        
+    </code>
+</pre>
+            Но такое использование требует крайней осторожности. Если массив пуст, то вызов reduce без начального
+            значения выдаст ошибку.
+            <pre>
+    <code class="language-js">
+let arr = [];
+// Error: Reduce of empty array with no initial value
+// если бы существовало начальное значение, reduce вернул бы его для пустого массива.
+arr.reduce((sum, current) => sum + current);        
+    </code>
+</pre>
+            На самом деле <a href="array-metods-working/reduce.js">такой код</a> упал в ошибку с сообщением:
+            <br>Uncaught TypeError TypeError: Reduce of empty array with no initial value (и далее)
+            </p>
+        </div>
+        <div class="topic" id="isArray">
+            <h1><a href="21.07.2025">Array.isArray</a></h1>
+            <p>Сама ф-ция работает как Array.isArray([]) в таком виде:
+            <pre>
+            <code class="language-js">
+let arr = [2,2,3]
+let obj = {
+    2:2,
+    3:3
+}
+console.log(`arr is ${typeof arr} and obj is ${typeof obj}`) //arr is object and obj is object
+console.log(Array.isArray(arr)) //true
+alert(Array.isArray({})); // false               
+            </code>
+        </pre>
+            Как понятно из кода typeof не делает различие между объектом и массивом (потому что это одно и тоже в
+            JavaScript), а потому нужен такой хитрый огород чтобы их отличать <a
+                href="array-metods-working/isarray.js">Ссылка на код</a>.
+            </p>
+        </div>
+    </div>
+    <div class="topic" id="thisArg">
+        <h1><a href="https://learn.javascript.ru/array-methods#bolshinstvo-metodov-podderzhivayut-thisarg">Большинство
+                методов поддерживают «thisArg»</a></h1>
+        <p>
+            Почти все методы массива, которые вызывают функции – такие как find, filter, map, за исключением метода
+            sort, принимают необязательный параметр thisArg.
+        <pre>
+                <code class="language-js">
+arr.find(func, thisArg);
+arr.filter(func, thisArg);
+arr.map(func, thisArg);
+// ...
+// thisArg -- необязательный последний аргумент                    
+                </code>
+            </pre>
+        Значение параметра thisArg становится this для func.
+
+        <br>Например, тут мы используем метод объекта army как фильтр, и thisArg передаёт ему контекст:
+        <pre>
+    <code class="language-js">
+let army = {
+  minAge: 18,
+  maxAge: 27,
+  canJoin(user) {
+    return user.age >= this.minAge && user.age < this.maxAge;
+  }
+};
+
+let users = [
+  {age: 16},
+  {age: 20},
+  {age: 23},
+  {age: 30}
+];
+
+// найти пользователей, для которых army.canJoin возвращает true
+let soldiers = users.filter(army.canJoin, army);        
+    </code>
+</pre>
+        Если бы мы в примере выше использовали просто <code>users.filter(army.canJoin)</code>, то вызов
+        <code>army.canJoin</code> был бы в режиме
+        отдельной функции, с <code>this=undefined</code>. Это тут же привело бы к ошибке.
+
+        <br>Вызов <code>users.filter(army.canJoin, army)</code> можно заменить на
+        <code>users.filter(user => army.canJoin(user))</code>, который
+        делает то же самое. Последняя запись используется даже чаще, так как функция-стрелка более наглядна.
+        </p>
+    </div>
+    <div class="topic" id="total">
+        <h1><a href="https://learn.javascript.ru/array-methods#itogo">Итого</a></h1>
+        <p>Идёт краткое описание всех ф-ций которые были описаны выше.
+            <br>Отмечу лишь пример ф-ции для сравнения массивов:
+        <pre>
+                <code class="language-js">
+function arraysEqual(arr1, arr2) {
+  return arr1.length === arr2.length && arr1.every((value, index) => value === arr2[index]);
+}
+
+alert( arraysEqual([1, 2], [1, 2])); // true                    
+                </code>
+            </pre>
+        Так же указано, что рассмотрены не все методы и дана <a
+            href="https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Array">ссылка на
+            подробную доку</a>.
+        </p>
+    </div>
+    <div class="topic" id="tasks">
+        <h1>Задачи</h1>
+        <div id="task1">
+            <h3>Решение задачи 1</h3>
+            <p><a href="array-metods-working/task1.js">Решение тут</a> моё без номера, два других предложил дипсик, одно
+                работает. Второе нет. Первое его решение его короче, и если вдуматься реально понятнее, для кого-то. Мне
+                показалось не очевидно использование .slice(1) и то что цикл начался с 1 я не сразу заметил. А так норм.
+                <br>Второй его пример не заработал, я настаивать не стал.
+            </p>
+        </div>
+        <div id="task2">
+            <h3>Решение второй <a href="https://learn.javascript.ru/array-methods#filtratsiya-po-diapazonu">задачи</a>
+            </h3>
+            <p>Дипсик одобряет <a href="array-metods-working/task2.js">решение</a> но говорит не учтены проверки на
+                пустой массив, на a > b. Но в задании этого не прополагалось, и не проверяется. </p>
+        </div>
+        <div id="task3">
+            <h3><a href="https://learn.javascript.ru/array-methods#filtratsiya-po-diapazonu-na-meste">3 задача</a></h3>
+            <p>
+                <a href="array-metods-working/task3.js">Плохо смотрел в условие и потому ебался полчаса</a> по итогу
+                разобрался с дипсиком, надо удалить и запихать туда новые значения, типа ссылку переприсвоить нельзя
+            <PRe>
+🔹 Итог
+
+    Переприсваивание (arr = новыйМассив) — не меняет исходный массив, переданный в функцию.
+
+    Мутация (arr.push(), arr.length = 0) — меняет содержимое исходного массива.
+
+Твой изначальный код не работал, потому что ты пытался переприсвоить переменную, 
+а не изменить сам массив. Исправленные варианты выше мутируют массив, что и требовалось в задаче.
+
+🔹 2. Почему length = 0 и splice работают?
+
+Эти методы мутируют (изменяют) сам объект массива, а не перезаписывают ссылку.                    
+                </PRe>
+            </p>
+        </div>
+        <div id="task4">
+            <h3><a href="https://learn.javascript.ru/array-methods#sortirovat-v-poryadke-po-ubyvaniyu">4 задача</a></h3>
+            <p>Если вдуматься простая, помним что в функции мутируют только мутабельные методы. <a
+                    href="array-metods-working/task4.js">Решение</a>.</p>
+        </div>
+        <div id="task5">
+            <h3>Задача <a href="https://learn.javascript.ru/array-methods#skopirovat-i-otsortirovat-massiv">5</a></h3>
+            <p><a href="array-metods-working/task5.js">Решение задачи</a>, но автор предлагает испольовать
+                <code>slice()</code>:
+            <pre>
+                <code class="language-js">
+function copySorted(arr) {
+  return arr.slice().sort();
+}
+
+let arr = ["HTML", "JavaScript", "CSS"];
+
+let sorted = copySorted(arr);
+
+alert( sorted );
+alert( arr );                    
+                </code>
+            </pre>
+            </p>
+        </div>
+        <div id="task6">
+            <h3>Задача <a href="https://learn.javascript.ru/array-methods#sozdat-rasshiryaemyy-kalkulyator">6</a></h3>
+            <p><a href="array-metods-working/task6.js">Эту задачу я на удивление без проблем решил</a> дипсик обосрал по
+                делу, завтра попробую с ним поговорить. Код предложенный дипсиком:
+            <pre>
+                <code class="language-js">
+function Calculator() {
+  this.operations = {
+    '+': (a, b) => a + b,
+    '-': (a, b) => a - b
+  };
+
+  this.addMethod = function(operator, func) {
+    this.operations[operator] = func;
+  };
+
+  this.calculate = function(str) {
+    const [a, op, b] = str.split(' ');
+    
+    if (!this.operations[op]) {
+      console.log(`Unknown operator: "${op}"`);
+      return NaN;
+    }
+    
+    return this.operations[op](+a, +b);
+  };
+}                    
+                </code>
+            </pre>
+            <div id="hash">
+                Что удалось выяснить: можно создать хештаблицу из объетка и добавление в неё происходит так же,
+                например:
+                <pre>
+                    <code class="language-js">
+let arr = {
+    'a': 1,
+    'b': 1,
+    'c': 1
+}
+arr['d'] = 2;
+console.log(arr['d'])                        
+                    </code>
+                </pre>
+                Из примечательного, что я заметил это парсинг входного выражения сразу разбивка на переменные:
+                <code>const [a, op, b] = str.split(' ');</code>
+                <br>А так же обработка ошибок на основе <code>if (!this.operations[op])</code>. Плюс-минус как в обычной
+                хештаблице.
+            </div>
+            </p>
+        </div>
+        <div id="task7">
+            <h3><a href="https://learn.javascript.ru/array-methods#transformirovat-v-massiv-imyon">Задача 7</a></h3>
+            <p>
+                <a href="array-metods-working/task7.js">Решение</a>. Работает, но автор предлагает решениен на
+                <code>map</code>:
+            <pre>
+                    <code class="language-js">
+let names = users.map(item => item.name);                        
+                    </code>
+                </pre>
+            </p>
+        </div>
+        <div id="task8">
+            <h3><a href="https://learn.javascript.ru/array-methods#transformirovat-v-obekty">Задача 8</a></h3>
+            <p><a href="array-metods-working/task8.js">Код получился таким.</a> Дипсик предлагает такой вариант:
+            <pre>
+                <code class="language-js">
+function getSurname(users) {
+  return users.map(user => ({
+    id: user.id,
+    fullName: `${user.name} ${user.surname}`
+  }));
+}                    
+                </code>
+            </pre>
+            Автор тоже имеет это же в виду:
+            <pre>
+                <code class="language-js">
+let usersMapped = users.map(user => ({
+  fullName: `${user.name} ${user.surname}`,
+  id: user.id
+}));                    
+                </code>
+            </pre>
+            </p>
+        </div>
+        <div id="task9">
+            <h3><a href="https://learn.javascript.ru/array-methods#otsortirovat-polzovateley-po-vozrastu">Задача 9</a>
+            </h3>
+            <p>
+                <a href="array-metods-working/task9.js">На этот раз все решил как и автор и дипсик</a>
+            </p>
+        </div>
+        <div id="tast10">
+            <h3><a href="https://learn.javascript.ru/array-methods#peremeshayte-massiv">Задача 10</a></h3>
+            <p>С ходу ничего не додумал, посмотрел в ответ:
+            <pre>
+                    <code class="language-js">
+function shuffle(array) {
+  array.sort(() => Math.random() - 0.5);
+}
+
+let arr = [1, 2, 3];
+shuffle(arr);
+alert(arr);                        
+                    </code>
+                </pre>
+            </p>
+        </div>
+        <div id="task11">
+            <h3><a href="https://learn.javascript.ru/array-methods#poluchit-sredniy-vozrast">Задача 11</a></h3>
+            <p><a href="array-metods-working/task11.js">Задание</a> по началу было выполнено в стиле цикла
+                <code>for</code>, но затем переписано на <code>arr.reduce</code> не зря же я эту хуйню учил.
+            </p>
+        </div>
+        <div id="task12">
+            <h3><a href="https://learn.javascript.ru/array-methods#ostavit-unikalnye-elementy-massiva">Задание 12</a>
+            </h3>
+            <p>
+                <a href="array-metods-working/task12.js">В целом решено через объект как хеш-мап</a>, дипсик грамотно
+                    подметил, что отдельного цикла для пуша не надо
+                <pre>
+                    <code class="language-js">
+function unique(arr) {
+  const seen = new Map(); // Используем Map вместо Object
+  const result = [];
+  
+  for (const item of arr) {
+    if (!seen.has(item)) {
+      seen.set(item, true);
+      result.push(item);
+    }
+  }
+  
+  return result;
+}                        
+                    </code>
+                </pre>
+                Или вообще использовать filter, что в стопицот раз грамотнее:
+                <pre>
+                    <code class="language-js">
+function unique(arr) {
+  return arr.filter((item, index) => arr.indexOf(item) === index);
+}                        
+                    </code>
+                </pre>
+                <br>Решения через Set/Map тоже есть, что опять же грамотнее:
+                <pre>
+                    <code class="language-js">
+function unique(arr) {
+  return [...new Set(arr)];
+}
+
+function unique(arr) {
+  const seen = new Map(); // Используем Map вместо Object
+  const result = [];
+  
+  for (const item of arr) {
+    if (!seen.has(item)) {
+      seen.set(item, true);
+      result.push(item);
+    }
+  }
+  
+  return result;
+}
+                    </code>
+                </pre>
+                Автор предлагает использование includes:
+                <pre>
+                    <code class="language-js">
+function unique(arr) {
+  let result = [];
+
+  for (let str of arr) {
+    if (!result.includes(str)) {
+      result.push(str);
+    }
+  }
+
+  return result;
+}                        
+                    </code>
+                </pre>
+            </p>
+        </div>
+        <div id="task13">
+            <h3>Решение <a href="https://learn.javascript.ru/array-methods#sozdayte-obekt-s-klyuchami-iz-massiva">13 задачи</a></h3>
+            <p>Итеративное решение <a href="array-metods-working/task13.js">ТУТ</a>, но дипсик и автор предлагают альтернативное решение на основе:
+            <pre>
+                <code class="language-js">
+function groupById(array) {
+  return array.reduce((obj, value) => {
+    obj[value.id] = value;
+    return obj;
+  }, {})
+}                    
+                </code>
+            </pre>
+            Где <code>obj</code> это аккамулятор, а <code>{}</code> его начальное значение.
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

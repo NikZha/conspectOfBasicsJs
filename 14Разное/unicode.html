@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Юникод, внутреннее устройство строк</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#uni">Юникод, внутреннее устройство строк</a></h2>
+        <ul>
+            <li><a href="#sur">Суррогатные пары</a></li>
+            <li><a href="#dia">Диакритические знаки и нормализация</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="uni">
+        <h2><a href="https://learn.javascript.ru/unicode"></a></h2>
+        <p>
+            JavaScript позволяет нам вставить символ в строку, указав его шестнадцатеричный Юникод с помощью одной из
+            этих трех нотаций:
+        <ul>
+            <li>
+                \xXX
+                <br>Вместо XX должны быть указаны две шестнадцатеричные цифры со значением от 00 до FF. В этом случае
+                \xXX – это символ, Юникод которого равен XX.
+                <pre>
+                    <code class="language-js">
+alert( "\x7A" ); // z
+alert( "\xA9" ); // ©, символ авторского права                        
+                    </code>
+                </pre>
+            </li>
+            <li>\uXXXX
+                <br>Вместо XXXX должны быть указаны ровно 4 шестнадцатеричные цифры со значением от 0000 до FFFF. В этом
+                случае \uXXXX – это символ, Юникод которого равен XXXX.
+                <pre>
+                    <code class="language-js">
+alert( "\u00A9" ); // ©, то же самое, что \xA9, используя 4-значную шестнадцатеричную нотацию
+alert( "\u044F" ); // я, буква кириллического алфавита
+alert( "\u2191" ); // ↑, символ стрелки вверх                        
+                    </code>
+                </pre>
+            </li>
+            <li>\u{X…XXXXXX}
+                <br>Вместо X…XXXXXX должно быть шестнадцатеричное значение от 1 до 6 байт от 0 до 10FFFF (максимальная
+                точка кода, определенная стандартом Юникод). Эта нотация позволяет нам легко представлять все
+                существующие символы Юникода.
+                <pre>
+                    <code class="language-js">
+alert( "\u{20331}" ); // 佫, редкий китайский иероглиф (длинный Юникод)
+alert( "\u{1F60D}" ); // 😍, символ улыбающегося лица (ещё один длинный Юникод)                        
+                    </code>
+                </pre>
+            </li>
+        </ul>
+        </p>
+    </div>
+    <div class="topic" id="sur">
+        <h3><a href="https://learn.javascript.ru/unicode#surrogatnye-pary">Суррогатные пары</a></h3>
+        <p>редкие символы, требующие более 2 байт, кодируются парой 2-байтовых символов, которые называются «суррогатной
+            парой».
+            Побочным эффектом является то, что длина таких символов равна 2:
+        <pre>
+            <code class="language-js">
+alert( '𝒳'.length ); // 2, MATHEMATICAL SCRIPT CAPITAL X
+alert( '😂'.length ); // 2, FACE WITH TEARS OF JOY
+alert( '𩷶'.length ); // 2, редкий китайский иероглиф                
+            </code>
+        </pre>
+        </p>
+    </div>
+    <div class="topic" id="dia">
+        <h3><a href="https://learn.javascript.ru/unicode#diakriticheskie-znaki-i-normalizatsiya">Диакритические знаки и
+                нормализация</a></h3>
+        <p>Сам раздел маленький оставляю ссылку, описывается там муть, как поставить точку под или над симоволом, достигается это
+            разными байтами и для решения проблемы сравнения одинаково выглядящих букв есть метод str.normalize().</p>
+
+    </div>
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>

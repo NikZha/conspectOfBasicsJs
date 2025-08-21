@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Декораторы и переадресация вызова, call/apply</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#decor">Декораторы и переадресация вызова</a>, call/apply</h2>
+        <h2>
+            <ul>
+                <li><a href="#clear">Прозрачное кеширование</a></li>
+                <li><a href="#fun.call">Применение «func.call» для передачи контекста</a></li>
+                <li><a href="#many">Переходим к нескольким аргументам с «func.apply»</a></li>
+                <li><a href="#borrowing">Заимствование метода</a></li>
+                <li><a href="#total">Итого</a></li>
+                <li><a href="#tasks">Задачи</a></li>
+            </ul>
+        </h2>
+    </div>
+    <div class="topic" id="decor">
+        <h2><a href="https://learn.javascript.ru/call-apply-decorators">Декораторы и переадресация вызова,
+                call/apply</a></h2>
+        <p>В этом разделе будет рассмотрена возможность создания кеширующих объектов, коротые захватывают аргументы
+            других ф-ций и хранят их работу.</p>
+    </div>
+    <div class="topic" id="clear">
+        <h2>Прозрачное кеширование</h2>
+        <p>Предположим, что функция ведёт себя, как математическая ф-ция получает значения из одного множества и
+            возвращает значения из другого множества, получая один и теже значения, возвращает такие же результаты.
+            И если вычисления связаны с огромной работой, то возникает потребность кеширования результатов:
+        <pre>
+                <code class="language-js">
+function fact(x) {
+    return x == 1 ? 1 : x*fact(x-1) 
+}
+
+function cachingDecorator(func) {
+  let cache = new Map();
+
+  return function(x) {
+    if (cache.has(x)) {    // если кеш содержит такой x,
+      return cache.get(x); // читаем из него результат
+    }
+
+    let result = func(x); // иначе, вызываем функцию
+
+    cache.set(x, result); // и кешируем (запоминаем) результат
+    return result;
+  };
+}
+fact = cachingDecorator(fact);
+console.log(fact(20))
+console.log(fact(20))                    
+                </code>
+            </pre>
+        Функция выбрана глупая с рекурсией и результаты её работы закешированы и это работает. <br>Таким образом:
+        <ul>
+            <li>Функцию cachingDecorator можно использовать повторно. Мы можем применить её к другой функции.</li>
+            <li>Логика кеширования является отдельной, она не увеличивает сложность самой slow (если таковая была).</li>
+            <li>При необходимости мы можем объединить несколько декораторов (речь об этом пойдёт позже). </li>
+        </ul>
+        </p>
+    </div>
+    <div class="topic" id="fun.call">
+        <h2>Применение «func.call» для передачи контекста</h2>
+        <p>Приведённый выше декоратор не работает с методами объектов, например:
+        <pre>
+    <code class="language-js">
+let worker = {
+    beginValue(){
+        return 1;
+    },
+    slow(x) {
+        console.log(`Recursion begin:${x}`)
+    return x == 1 ? 1 : x*this.slow(x-1) 
+}
+};
+
+function cachingDecorator(func) {
+  let cache = new Map();
+  return function(x) {
+    if (cache.has(x)) {
+      return cache.get(x);
+    }
+    let result = func(x); // (**)
+    cache.set(x, result);
+    return result;
+  };
+}
+
+console.log(worker.slow(5))
+worker.slow = cachingDecorator(worker.slow); // теперь сделаем его кеширующим
+console.log(worker.slow(5)) //ошибка        
+    </code>
+</pre>
+        По причине что у декоратора получается this = undefined.
+        </p>
+        <p>Существует специальный вызов:
+        <pre>
+        <code class="language-js">
+func.call(context, arg1, arg2, ...)            
+        </code>
+    </pre>
+        Он запускает функцию func, используя первый аргумент как её контекст this, а последующие – как её аргументы.
+        </p>
+        <p>Надо заметить, что вызов <code>.call</code> это вызов к любой функции, таким образом можно исправить исходный
+            пример:
+        <pre>
+            <code class="language-js">
+let worker = {
+    beginValue(){
+        return 1;
+    },
+    slow(x) {
+        console.log(`Recursion begin:${x}`)
+    return x == 1 ? 1 : x*this.slow(x-1) 
+}
+};
+
+function cachingDecorator(func) {
+  let cache = new Map();
+  return function(x) {
+    if (cache.has(x)) {
+      return cache.get(x);
+    }
+    let result = func.call(this, x); // func здесь имя переданной функции, а .call просто вызов передающий this и агрумент
+    cache.set(x, result);
+    return result;
+  };
+}
+
+console.log(worker.slow(5))
+worker.slow = cachingDecorator(worker.slow); // теперь сделаем его кеширующим
+console.log(worker.slow(5)) //ошибка                
+            </code>
+        </pre>
+        </p>
+    </div>
+    <div class="topic" id="many">
+        <h2>Переходим к нескольким аргументам с «func.apply»</h2>
+        <p>Можно сделать декораторы более универсальными, и работающими с несколькимим ф-циями:
+        <pre>
+            <code class="language-js">
+let worker = {
+  slow(min, max){
+    return max > min ? max : min;
+  }
+}
+
+function cachingDecorator(func, hash) {
+  let cache = new Map();
+  return function() {
+    let key = hash(arguments); // (*)
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+
+    let result = func.call(this, ...arguments); // (**) Принимает ссылку на this и создаёт массив из агрументов.
+
+    cache.set(key, result);
+    return result;
+  };
+}
+
+function hash(args) { //* функия очень простая возвращает string из двух аргументов, как ты понимаешь можно больше.
+  return args[0] + ',' + args[1];
+}
+
+worker.slow = cachingDecorator(worker.slow, hash);
+
+console.log( worker.slow(3, 5) ); // работает
+console.log( "Again " + worker.slow(3, 5) ); // аналогично (из кеша)                
+            </code>
+        </pre>
+        </p>Накидал такое в качестве функции для ключей мапы. Почитав ниже, я вспомнил метод .join() c которым этот
+        огород нахер не нужен.
+        <pre>
+        <code class="language-js">
+function hash1(args){
+  let str = '' + args[0] + ',';
+  for(let i=1;i&lt;args.length;i++) str+=args[i]+',';
+  
+}            
+        </code>
+    </pre>
+        <p>Для принятия массива аргументов есть другая встроенная функция:
+        <pre>
+    <code class="language-js">
+func.apply(context, args)        
+    </code>
+</pre>
+        С одним отличием: А apply принимает только псевдомассив args.
+        </p>
+    </div>
+    <div class="topic" id="borrowing">
+        <h2>Заимствование метода</h2>
+
+        <p>Но когда массив является псевмассивом, как arguments, то возникнет ошибка:
+            <br><button onclick="alert(hash(2,2,3))">Тест кода</button>
+        <pre>
+    <code class="language-js">
+        function hash() {
+            return arguments.join()
+        }        
+    </code>
+</pre>
+        </p>
+        <script>
+            function hash() {
+                return arguments.join()
+            }
+
+        </script>
+        <p><button onclick="alert(hash1(3, 3, 5))">тест рабочего кода</button> Тем не менее, есть простой способ
+            использовать соединение массива:
+        <pre>
+    <code class="language-js">
+function hash1() {
+  alert( [].join.call(arguments) ); // 1,2
+}        
+    </code>
+</pre>
+        </p>
+        <script>
+            function hash1() {
+                alert([].join.call(arguments)); // 1,2
+            }
+
+            hash(1, 2);    
+        </script>
+        <p>Этот трюк называется заимствование метода.
+        </p>
+        <p>Мы берём (заимствуем) метод join из обычного массива [].join. И используем [].join.call, чтобы выполнить его
+            в контексте arguments.</p>
+    </div>
+    <div class="topic" id="total">
+        <h2>Итого</h2>
+        <p>Декоратор – это обёртка вокруг функции, которая изменяет поведение последней. Основная работа по-прежнему
+            выполняется функцией.</p>
+        <p>Работу по прозначному декорированию позволяют выполнить методы .call and .aply: первый работает с
+            аргументами, второй с псевдомассивом.</p>
+        <p>Так же был рассмотрен метод заимствования методов когда мы вызываем метод у объекта в контексте другого
+            объекта. Весьма распространено заимствовать методы массива и применять их к arguments. В качестве
+            альтернативы можно использовать объект с остаточными параметрами ...args, который является реальным
+            массивом.</p>
+    </div>
+    <div class="topic" id="tasks">
+        <h2>Задачи</h2>
+        <div id="task1">
+            <h3>Задача 1</h3>
+ <p>Продолбался 3 часа, сделал полурабочий код, спросил дипсика и он выдал:
+<pre>
+    <code class="language-js">
+function work(a, b) {
+    console.log(a + b); // произвольная функция или метод
+}
+
+function spy(func) {
+    // Инициализируем массив calls ОДИН РАЗ при создании обёртки
+    wrapper.calls = [];
+    
+    function wrapper() {    
+        let key = hash(arguments);   
+        wrapper.calls.push(key); // Добавляем в массив calls обёртки
+        return func.apply(this, arguments);
+    }
+    
+    return wrapper;
+}
+
+function hash(args) {
+    return Array.from(args); // Преобразуем arguments в массив
+}
+
+work = spy(work);
+
+work(1, 2); // Выведет: 3
+work(4, 5); // Выведет: 9
+
+for (let args of work.calls) {
+    console.log('call:' + args.join()); // "call:1,2", "call:4,5"
+}
+    </code>
+</pre>    
+Что характерно пидор не написал, что надо возвращать объект, гандон сука.
+</p>
+        </div>
+       <div id="task2">
+        <h3>Задача 2</h3>
+        <p><details>
+            <summary>Мой код проходит тесты</summary>
+            <pre>
+                <code class="language-js">
+function delay(func, del) {
+    delay.delay = del
+
+    return function (...args) {
+
+
+        setTimeout(() => {
+            let result = func.apply(this, args);
+            return result;
+        }, delay.delay)
+    }
+}                    
+                </code>
+            </pre>
+        </details>
+    <details><summary>Но дипсик говорит, что оно не то, его код:</summary>
+    <pre>
+        <code class="language-js">
+function delay(f, ms) {
+  return function(...args) {
+    setTimeout(() => {
+      f.apply(this, args);
+    }, ms);
+  };
+}            
+        </code>
+    </pre>
+    </details>
+    Его код тоже проходит тесты.
+    </p>
+       </div>
+       <p><a href="https://learn.javascript.ru/call-apply-decorators#dekorator-debounce">2 задания отложил</a></p>
+    </div>
+</body>
+
+</html>

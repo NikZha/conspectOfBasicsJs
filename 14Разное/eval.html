@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eval</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#eval">Eval: выполнение строки кода</a></h2>
+        <ul>
+            <li><a href="#useeval">Использование «eval»</a></li>
+            <li><a href="#total">Итого</a></li>
+            <li><a href="#tasks">Задачи</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="eval">
+        <h2><a href="https://learn.javascript.ru/eval">Eval: выполнение строки кода</a></h2>
+        <p>
+            Синтаксис:
+        <pre>
+            <code class="language-js">
+let result = eval(code);                
+            </code>
+        </pre>
+        Пример:
+        <pre>
+            <code class="language-js">
+let code = 'alert("Привет")';
+eval(code); // Привет                
+            </code>
+        </pre>
+        Код в eval выполняется в текущем лексическом окружении, поэтому ему доступны внешние переменные:
+        <pre>
+    <code class="language-js">
+let a = 1;
+
+function f() {
+  let a = 2;
+
+  eval('alert(a)'); // 2
+}
+
+f();        
+    </code>
+</pre>
+        Значения внешних переменных можно изменять:
+        <pre>
+    <code class="language-js">
+let x = 5;
+eval("x = 10");
+alert(x); // 10, значение изменено        
+    </code>
+</pre>
+        В строгом режиме у eval имеется своё лексическое окружение. Поэтому функции и переменные, объявленные внутри
+        eval, нельзя увидеть снаружи:
+        <pre>
+            <code class="language-js">
+// напоминание: режим 'use strict' включён по умолчанию во всех исполняемых примерах
+
+eval("let x = 5; function f() {}");
+
+alert(typeof x); // undefined (нет такой переменной)
+// функция f тоже невидима                
+            </code>
+        </pre>
+Без use strict у eval не будет отдельного лексического окружения, поэтому x и f будут видны из внешнего кода.        
+        </p>
+    </div>
+<div class="topic" id="useeval">
+    <h2>Использование «eval»</h2>
+    <p>В современной разработке на JavaScript eval используется весьма редко. Есть даже известное выражение – «eval is evil» («eval – это зло»).
+В этом случае код выполняется в глобальной области видимости:
+<pre>
+    <code class="language-js">
+let x = 1;
+{
+  let x = 5;
+  window.eval('alert(x)'); // 1 (глобальная переменная)
+}        
+    </code>
+</pre>
+Если коду внутри eval нужны локальные переменные, поменяйте eval на new Function и передавайте необходимые данные как аргументы:
+<pre>
+    <code class="language-js">
+let f = new Function('a', 'alert(a)');
+
+f(5); // 5        
+    </code>
+</pre>
+
+    </p>
+</div>
+<div class="topic" id="total">
+    <h3>Итого</h3>
+    <p>
+        Вызов eval(code) выполняет строку кода и возвращает результат последней инструкции.
+<ul>
+<li>Это редко используется в современном JavaScript, так как в этом обычно нет необходимости.</li>
+<li>Возможен доступ к внешним локальным переменным. Это считается плохой практикой.</li>
+<li>Чтобы выполнить строку кода с помощью eval в глобальной области видимости, используйте window.eval(code).</li>
+<li>Или же, если ваш код нуждается в каких-то данных из внешней области видимости, то используйте new Function, передав эти данные в качестве аргументов.    </li>
+</ul>
+
+    </p>
+</div>
+<div class="topic" id="tasks">
+    <h3>Задача</h3>
+    <script>
+        function task1(params) {
+            let str = prompt('Введите выражение', '2*2')
+            alert(eval(str))
+        }
+    </script>
+    <button onclick="task1()">Тест eval</button>
+    <pre>
+        <code class="language-js">
+            let str = prompt('Введите выражение', '2*2')
+            alert(eval(str))            
+        </code>
+    </pre>
+</div>
+
+
+
+
+</body>
+
+</html>

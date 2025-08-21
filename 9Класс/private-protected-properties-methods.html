@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Приватные и защищённые методы и свойства</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#save">Приватные и защищённые методы и свойства</a></h2>
+        <ul>
+            <li><a href="#saveinst">Защищённое свойство</a></li>
+            <li><a href="#onlyread">Свойство только для чтения </a></li>
+            <li><a href="#private">Приватное свойство</a></li>
+            <li><a href="#total">Итого</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="save">
+        <h2><a href="https://learn.javascript.ru/private-protected-properties-methods">Приватные и защищённые методы и
+                свойства</a></h2>
+        <p>Большая часть топика просто скипнута, потому что там пример, там какой-то не нужный мне текст из рассуждений.
+        </p>
+        <p>В целом можно выделить три варианта <code>private</code> в JavaScript: неявное соглашение, только чтение и
+            настоящая приватность.</p>
+    </div>
+    <div class="topic" id="saveinst">
+        <h3>Защищённое свойство</h3>
+        <script>
+            class TestClass {
+
+                constructor(parameters) {
+                    this._fakePrivate = parameters
+                }
+
+            }
+            const obj = new TestClass('test')
+            function fakePrivate(params) {
+                alert(obj._fakePrivate)
+                obj._fakePrivate = "fake"
+                alert(obj._fakePrivate)
+            }
+        </script>
+        <p> Первый вариант:
+        <pre><button onclick="fakePrivate()">Тест кода</button>
+            <code class="language-js">
+        class TestClass {
+
+            constructor(parameters) {
+            this._fakePrivate = parameters    
+            }
+
+        }
+        const obj = new TestClass('test')
+        function fakePrivate(params) {
+            alert(obj._fakePrivate)
+            obj._fakePrivate = "fake"
+            alert(obj._fakePrivate)
+        }                
+            </code>
+        </pre>
+        Как видно это всего лишь договорённость которая фактически не защищает ни от чего.
+        </p>
+    </div>
+    <div class="topic" id="onlyread">
+        <h3>Свойство только для чтения</h3>
+        <script>
+            class TestClass1 {
+                constructor(parameters) {
+                    this._onlyRead = parameters;
+                }
+                get onlyRead() {
+                    return this._onlyRead;
+                }
+            }
+
+            function testR(params) {
+                const obj = new TestClass1("Test only read prop")
+                alert(obj.onlyRead)
+                obj._onlyRead = "test"
+                alert(obj.onlyRead)
+                obj.onlyRead = "111"
+                alert(obj.onlyRead)
+            }
+        </script>
+        <p> Второй вариант, основан на get/set
+        <pre><button onclick="testR()">Тест</button>
+            <code class="language-js">
+        class TestClass1 {
+            constructor(parameters) {
+                this._onlyRead = parameters;
+            }
+            get onlyRead(){
+                return this._onlyRead;
+            }
+        }
+
+        function testR(params) {
+            const obj = new TestClass1("Test only read prop")
+            alert(obj.onlyRead)
+            obj._onlyRead = "test"
+            alert(obj.onlyRead)
+            obj.onlyRead = "111"
+            alert(obj.onlyRead)
+        }                
+            </code>
+        </pre>
+        В целом он получше, но доступ к внутреннему состоянию так же есть.
+        </p>
+    </div>
+    <div class="topic" id="private">
+        <h3>Приватное свойство</h3>
+        <script>
+            class TestClass2 {
+                #privateProp = null
+                constructor(parameters) {
+                    this.#privateProp = parameters
+                }
+                get privateProp() {
+                    return this.#privateProp;
+                }
+            }
+            function testPrivate(params) {
+                const obj = new TestClass2("PRIVATE")
+                alert(obj.privateProp)
+                obj.privateProp = "NON"
+                alert(obj.privateProp)
+                //  obj.#privateProp = "NON" Mistake!
+                alert(obj.privateProp)
+            }
+        </script>
+        <p> Собственно это и есть по настоящему приватное свойство, в которое нельзя писать как попало:
+        <pre><button onclick="testPrivate()">Тест приватного свойства</button>
+            <code class="language-js">
+        class TestClass2 {
+            #privateProp = null
+            constructor(parameters) {
+                this.#privateProp = parameters
+             }
+             get privateProp(){
+                return this.#privateProp;
+             }
+        }
+        function testPrivate(params) {
+            const obj = new TestClass2("PRIVATE")
+            alert(obj.privateProp)
+            obj.privateProp = "NON"
+            alert(obj.privateProp)
+          //  obj.#privateProp = "NON" Mistake!
+            alert(obj.privateProp)
+        }                
+            </code>
+        </pre>
+        Так же следует отметить, что this['#name'] не работает. Это ограничение синтаксиса сделано для обеспечения
+        приватности.
+        </p>
+    </div>
+    <div class="topic" id="total">
+        <h3>Итого</h3>
+        <p>Единственная приватность это <code>#name</code> для поля и метода. Все остальное фикция и надежда на то что
+            ты сам и другие
+            разработчики будут соблюдать эти шаткие договорённости. </p>
+        <p>В приватных полях и методах есть одна тонкость - приватные поля и методы не наследуются и не сериализуются посредством JSON и эту особенность
+            надо серьёзно учитывать.</p>
+        <p>Никакого protected в JavaScript нет.</p>
+    </div>
+
+</body>
+
+</html>

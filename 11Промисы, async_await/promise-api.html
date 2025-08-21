@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promise API</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#PromiseAPI">Promise API</a></h2>
+        <ul>
+            <li><a href="#Promise.all">Promise.all</a></li>
+            <li><a href="#Promise.allSettled">Promise.allSettled</a></li>
+            <li><a href="#Promise.race">Promise.race</a></li>
+            <li><a href="#Promise.any">Promise.any</a></li>
+            <li><a href="#Promise.resolve/reject">Promise.resolve/reject</a></li>
+            <li><a href="#total">Итого</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="PromiseAPI">
+        <h2><a href="https://learn.javascript.ru/promise-api">Promise API</a></h2>
+        <p>
+            В классе Promise есть 6 статических методов. Давайте познакомимся с ними.
+
+        </p>
+    </div>
+    <div class="topic" id="Promise.all">
+        <h3>Promise.all</h3>
+        <p>Синтаксис:
+        <pre>
+    <code class="language-js">
+let promise = Promise.all(iterable);        
+    </code>
+</pre>
+        Более подробный пример:
+        <pre>
+    <code class="language-js">
+Promise.all([
+  new Promise(resolve => setTimeout(() => resolve(1), 3000)), // 1
+  new Promise(resolve => setTimeout(() => resolve(2), 2000)), // 2
+  new Promise(resolve => setTimeout(() => resolve(3), 1000))  // 3
+]).then(alert); // когда все промисы выполнятся, результат будет 1,2,3
+// каждый промис даёт элемент массива        
+    </code>
+</pre>
+        Часто применяемый трюк – пропустить массив данных через map-функцию, которая для каждого элемента создаст
+        задачу-промис, и затем обернуть получившийся массив в Promise.all.
+        <pre>
+            <code class="language-js">
+let urls = [
+  'https://api.github.com/users/iliakan',
+  'https://api.github.com/users/remy',
+  'https://api.github.com/users/jeresig'
+];
+
+// Преобразуем каждый URL в промис, возвращённый fetch
+let requests = urls.map(url => fetch(url));
+
+// Promise.all будет ожидать выполнения всех промисов
+Promise.all(requests)
+  .then(responses => responses.forEach(
+    response => alert(`${response.url}: ${response.status}`)
+  ));                
+            </code>
+        </pre>
+        В случае ошибки в одном промисе, остальные результаты в Promise.all игнорируются.
+<script>
+    function expl1(params) {
+Promise.all([
+  new Promise((resolve, reject) => setTimeout(() => resolve(1), 1000)),
+  new Promise((resolve, reject) => setTimeout(() => reject(new Error("Ошибка!")), 2000)),
+  new Promise((resolve, reject) => setTimeout(() => resolve(3), 3000))
+]).then(alert).catch(alert);        
+    }
+</script> 
+<br>В данном случет покажет только ошибку, все остальные результаты пропадут:
+<button onclick="expl1()">Тест кода</button>       
+<pre>
+    <code class="language-js">
+Promise.all([
+  new Promise((resolve, reject) => setTimeout(() => resolve(1), 1000)),
+  new Promise((resolve, reject) => setTimeout(() => reject(new Error("Ошибка!")), 2000)),
+  new Promise((resolve, reject) => setTimeout(() => resolve(3), 3000))
+]).then(alert).catch(alert);           
+    </code>
+</pre>
+        </p>
+    </div>
+<div class="topic" id="Promise.allSettled">
+    <h3>Promise.allSettled</h3>
+    <p>Этот метод чутка поумнее и возвращает:
+<ul>
+    <li>{status:"fulfilled", value:результат} для успешных завершений,</li>
+    <li>{status:"rejected", reason:ошибка} для ошибок.</li>
+</ul>
+<script>
+    function expl2(params) {
+Promise.allSettled([
+  fetch('https://ya.ru'),
+  fetch('https://google.com'),
+  fetch('C:\\AMFTrace.log')
+]).then(render => {
+    render.forEach((result)=>{
+        alert(`${result.reason} ${result.status} ${result.value}`)
+    })
+}); // методу render нужны результаты всех fetch        
+    }
+</script>
+<pre>Этот код у меня не работает  <button onclick="expl2()">Тест код</button>
+    <code class="language-js">
+Promise.allSettled([
+  fetch('https://ya.ru'),
+  fetch('https://google.com'),
+  fetch('C:\\AMFTrace.log')
+]).then(render => {
+    render.forEach((result)=>{
+        alert(`${result.reason} ${result.status} ${result.value}`)
+    })
+}); // методу render нужны результаты всех fetch          
+    </code>
+</pre>
+Но код с примера работает на ура:
+<pre>
+    <code class="language-js">
+let urls = [
+  'https://api.github.com/users/iliakan',
+  'https://api.github.com/users/remy',
+  'https://no-such-url'
+];
+
+Promise.allSettled(urls.map(url => fetch(url)))
+  .then(results => { // (*)
+    results.forEach((result, num) => {
+      if (result.status == "fulfilled") {
+        alert(`${urls[num]}: ${result.value.status}`);
+      }
+      if (result.status == "rejected") {
+        alert(`${urls[num]}: ${result.reason}`);
+      }
+    });
+  });        
+    </code>
+</pre>       
+    </p>
+    <h4>Полифил</h4>
+    <p>Если в браузере нет этого метода, его легко сделать.
+<pre>
+    <code class="language-js">
+if(!Promise.allSettled) {
+  Promise.allSettled = function(promises) {
+    return Promise.all(promises.map(p => Promise.resolve(p).then(value => ({
+      status: 'fulfilled',
+      value: value
+    }), error => ({
+      status: 'rejected',
+      reason: error
+    }))));
+  };
+}        
+    </code>
+</pre>        
+    </p>
+</div>
+<div class="topic" id="Promise.race">
+    <h3>Promise.race</h3>
+    <p>Метод очень похож на Promise.all, но ждёт только первый выполненный промис, из которого берёт результат (или ошибку).
+
+Синтаксис:
+<pre>
+    <code class="language-js">
+let promise = Promise.race(iterable);        
+    </code>
+</pre>
+<script>
+        function expl3(params) {
+Promise.race([
+ new Promise((resolve, reject) => setTimeout(() => resolve(1), 1000)),
+  new Promise((resolve, reject) => setTimeout(() => reject(new Error("Ошибка!")), 2000)),
+  new Promise((resolve, reject) => setTimeout(() => resolve(3), 3000))
+]).then(alert); // 1    
+    }
+</script>
+<button onclick="expl3()">Тест кода</button>
+<pre>
+    <code class="language-js">
+Promise.race([
+ new Promise((resolve, reject) => setTimeout(() => resolve(1), 1000)),
+  new Promise((resolve, reject) => setTimeout(() => reject(new Error("Ошибка!")), 2000)),
+  new Promise((resolve, reject) => setTimeout(() => resolve(3), 3000))
+]).then(alert); // 1            
+    </code>
+</pre>
+</p>
+</div>
+<div class="topic" id="Promise.any">
+    <h3>Promise.any</h3>
+    <p>Метод очень похож на Promise.race, но ждёт только первый успешно выполненный промис, из которого берёт результат.
+        Сиинтаксис такой же.
+        <pre>
+            <code class="language-js">
+Promise.any([
+  new Promise((resolve, reject) => setTimeout(() => reject(new Error("Ошибка!")), 1000)),
+  new Promise((resolve, reject) => setTimeout(() => resolve(1), 2000)),
+  new Promise((resolve, reject) => setTimeout(() => resolve(3), 3000))
+]).then(alert); // 1                
+            </code>
+        </pre>
+        Если все ошибка, то результата не будет.
+    </p>
+</div>
+<div class="topic" id="Promise.resolve/reject">
+    <h3>Promise.resolve/reject</h3>
+    <p>
+Методы Promise.resolve и Promise.reject редко используются в современном коде, так как синтаксис async/await (мы рассмотрим его чуть позже) делает их, в общем-то, не нужными.
+
+<br>Мы рассмотрим их здесь для полноты картины, а также для тех, кто по каким-то причинам не может использовать async/await.        
+    </p>
+    <div id="Promise.resolve">
+        <h4>Promise.resolve</h4>
+        <p>
+Promise.resolve(value) создаёт успешно выполненный промис с результатом value.
+<pre>
+    <code class="language-js">
+let cache = new Map();
+
+function loadCached(url) {
+  if (cache.has(url)) {
+    return Promise.resolve(cache.get(url)); // (*)
+  }
+
+  return fetch(url)
+    .then(response => response.text())
+    .then(text => {
+      cache.set(url,text);
+      return text;
+    });
+}        
+    </code>
+</pre>
+</p>
+    </div>
+<div id="Promise.reject">
+    <h4>Promise.reject</h4>
+    <p>Promise.reject(error) создаёт промис, завершённый с ошибкой error.
+Тоже самое что и:
+<pre>
+    <code class="language-js">
+let promise = new Promise((resolve, reject) => reject(error));        
+    </code>
+</pre>
+
+    </p>
+    
+</div>
+
+</div>
+<div class="topic" id="total">
+    <h3>Итого</h3>
+<p>
+<ol>
+<li>Promise.all(promises) – ожидает выполнения всех промисов и возвращает массив с результатами. Если любой из указанных промисов вернёт ошибку, то результатом работы Promise.all будет эта ошибка, результаты остальных промисов будут игнорироваться.</li>
+<li>Promise.allSettled(promises) (добавлен недавно) – ждёт, пока все промисы завершатся и возвращает их результаты в виде массива с объектами, у каждого объекта два свойства:
+<ul>
+    <li>status: "fulfilled", если выполнен успешно или "rejected", если ошибка,</li>
+<li>value – результат, если успешно или reason – ошибка, если нет.</li>
+</ul>
+</li>
+
+<li>Promise.race(promises) – ожидает первый выполненный промис, который становится его результатом, остальные игнорируются.</li>
+<li>Promise.any(promises) (добавлен недавно) – ожидает первый успешно выполненный промис, который становится его результатом, остальные игнорируются. Если все переданные промисы отклонены, AggregateError становится ошибкой Promise.any.</li>
+<li>Promise.resolve(value) – возвращает успешно выполнившийся промис с результатом value.</li>
+<li>Promise.reject(error) – возвращает промис с ошибкой error.    </li>
+</ol>    
+
+Из всех перечисленных методов, самый часто используемый – это, пожалуй, Promise.all. (по мнению автора)
+
+
+</p>
+
+</div>
+
+</body>
+
+</html>

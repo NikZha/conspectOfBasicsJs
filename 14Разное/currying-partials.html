@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каррирование</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#curr">Каррирование</a></h2>
+        <ul>
+            <li><a href="#why">Каррирование? Зачем?</a></li>
+            <li><a href="#smart">Продвинутая реализация каррирования</a></li>
+            <li><a href="#total">Итого</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="curr">
+        <h2><a href="https://learn.javascript.ru/currying-partials">Каррирование</a></h2>
+        <p>Представляет из себя разбиение аргументов: f(a, b, c), а как f(a)(b)(c). Каррирование не вызывает функцию.
+            Оно просто трансформирует её. Например:
+        <pre>
+    <code class="language-js">
+function curry(f) { // curry(f) выполняет каррирование
+  return function(a) {
+    return function(b) {
+      return f(a, b);
+    };
+  };
+}
+
+// использование
+function sum(a, b) {
+  return a + b;
+}
+
+let curriedSum = curry(sum);
+
+alert( curriedSum(1)(2) ); // 3        
+    </code>
+</pre>
+
+
+        </p>
+
+        Более продвинутые реализации каррирования, как например _.curry из библиотеки lodash, возвращают обёртку,
+        которая
+        позволяет запустить функцию как обычным образом, так и частично.
+        <pre><button onclick="expl1()">Тест lodash</button>
+        <code class="language-js">
+function sum(a, b) {
+  return a + b;
+}
+
+let curriedSum = _.curry(sum); // используем _.curry из lodash
+
+alert( curriedSum(1, 2) ); // 3, можно вызывать как обычно
+alert( curriedSum(1)(2) ); // 3, а можно частично            
+        </code>
+    </pre>
+        <script src="lodash.js"></script>
+        <script>
+            function expl1(params) {
+                function sum(a, b) {
+                    return a + b;
+                }
+
+                let curriedSum = _.curry(sum); // используем _.curry из lodash
+
+                alert(curriedSum(1, 2)); // 3, можно вызывать как обычно
+                alert(curriedSum(1)(2)); // 3, а можно частично         
+            }
+        </script>
+    </div>
+    <div class="topic" id="why">
+        <h3>Каррирование? Зачем?</h3>
+        <p>Каррирование может быть использовано, как вариант предоставления арументов по умолчанию, например даты и
+            времени в логах:
+        <pre>
+    <code class="language-js">
+function log(date, importance, message) { //функция логгирования
+  alert(`[${date.getHours()}:${date.getMinutes()}] [${importance}] ${message}`);
+} 
+log = _.curry(log); //применяем каррирование
+log(new Date(), "DEBUG", "some debug"); // log(a, b, c)
+log(new Date())("DEBUG")("some debug"); // log(a)(b)(c) 
+// logNow будет частичным применением функции log с фиксированным первым аргументом
+let logNow = log(new Date());
+
+// используем её
+logNow("INFO", "message"); // [HH:mm] INFO message       
+    </code>
+</pre>
+        <ul>
+            <li>Мы ничего не потеряли после каррирования: log всё так же можно вызывать нормально.</li>
+            <li>Мы можем легко создавать частично применённые функции, как сделали для логов с текущим временем. </li>
+        </ul>
+        </p>
+    </div>
+    <div class="topic" id="smart">
+        <h3>Продвинутая реализация каррирования</h3>
+        <p>
+            Пример с вариантами использования:
+        <pre><button onclick="expl2()">Тест каррирования</button>
+    <code class="language-js">
+function curry(func) {
+
+  return function curried(...args) {
+    if (args.length >= func.length) {
+      return func.apply(this, args);
+    } else {
+      return function(...args2) {
+        return curried.apply(this, args.concat(args2));
+      }
+    }
+  };
+
+}
+//Использование:
+function sum(a, b, c) {
+  return a + b + c;
+}
+
+let curriedSum = curry(sum);
+
+alert( curriedSum(1, 2, 3) ); // 6, всё ещё можно вызывать нормально
+alert( curriedSum(1)(2,3) ); // 6, каррирование первого аргумента
+alert( curriedSum(1)(2)(3) ); // 6, каррирование всех аргументов        
+    </code>
+</pre>
+        Когда мы запускаем её, есть две ветви выполнения if:
+        <ol>
+            <li>Вызвать сейчас: если количество переданных аргументов args совпадает с количеством аргументов при
+                объявлении функции (func.length) или больше, тогда вызов просто переходит к ней.</li>
+            <li>Частичное применение: в противном случае func не вызывается сразу. Вместо этого, возвращается другая
+                обёртка pass, которая снова применит curried, передав предыдущие аргументы вместе с новыми. Затем при
+                новом вызове мы опять получим либо новое частичное применение (если аргументов недостаточно) либо,
+                наконец, результат.</li>
+        </ol>
+        <script>
+            function expl2(params) {
+                function curry(func) {
+
+                    return function curried(...args) {
+                        if (args.length >= func.length) {
+                            return func.apply(this, args);
+                        } else {
+                            return function (...args2) {
+                                return curried.apply(this, args.concat(args2));
+                            }
+                        }
+                    };
+
+                }
+                //Использование:
+                function sum(a, b, c) {
+                    return a + b + c;
+                }
+
+                let curriedSum = curry(sum);
+
+                alert(curriedSum(1, 2, 3)); // 6, всё ещё можно вызывать нормально
+                alert(curriedSum(1)(2, 3)); // 6, каррирование первого аргумента
+                alert(curriedSum(1)(2)(3)); // 6, каррирование всех аргументов         
+            }
+        </script>
+
+        </p>
+    </div>
+    <div class="topic" id="total">
+        <h3>Итого</h3>
+        <p>Каррирование – это трансформация, которая превращает вызов f(a, b, c) в f(a)(b)(c). В JavaScript реализация
+            обычно позволяет вызывать функцию обоими вариантами: либо нормально, либо возвращает частично применённую
+            функцию, если количество аргументов недостаточно.</p>
+
+        <p>Каррирование позволяет легко получать частичные функции. Как мы видели в примерах с логами: универсальная
+            функция log(date, importance, message) после каррирования возвращает нам частично применённую функцию, когда
+            вызывается с одним аргументом, как log(date) или двумя аргументами, как log(date, importance). </p>
+    </div>
+
+</body>
+
+</html>

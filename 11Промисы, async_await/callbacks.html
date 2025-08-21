@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Введение: колбэки</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#callback">Введение: колбэки</a></h2>
+        <ul>
+            <li><a href="#into">Колбэк в колбэке</a></li>
+            <li><a href="#catch">Перехват ошибок</a></li>
+            <li><a href="#hell">Адская пирамида вызовов</a></li>
+        </ul>
+    </div>
+<div class="topic" id="callback">
+    <h2>Введение: колбэки</h2>
+    <p>Пишет что рассматриваются браузерные методы, передача указателя на функцию в функцию знакома ещё по Столярову. Но есть и отличия.</p>
+    <p>
+        Многие действия в JavaScript асинхронные.
+<pre>
+    <code class="language-js">
+function loadScript(src) {
+  let script = document.createElement('script');
+  script.src = src;
+  document.head.append(script);
+}        
+    </code>
+</pre>
+Если запустить функцию, а потом попытаться выполнить загруженный код, то возникнет ошибка, потому что загрузка ассинхронная.
+<pre>
+    <code class="language-js">
+loadScript('/my/script.js'); // в скрипте есть "function newFunction() {…}"
+
+newFunction(); // такой функции не существует!        
+    </code>
+</pre>
+Чтобы этого избежать, автор предлагает передать callback в функцию:
+<pre>
+    <code class="language-js">
+function loadScript(src, callback) {
+  let script = document.createElement('script');
+  script.src = src;
+  script.onload = () => callback(script);
+  document.head.append(script);
+}        
+    </code>
+</pre>
+Тогда:
+<pre>
+    <code class="language-js">
+loadScript('/my/script.js', function() {
+  // эта функция вызовется после того, как загрузится скрипт
+  newFunction(); // теперь всё работает
+  ...
+});        
+    </code>
+</pre>
+Автор приводит пример с lodash:
+<script>
+function loadScript(src, callback) {
+  let script = document.createElement('script');
+  script.src = src;
+  script.onload = () => callback(script);
+  document.head.append(script);
+}
+
+    
+</script>
+<button onclick="loadScript('https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.2.0/lodash.js', script => {
+  alert(`Здорово, скрипт ${script.src} загрузился`);
+  alert( _ ); // функция, объявленная в загруженном скрипте
+});">Тест кода</button>
+<pre>
+    <code class="language-js">
+function loadScript(src, callback) {
+  let script = document.createElement('script');
+  script.src = src;
+  script.onload = () => callback(script);
+  document.head.append(script);
+}
+
+loadScript('https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.2.0/lodash.js', script => {
+  alert(`Здорово, скрипт ${script.src} загрузился`);
+  alert( _ ); // функция, объявленная в загруженном скрипте
+});        
+    </code>
+</pre>
+Такое написание называют асинхронным программированием с использованием колбэков. 
+    </p>
+</div>
+<div class="topic" id="into">
+    <h3>Колбэк в колбэке</h3>
+    <p>
+<pre>
+    <code class="language-js">
+loadScript('/my/script.js', function(script) {
+
+  loadScript('/my/script2.js', function(script) {
+
+    loadScript('/my/script3.js', function(script) {
+      // ...и так далее, пока все скрипты не будут загружены
+    });
+
+  })
+
+});        
+    </code>
+</pre>        
+Это неудобно, автор предлагает разобрать альтернативу позже.
+    </p>
+</div>
+<div class="topic" id="catch">
+    <h3>Перехват ошибок</h3>
+    <p>
+        Автор предлагает писать колбеки сразу с учётом возможных ошибок:
+        <pre>
+            <code class="language-js">
+function loadScript(src, callback) {
+  let script = document.createElement('script');
+  script.src = src;
+
+  script.onload = () => callback(null, script);
+  script.onerror = () => callback(new Error(`Не удалось загрузить скрипт ${src}`));
+
+  document.head.append(script);
+}                
+            </code>
+        </pre>
+        Тогда:
+        <pre>
+            <code class="language-js">
+loadScript('/my/script.js', function(error, script) {
+  if (error) {
+    // обрабатываем ошибку
+  } else {
+    // скрипт успешно загружен
+  }
+});                
+            </code>
+        </pre>
+    </p>
+</div>
+<div class="topic" id="hell">
+    <h3>Адская пирамида вызовов</h3>
+    <p>
+        <pre>
+            <code class="language-js">
+loadScript('1.js', function(error, script) {
+
+  if (error) {
+    handleError(error);
+  } else {
+    // ...
+    loadScript('2.js', function(error, script) {
+      if (error) {
+        handleError(error);
+      } else {
+        // ...
+        loadScript('3.js', function(error, script) {
+          if (error) {
+            handleError(error);
+          } else {
+            // ...и так далее, пока все скрипты не будут загружены (*)
+          }
+        });
+
+      }
+    })
+  }
+});                
+            </code>
+        </pre>
+        Решением этого не элегантного кода может быть переписать все на отдельные функции:
+        <pre>
+            <code class="language-js">
+loadScript('1.js', step1);
+
+function step1(error, script) {
+  if (error) {
+    handleError(error);
+  } else {
+    // ...
+    loadScript('2.js', step2);
+  }
+}
+
+function step2(error, script) {
+  if (error) {
+    handleError(error);
+  } else {
+    // ...
+    loadScript('3.js', step3);
+  }
+}
+
+function step3(error, script) {
+  if (error) {
+    handleError(error);
+  } else {
+    // ...и так далее, пока все скрипты не будут загружены (*)
+  }
+};                
+            </code>
+        </pre>
+        Но автор предлагает рассмотреть промисы в другом разделе.
+    </p>
+</div>
+
+</body>
+</html>

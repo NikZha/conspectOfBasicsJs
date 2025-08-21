@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Краткий конспект Язык JavaScript</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="contents" id="5and6">
+
+        <h1>
+            5.Типы данных.</h1>
+
+
+        <ul>
+            <a href="5.Типы данных/type_of_data.html#arrays">Массивы</a>
+            <li><a href="5.Типы данных/type_of_data.html#push">Методы pop/push, shift/unshift</a></li>
+            <li><a href="5.Типы данных/type_of_data.html#vnutrennee-ustroystvo-massiva">Внутреннее устройство
+                    массива</a></li>
+            <li><a href="5.Типы данных/type_of_data.html#eff">Эффетивность</a></li>
+            <li><a href="5.Типы данных/type_of_data.html#iter">Перебор элементов</a></li>
+            <li><a href="5.Типы данных/type_of_data.html#length">Немного о «length»</a></li>
+            <li><a href="5.Типы данных/type_of_data.html#new">new Array()</a></li>
+            <li><a href="5.Типы данных/type_of_data.html#many">Многомерные массивы</a></li>
+            <li><a href="5.Типы данных/type_of_data.html#tostring">toString</a></li>
+            <li><a href="5.Типы данных/type_of_data.html#ne-sravnivayte-massivy-pri-pomoschi">Не сравнивайте
+                    массивы при помощи ==</a></li>
+            <li><a href="5.Типы данных/type_of_data.html#itog">Итого</a></li>
+            <li><a href="5.Типы данных/type_of_data.html#tasks">Решения задач</a></li>
+        </ul>
+
+
+        <h2> <a href="5.Типы данных/array-methods.html#method">Методы массивов</a></h2>
+        <ul>
+            <li><a href="5.Типы данных/array-methods.html#addremove">Добавление и удаление элементов</a></li>
+            <li><a href="5.Типы данных/array-methods.html#splice">splice</a></li>
+            <li><a href="5.Типы данных/array-methods.html#concat">concat</a></li>
+            <li><a href="5.Типы данных/array-methods.html#forEach">forEach</a></li>
+            <li><a href="5.Типы данных/array-methods.html#search">Поиск в массиве</a></li>
+
+
+            <li><a href="5.Типы данных/array-methods.html#indexOf">indexOf/lastIndexOf и includes</a></li>
+            <li><a href="5.Типы данных/array-methods.html#find">find и findIndex/findLastIndex</a></li>
+            <li><a href="5.Типы данных/array-methods.html#filter">filter</a></li>
+
+        </ul>
+        <h3><a href="5.Типы данных/array-methods.html#change">Преобразование массива</a></h3>
+
+        <ul>
+            <li><a href="5.Типы данных/array-methods.html#map">map</a></li>
+            <li><a href="5.Типы данных/array-methods.html#sort">sort(fn)</a></li>
+            <li><a href="5.Типы данных/array-methods.html#closure">Коротко о замыканиях?</a></li>
+            <li><a href="5.Типы данных/array-methods.html#localeCompare">localeCompare для строк</a></li>
+            <li><a href="5.Типы данных/array-methods.html#reverse">reverse</a></li>
+            <li><a href="5.Типы данных/array-methods.html#split">split и join</a></li>
+            <li><a href="5.Типы данных/array-methods.html#reduce">reduce/reduceRight</a></li>
+        </ul>
+
+        <ul>
+            <li><a href="5.Типы данных/array-methods.html#isArray">Array.isArray</a></li>
+            <li><a href="5.Типы данных/array-methods.html#thisArg">Большинство методов поддерживают «thisArg»</a>
+            </li>
+            <li><a href="5.Типы данных/array-methods.html#total">Итого</a></li>
+            <li><a href="5.Типы данных/array-methods.html#tasks">Задачи</a></li>
+            <li><a href="5.Типы данных/array-methods.html#hash">Объект это хештаблица</a></li>
+        </ul>
+
+        <h2>
+            <a href="5.Типы данных/iterable.html#iterobj">Перебираемые объекты</a>
+        </h2>
+
+        <ul>
+            <li><a href="5.Типы данных/iterable.html#Symbol.iterator">Symbol.iterator</a></li>
+            <li><a href="5.Типы данных/iterable.html#str_iter">Строка – перебираемый объект</a></li>
+            <li><a href="5.Типы данных/iterable.html#visiable_iter">Явный вызов итератора</a></li>
+            <li><a href="5.Типы данных/iterable.html#pseudoarrays">Итерируемые объекты и псевдомассивы</a></li>
+            <li><a href="5.Типы данных/iterable.html#Array.from">Array.from</a></li>
+            <li><a href="5.Типы данных/iterable.html#total">Итого</a></li>
+        </ul>
+
+        <h2><a href="5.Типы данных/map_and_set.html#map_set">Map и Set</a></h2>
+
+        <ul>
+            <li><a href="5.Типы данных/map_and_set.html#map">Map</a></li>
+            <li><a href="5.Типы данных/map_and_set.html#iter_map">Перебор Map</a></li>
+            <li><a href="5.Типы данных/map_and_set.html#map_from_obj">Object.entries: Map из Object</a></li>
+            <li><a href="5.Типы данных/map_and_set.html#obj_from_map">Object.fromEntries: Object из Map</a></li>
+            <li><a href="5.Типы данных/map_and_set.html#set">Set</a></li>
+            <li><a href="5.Типы данных/map_and_set.html#iter_set">Перебор объекта Set</a></li>
+            <li><a href="5.Типы данных/map_and_set.html#total">Итого</a></li>
+            <li><a href="5.Типы данных/map_and_set.html#tasks">Задачи</a></li>
+        </ul>
+
+        <h2><a href="5.Типы данных/weakmap-weakset.html#weakmap_set">WeakMap и WeakSet</a></h2>
+
+        <ul>
+            <li><a href="5.Типы данных/weakmap-weakset.html#WeakMap">WeakMap</a></li>
+            <ul>
+
+                <li><a href="5.Типы данных/weakmap-weakset.html#moredata">Пример: дополнительные данные</a></li>
+                <li><a href="5.Типы данных/weakmap-weakset.html#cashe">Применение для кеширования</a></li>
+
+            </ul>
+            <li><a href="5.Типы данных/weakmap-weakset.html#WeakSet">WeakSet</a></li>
+            <li><a href="5.Типы данных/weakmap-weakset.html#tasks">Задачи</a></li>
+        </ul>
+
+        <h2><a href="5.Типы данных/keys-values-entries.html#Object.keys_values_entries">Object.keys, values, entries</a>
+        </h2>
+        <a href="5.Типы данных/keys-values-entries.html#trans">Трансформации объекта</a>
+        <a href="5.Типы данных/keys-values-entries.html#tasks">Задачи</a>
+        <a href="5.Типы данных/destructuring-assignment.html#destruct_ass">Деструктурирующее присваивание</a>
+
+        <ul>
+            <li><a href="5.Типы данных/destructuring-assignment.html#destruct_array">Деструктуризация массива</a>
+
+                <ul>
+                    <li><a href="5.Типы данных/destructuring-assignment.html#...">Остатки "..."</a></li>
+                    <li><a href="5.Типы данных/destructuring-assignment.html#default_values">Значения по
+                            умолчанию</a></li>
+                </ul>
+            </li>
+
+            <li><a href="5.Типы данных/destructuring-assignment.html#destruct_obj">Деструктуризация объекта</a></li>
+            <ul>
+                <li><a href="5.Типы данных/destructuring-assignment.html#...obj">Остаток объекта «…»</a></li>
+            </ul>
+            </li>
+            <li><a href="5.Типы данных/destructuring-assignment.html#inside">Вложенная деструктуризация</a></li>
+            <li><a href="5.Типы данных/destructuring-assignment.html#smart">Умные параметры функций</a></li>
+            <li><a href="5.Типы данных/destructuring-assignment.html#total">Итого</a></li>
+            <li><a href="5.Типы данных/destructuring-assignment.html#tasks">Задачи</a></li>
+        </ul>
+
+        <h2><a href="5.Типы данных/date.html#date_and_time">Дата и Время</a></h2>
+
+        <ul>
+            <li><a href="5.Типы данных/date.html#making">Создание</a></li>
+            <li><a href="5.Типы данных/date.html#getdate">Получение компонентов даты</a></li>
+            <li><a href="5.Типы данных/date.html#setdate">Установка компонентов даты</a></li>
+            <li><a href="5.Типы данных/date.html#autocorrect">Автоисправление даты</a></li>
+            <li><a href="5.Типы данных/date.html#transdate">Преобразование к числу, разность дат</a></li>
+            <li><a href="5.Типы данных/date.html#Date.now()">Date.now()</a></li>
+            <li><a href="5.Типы данных/date.html#benchnark">Бенчмаркинг</a></li>
+            <li><a href="5.Типы данных/date.html#dissdate">Разбор строки с датой</a></li>
+            <li><a href="5.Типы данных/date.html#total">Итого</a></li>
+            <li><a href="5.Типы данных/date.html#tasks">Задачи</a></li>
+        </ul>
+
+        <h2><a href="5.Типы данных/json.html#json">Формат JSON, метод toJSON</a></h2>
+
+        <ul>
+            <li><a href="5.Типы данных/json.html#JSON.stringify">JSON.stringify</a></li>
+            <li><a href="5.Типы данных/json.html#replacer">Исключаем и преобразуем: replacer</a></li>
+            <li><a href="5.Типы данных/json.html#space">Форматирование: space</a></li>
+            <li><a href="5.Типы данных/json.html#users_tojson">Пользовательский «toJSON»</a></li>
+            <li><a href="5.Типы данных/json.html#JSON.parse">JSON.parse</a></li>
+            <li><a href="5.Типы данных/json.html#reviver">Использование reviver</a></li>
+            <li><a href="5.Типы данных/json.html#total">Итого</a></li>
+            <li><a href="5.Типы данных/json.html#tasks">Задачи</a></li>
+        </ul>
+
+        <h1>6.Продвинутая работа с функциями</h1>
+
+        <ul>
+            <li><a href="6.Продвинутая работа с функциями/recursion.html">Рекурсия</a></li>
+        </ul>
+
+        <h2><a href="6.Продвинутая работа с функциями/rest-parameters-spread-operator.html#rest_spred">Остаточные
+                параметры и оператор расширения</a></h2>
+
+        <ul>
+            <li><a href="6.Продвинутая работа с функциями/rest-parameters-spread-operator.html#...">Остаточные
+                    параметры (...)</a></li>
+            <li><a href="6.Продвинутая работа с функциями/rest-parameters-spread-operator.html#arguments">Переменная
+                    "arguments"</a></li>
+            <li><a href="6.Продвинутая работа с функциями/rest-parameters-spread-operator.html#spred">Оператор
+                    расширения</a></li>
+            <li><a href="6.Продвинутая работа с функциями/rest-parameters-spread-operator.html#total">Итого</a></li>
+        </ul>
+
+        <h2><a href="6.Продвинутая работа с функциями/closure.html#closure">Область видимости переменных, замыкание</a>
+        </h2>
+
+        <ul>
+            <li><a href="6.Продвинутая работа с функциями/closure.html#code_block">Блоки кода</a></li>
+            <li><a href="6.Продвинутая работа с функциями/closure.html#inner">Вложенные функции</a></li>
+            <li><a href="6.Продвинутая работа с функциями/closure.html#lexical">Лексическое окружение</a></li>
+
+            <ul>
+                <li><a href="6.Продвинутая работа с функциями/closure.html#step1">Шаг 1. Переменные</a></li>
+                <li><a href="6.Продвинутая работа с функциями/closure.html#step2">Шаг 2. Function
+                        Declaration</a></li>
+                <li><a href="6.Продвинутая работа с функциями/closure.html#step3">Шаг 3. Внутреннее и внешнее
+                        лексическое окружение</a></li>
+                <li><a href="6.Продвинутая работа с функциями/closure.html#step4">Шаг 4. Возврат функции</a>
+                </li>
+
+            </ul>
+
+            <li><a href="6.Продвинутая работа с функциями/closure.html#GC">Сборка мусора</a></li>
+            <li><a href="6.Продвинутая работа с функциями/closure.html#tasks">Задачи</a></li>
+        </ul>
+
+        <h2><a href="6.Продвинутая работа с функциями/var.html#elder">Устаревшее ключевое слово "var"</a></h2>
+
+        <ul>
+            <li><a href="6.Продвинутая работа с функциями/var.html#block">Для «var» не существует блочной области
+                    видимости</a></li>
+            <li><a href="6.Продвинутая работа с функциями/var.html#second">«var» допускает повторное объявление</a>
+            </li>
+            <li><a href="6.Продвинутая работа с функциями/var.html#begin">«var» обрабатываются в начале запуска
+                    функции</a></li>
+            <li><a href="6.Продвинутая работа с функциями/var.html#IIFE">IIFE</a></li>
+            <li><a href="6.Продвинутая работа с функциями/var.html#total">Итого</a></li>
+        </ul>
+
+
+        <h2><a href="6.Продвинутая работа с функциями/global-object.html#global">Глобальный объект</a></h2>
+        <ul>
+            <li>
+                <h3><a href="6.Продвинутая работа с функциями/global-object.html#polyfil">Использование для
+                        полифилов</a></h3>
+            </li>
+            <li>
+                <h3><a href="6.Продвинутая работа с функциями/global-object.html#total">Итого</a></h3>
+            </li>
+        </ul>
+
+        <h2><a href="6.Продвинутая работа с функциями/function-object.html#obj">Объект функции, NFE</a></h2>
+
+        <ul>
+            <li><a href="6.Продвинутая работа с функциями/function-object.html#name">Свойство «name»</a></li>
+            <li><a href="6.Продвинутая работа с функциями/function-object.html#length">Свойство «length»</a></li>
+            <li><a href="6.Продвинутая работа с функциями/function-object.html#users">Пользовательские свойства</a>
+            </li>
+            <li><a href="6.Продвинутая работа с функциями/function-object.html#nfe">Named Function Expression</a>
+            </li>
+            <li><a href="6.Продвинутая работа с функциями/function-object.html#total">Итого</a></li>
+            <li><a href="6.Продвинутая работа с функциями/function-object.html#tasks">Задачи</a></li>
+        </ul>
+
+        <h2><a href="6.Продвинутая работа с функциями/new-function.html#newf">Синтаксис "new Function"</a></h2>
+
+        <ul>
+            <li><a href="6.Продвинутая работа с функциями/new-function.html#sintacsis">Синтаксис</a></li>
+            <li><a href="6.Продвинутая работа с функциями/new-function.html#closure">Замыкание</a></li>
+            <li><a href="6.Продвинутая работа с функциями/new-function.html#total">Итого</a></li>
+        </ul>
+
+        <h2><a href="6.Продвинутая работа с функциями/settimeout-setinterval.html#settime">Планирование: setTimeout и
+                setInterval</a></h2>
+
+        <ul>
+            <li><a href="6.Продвинутая работа с функциями/settimeout-setinterval.html#setTimeout">setTimeout</a>
+                <br><a href="6.Продвинутая работа с функциями/settimeout-setinterval.html#canseltimeout">Отмена
+                    через clearTimeout</a>
+            </li>
+            <li><a href="6.Продвинутая работа с функциями/settimeout-setinterval.html#setInterval">setInterval</a>
+            </li>
+            <li><a href="6.Продвинутая работа с функциями/settimeout-setinterval.html#inerset">Вложенный
+                    setTimeout</a></li>
+            <li><a href="6.Продвинутая работа с функциями/settimeout-setinterval.html#nulldelay">setTimeout с
+                    нулевой задержкой</a></li>
+            <li><a href="6.Продвинутая работа с функциями/settimeout-setinterval.html#total">Итого</a></li>
+            <li><a href="6.Продвинутая работа с функциями/settimeout-setinterval.html#tasks">Задачи</a></li>
+        </ul>
+
+        <h2><a href="6.Продвинутая работа с функциями/call-apply-decorators.html#decor">Декораторы и переадресация
+                вызова</a>, call/apply</h2>
+
+        <ul>
+            <li><a href="6.Продвинутая работа с функциями/call-apply-decorators.html#clear">Прозрачное
+                    кеширование</a></li>
+            <li><a href="6.Продвинутая работа с функциями/call-apply-decorators.html#fun.call">Применение
+                    «func.call» для передачи контекста</a></li>
+            <li><a href="6.Продвинутая работа с функциями/call-apply-decorators.html#many">Переходим к нескольким
+                    аргументам с «func.apply»</a></li>
+            <li><a href="6.Продвинутая работа с функциями/call-apply-decorators.html#borrowing">Заимствование
+                    метода</a></li>
+            <li><a href="6.Продвинутая работа с функциями/call-apply-decorators.html#total">Итого</a></li>
+            <li><a href="6.Продвинутая работа с функциями/call-apply-decorators.html#tasks">Задачи</a></li>
+        </ul>
+
+        <h2><a href="6.Продвинутая работа с функциями/bind.html#bind">Привязка контекста к функции</a></h2>
+
+        <ul>
+            <li><a href="6.Продвинутая работа с функциями/bind.html#lost_this">Потеря «this»</a></li>
+            <li><a href="6.Продвинутая работа с функциями/bind.html#sol1">Решение 1: сделать функцию-обёртку</a></li>
+            <li><a href="6.Продвинутая работа с функциями/bind.html#sol2">Решение 2: привязать контекст с помощью
+                    bind</a></li>
+            <li><a href="6.Продвинутая работа с функциями/bind.html#part">Частичное применение</a></li>
+            <li><a href="6.Продвинутая работа с функциями/bind.html#part2">Частичное применение без контекста</a></li>
+            <li><a href="6.Продвинутая работа с функциями/bind.html#total">Итого</a></li>
+            <li><a href="6.Продвинутая работа с функциями/bind.html#tasks">Задачи</a></li>
+        </ul>
+
+        <h2><a href="6.Продвинутая работа с функциями/arrow-functions.html#return_to_arrow_func">Повторяем стрелочные
+                функции</a></h2>
+
+        <ul>
+            <li><a href="6.Продвинутая работа с функциями/arrow-functions.html#nothis">У стрелочных функций нет
+                    «this»</a></li>
+            <li><a href="6.Продвинутая работа с функциями/arrow-functions.html#noarguments">Стрелочные функции не имеют
+                    «arguments»</a></li>
+            <li><a href="6.Продвинутая работа с функциями/arrow-functions.html#total">Итого</a></li>
+        </ul>
+
+    </div>
+    <div class="contents" id="7">
+        <h1>7. Свойства объекта, их конфигурация</h1>
+        <h2><a href="7Свойства объекта, их конфигурация/property-descriptors.html#flag">Флаги и дескрипторы свойств</a>
+        </h2>
+        <ul>
+            <li><a href="7Свойства объекта, их конфигурация/property-descriptors.html#flag_propert">Флаги свойств</a>
+            </li>
+            <li><a href="7Свойства объекта, их конфигурация/property-descriptors.html#onlyread">Только для чтения</a>
+            </li>
+            <li><a href="7Свойства объекта, их конфигурация/property-descriptors.html#notiter">Неперечислимое
+                    свойство</a></li>
+            <li><a href="7Свойства объекта, их конфигурация/property-descriptors.html#notconfig">Неконфигурируемое
+                    свойство</a></li>
+            <li><a href="7Свойства объекта, их конфигурация/property-descriptors.html#Object.defineProperties">Метод
+                    Object.defineProperties</a></li>
+            <li><a
+                    href="7Свойства объекта, их конфигурация/property-descriptors.html#Object.getOwnPropertyDescriptors">Object.getOwnPropertyDescriptors</a>
+            </li>
+            <li><a href="7Свойства объекта, их конфигурация/property-descriptors.html#globalseal">Глобальное
+                    запечатывание объекта</a></li>
+        </ul>
+        <h2><a href="7Свойства объекта, их конфигурация/property-accessors.html#propgetset">Свойства - геттеры и
+                сеттеры</a></h2>
+        <ul>
+            <li><a href="7Свойства объекта, их конфигурация/property-accessors.html#getset">Геттеры и сеттеры</a></li>
+            <li><a href="7Свойства объекта, их конфигурация/property-accessors.html#decr">Дескрипторы свойств
+                    доступа</a></li>
+            <li><a href="7Свойства объекта, их конфигурация/property-accessors.html#smart">Умные геттеры/сеттеры</a>
+            </li>
+            <li><a href="7Свойства объекта, их конфигурация/property-accessors.html#compability">Использование для
+                    совместимости</a></li>
+
+        </ul>
+    </div>
+    <div class="contents" id="8">
+        <h1>Прототипы, наследование</h1>
+        <h2><a href="8Прототипы, наследование/prototype-inheritance.html#inh">Прототипное наследование</a></h2>
+        <ul>
+            <li><a href="8Прототипы, наследование/prototype-inheritance.html#proti">[[Prototype]]</a></li>
+            <li><a href="8Прототипы, наследование/prototype-inheritance.html#write">Операция записи не использует
+                    прототип</a></li>
+            <li><a href="8Прототипы, наследование/prototype-inheritance.html#this">Значение «this»</a></li>
+            <li><a href="8Прототипы, наследование/prototype-inheritance.html#forin">Цикл for…in</a></li>
+            <li><a href="8Прототипы, наследование/prototype-inheritance.html#total">Итого</a></li>
+            <li><a href="8Прототипы, наследование/prototype-inheritance.html#tasks">Задачи</a></li>
+        </ul>
+        <h2><a href="8Прототипы, наследование/function-prototype.html#F.prototype">F.prototype</a></h2>
+        <ul>
+            <li><a href="8Прототипы, наследование/function-prototype.html#prototype">F.prototype по умолчанию, свойство
+                    constructor</a></li>
+            <li><a href="8Прототипы, наследование/function-prototype.html#total">Итого</a></li>
+
+        </ul>
+        <h2><a href="8Прототипы, наследование/native-prototypes.html#build-in">Встроенные прототипы</a></h2>
+        <ul>
+            <li><a href="8Прототипы, наследование/native-prototypes.html#Object.prototype">Object.prototype</a></li>
+            <li><a href="8Прототипы, наследование/native-prototypes.html#another">Другие встроенные прототипы</a></li>
+            <li><a href="8Прототипы, наследование/native-prototypes.html#primitive">Примитивы</a></li>
+            <li><a href="8Прототипы, наследование/native-prototypes.html#change">Изменение встроенных прототипов</a>
+            </li>
+            <li><a href="8Прототипы, наследование/native-prototypes.html#borrowing">Заимствование у прототипов</a></li>
+            <li><a href="8Прототипы, наследование/native-prototypes.html#total">Итого</a></li>
+            <li><a href="8Прототипы, наследование/native-prototypes.html#tasks">Задачи</a></li>
+        </ul>
+        <h2><a href="8Прототипы, наследование/prototype-methods.html#method">Методы прототипов, объекты без свойства
+                __proto__</a></h2>
+        <ul>
+            <li><a href="8Прототипы, наследование/prototype-methods.html#short">Краткая история</a></li>
+            <li><a href="8Прототипы, наследование/prototype-methods.html#simpl">"Простейший" объект</a></li>
+            <li><a href="8Прототипы, наследование/prototype-methods.html#total">Итого</a></li>
+            <li><a href="8Прототипы, наследование/prototype-methods.html#tasks">Задачи</a></li>
+        </ul>
+
+    </div>
+    <div class="contents" id="9">
+        <h1>Классы</h1>
+        <h2><a href="9Класс/class.html#base">Класс: базовый синтаксис</a></h2>
+        <ul>
+            <li><a href="9Класс/class.html#syntax">Синтаксис «class»</a></li>
+            <li><a href="9Класс/class.html#watisclass">Что такое класс?</a></li>
+            <li><a href="9Класс/class.html#notshugar">Не просто синтаксический сахар</a></li>
+            <li><a href="9Класс/class.html#ClassExpression">Class Expression</a></li>
+            <li><a href="9Класс/class.html#getset">Геттеры/сеттеры, другие сокращения</a></li>
+            <li><a href="9Класс/class.html#prop">Свойства классов</a></li>
+            <li><a href="9Класс/class.html#total">Итого</a></li>
+            <li><a href="9Класс/class.html#tasks">Задача</a></li>
+        </ul>
+        <h2><a href="9Класс/class-inheritance.html#inh">Наследование классов</a></h2>
+        <ul>
+            <li><a href="9Класс/class-inheritance.html#extends">Ключевое слово «extends»</a></li>
+            <li><a href="9Класс/class-inheritance.html#override">Переопределение методов</a></li>
+            <li><a href="9Класс/class-inheritance.html#constr">Переопределение конструктора</a></li>
+            <li><a href="9Класс/class-inheritance.html#skip">Устройство super, [[HomeObject]]</a></li>
+            <li><a href="9Класс/class-inheritance.html#total">Итого</a></li>
+            <li><a href="9Класс/class-inheritance.html#tasks">Задачи</a></li>
+        </ul>
+        <h2><a href="9Класс/static-properties-methods.html#static">Статические свойства и методы</a></h2>
+        <ul>
+            <li><a href="9Класс/static-properties-methods.html#prop">Статические свойства</a></li>
+            <li><a href="9Класс/static-properties-methods.html#inh">Наследование статических свойств и методов</a></li>
+            <li><a href="9Класс/static-properties-methods.html#total">Итого</a></li>
+            <li><a href="9Класс/static-properties-methods.html#tasks">Задача</a></li>
+        </ul>
+
+        <h2><a href="9Класс/private-protected-properties-methods.html#save">Приватные и защищённые методы и свойства</a>
+        </h2>
+        <ul>
+            <li><a href="9Класс/private-protected-properties-methods.html#saveinst">Защищённое свойство</a></li>
+            <li><a href="9Класс/private-protected-properties-methods.html#onlyread">Свойство только для чтения </a></li>
+            <li><a href="9Класс/private-protected-properties-methods.html#private">Приватное свойство</a></li>
+            <li><a href="9Класс/private-protected-properties-methods.html#total"></a>Итого</li>
+        </ul>
+        <h2><a href="9Класс/extend-natives.html#exct">Расширение встроенных классов</a></h2>
+        <ul>
+            <li><a href="9Класс/extend-natives.html#dissapir">Отсутствие статического наследования встроенных
+                    классов</a></li>
+        </ul>
+        <h2><a href="9Класс/instanceof.html#check">Проверка класса: "instanceof"</a></h2>
+        <ul>
+            <li><a href="9Класс/instanceof.html#operator">Оператор instanceof</a></li>
+            <li><a href="9Класс/instanceof.html#bonus">Бонус: Object.prototype.toString возвращает тип</a></li>
+            <li><a href="9Класс/instanceof.html#total">Итого</a></li>
+            <li><a href="9Класс/instanceof.html#tasks">Задача</a></li>
+        </ul>
+        <h2><a href="9Класс/mixins.html#mix">Примеси</a></h2>
+        <ul>
+            <li><a href="9Класс/mixins.html#example">Пример примеси</a></li>
+            <li><a href="9Класс/mixins.html#EventMixin">EventMixin</a></li>
+            <li><a href="9Класс/mixins.html#total">Итого</a></li>
+        </ul>
+    </div>
+    <div class="contents" id="10">
+        <h1>Обработка ошибок</h1>
+        <h2><a href="10Обработка ошибок/try-catch.html#prepare">Обработка ошибок, "try..catch"</a></h2>
+        <ul>
+            <li><a href="10Обработка ошибок/try-catch.html#syntax">Синтаксис «try…catch»</a></li>
+            <li><a href="10Обработка ошибок/try-catch.html#obj">Объект ошибки</a></li>
+            <li><a href="10Обработка ошибок/try-catch.html#whitout">Блок «catch» без переменной</a></li>
+            <li><a href="10Обработка ошибок/try-catch.html#use">Использование «try…catch»</a></li>
+            <li><a href="10Обработка ошибок/try-catch.html#make">Генерация собственных ошибок</a></li>
+            <li><a href="10Обработка ошибок/try-catch.html#throw">Проброс исключения</a></li>
+            <li><a href="10Обработка ошибок/try-catch.html#try…catch…finally">try…catch…finally</a></li>
+            <li><a href="10Обработка ошибок/try-catch.html#global">Глобальный catch</a></li>
+            <li><a href="10Обработка ошибок/try-catch.html#total">Итого</a></li>
+            <li><a href="10Обработка ошибок/try-catch.html#tasks">Задачи</a></li>
+        </ul>
+        <h2><a href="10Обработка ошибок/custom-errors.html#users">Пользовательские ошибки, расширение Error</a></h2>
+        <ul>
+            <li><a href="10Обработка ошибок/custom-errors.html#extend">Расширение Error</a></li>
+            <li><a href="10Обработка ошибок/custom-errors.html#inh">Дальнейшее наследование</a></li>
+            <li><a href="10Обработка ошибок/custom-errors.html#puton">Обёртывание исключений</a></li>
+            <li><a href="10Обработка ошибок/custom-errors.html#total">Итого</a></li>
+            <li><a href="10Обработка ошибок/custom-errors.html#tasks">Задачи</a></li>
+        </ul>
+    </div>
+    <div class="contents" id="11">
+        <h1>Промисы, async/await</h1>
+        <h2><a href="11Промисы, async_await/callbacks.html#callback">Введение: колбэки</a></h2>
+        <ul>
+            <li><a href="11Промисы, async_await/callbacks.html#into">Колбэк в колбэке</a></li>
+            <li><a href="11Промисы, async_await/callbacks.html#catch">Перехват ошибок</a></li>
+            <li><a href="11Промисы, async_await/callbacks.html#hell">Адская пирамида вызовов</a></li>
+        </ul>
+        <h2><a href="11Промисы, async_await/promise-basics.html#promise">Промисы</a></h2>
+        <ul>
+            <li><a href="11Промисы, async_await/promise-basics.html#consumers">Потребители: then, catch</a></li>
+            <li><a href="11Промисы, async_await/promise-basics.html#finally">Очистка: finally</a></li>
+            <li><a href="11Промисы, async_await/promise-basics.html#expampl">Пример: loadScript</a></li>
+            <li><a href="11Промисы, async_await/promise-basics.html#tasks">Задачи (3)</a></li>
+        </ul>
+        <h2><a href="11Промисы, async_await/promise-chaining.html#chain">Цепочка промисов</a></h2>
+        <ul>
+            <li><a href="11Промисы, async_await/promise-chaining.html#return">Возвращаем промисы</a></li>
+            <li><a href="11Промисы, async_await/promise-chaining.html#example">Пример: loadScript</a></li>
+            <li><a href="11Промисы, async_await/promise-chaining.html#more">Более сложный пример: fetch</a></li>
+            <li><a href="11Промисы, async_await/promise-chaining.html#total">Итого</a></li>
+        </ul>
+        <h2><a href="11Промисы, async_await/promise-error-handling.html#error">Промисы: обработка ошибок</a></h2>
+        <ul>
+            <li><a href="11Промисы, async_await/promise-error-handling.html#notshow">Неявный try…catch</a></li>
+            <li><a href="11Промисы, async_await/promise-error-handling.html#throw">Пробрасывание ошибок</a></li>
+            <li><a href="11Промисы, async_await/promise-error-handling.html#nothandle">Необработанные ошибки</a></li>
+            <li><a href="11Промисы, async_await/promise-error-handling.html#total">Итого</a></li>
+            <li><a href="11Промисы, async_await/promise-error-handling.html#tasks">Задача</a></li>
+        </ul>
+        <h2><a href="11Промисы, async_await/promise-api.html#PromiseAPI">Promise API</a></h2>
+        <ul>
+            <li><a href="11Промисы, async_await/promise-api.html#Promise.all">Promise.all</a></li>
+            <li><a href="11Промисы, async_await/promise-api.html#Promise.allSettled">Promise.allSettled</a></li>
+            <li><a href="11Промисы, async_await/promise-api.html#Promise.race">Promise.race</a></li>
+            <li><a href="11Промисы, async_await/promise-api.html#Promise.any">Promise.any</a></li>
+            <li><a href="11Промисы, async_await/promise-api.html#Promise.resolve/reject">Promise.resolve/reject</a></li>
+            <li><a href="11Промисы, async_await/promise-api.html#total">Итого</a></li>
+        </ul>
+        <h2><a href="11Промисы, async_await/promisify.html">Промисификация, пропущенная глава.</a></h2>
+        <h2><a href="11Промисы, async_await/microtask-queue.html#micro">Микрозадачи</a></h2>
+        <ul>
+            <li><a href="11Промисы, async_await/microtask-queue.html#queue">Очередь микрозадач</a></li>
+            <li><a href="11Промисы, async_await/microtask-queue.html#notcatch">Необработанные ошибки</a></li>
+            <li><a href="11Промисы, async_await/microtask-queue.html#total">Итого</a></li>
+        </ul>
+        <h2><a href="11Промисы, async_await/async-await.html#Async/await">Async/await</a></h2>
+        <ul>
+            <li><a href="11Промисы, async_await/async-await.html#async">Асинхронные функции (async)</a></li>
+            <li><a href="11Промисы, async_await/async-await.html#Await">Await</a></li>
+            <li><a href="11Промисы, async_await/async-await.html#throw">Обработка ошибок</a></li>
+            <li><a href="11Промисы, async_await/async-await.html#total">Итого</a></li>
+            <li><a href="11Промисы, async_await/async-await.html#tasks">Задачи</a></li>
+        </ul>
+    </div>
+    <div class="contents" id="12">
+        <h1>Генераторы, продвинутая итерация</h1>
+        <h2><a href="12Генераторы, продвинутая итерация/generators.html#gen">Генераторы</a></h2>
+        <ul>
+            <li><a href="12Генераторы, продвинутая итерация/generators.html#fun">Функция-генератор</a></li>
+            <li><a href="12Генераторы, продвинутая итерация/generators.html#iter">Перебор генераторов</a></li>
+            <li><a href="12Генераторы, продвинутая итерация/generators.html#use">Использование генераторов для
+                    перебираемых объектов</a></li>
+            <li><a href="12Генераторы, продвинутая итерация/generators.html#comp">Композиция генераторов</a></li>
+            <li><a href="12Генераторы, продвинутая итерация/generators.html#road">yield – дорога в обе стороны</a></li>
+            <li><a href="12Генераторы, продвинутая итерация/generators.html#throw">generator.throw</a></li>
+            <li><a href="12Генераторы, продвинутая итерация/generators.html#total">Итого</a></li>
+            <li><a href="12Генераторы, продвинутая итерация/generators.html#tasks">Задача</a></li>
+        </ul>
+        <h2><a href="12Генераторы, продвинутая итерация/async-iterators-generators.html#async">Асинхронные итераторы и
+                генераторы</a></h2>
+        <ul>
+            <li><a href="12Генераторы, продвинутая итерация/async-iterators-generators.html#asynciter">Асинхронные
+                    итераторы</a></li>
+            <li><a href="12Генераторы, продвинутая итерация/async-iterators-generators.html#asyncgen">Асинхронные
+                    генераторы</a></li>
+            <li><a href="12Генераторы, продвинутая итерация/async-iterators-generators.html#asyncobj">Асинхронно
+                    перебираемые объекты</a></li>
+            <li><a href="12Генераторы, продвинутая итерация/async-iterators-generators.html#example">Пример из реальной
+                    практики</a></li>
+            <li><a href="12Генераторы, продвинутая итерация/async-iterators-generators.html#total">Итого</a></li>
+        </ul>
+    </div>
+    <div class="contents" id="13">
+        <h1>Модули</h1>
+        <h2><a href="13Модули/modules-intro.html#intro">Модули, введение</a></h2>
+        <ul>
+            <li><a href="13Модули/modules-intro.html#what">Что такое модуль?</a></li>
+            <li><a href="13Модули/modules-intro.html#basic">Основные возможности модулей</a></li>
+            <li><a href="13Модули/modules-intro.html#browser">Особенности в браузерах</a></li>
+            <li><a href="13Модули/modules-intro.html#tools">Инструменты сборки</a></li>
+            <li><a href="13Модули/modules-intro.html#total">Итого</a></li>
+        </ul>
+        <h2><a href="13Модули/import-export.html#expandimp">Экспорт и импорт</a></h2>
+        <ul>
+            <li><a href="13Модули/import-export.html#befor">Экспорт до объявления</a></li>
+            <li><a href="13Модули/import-export.html#after">Экспорт отдельно от объявления</a></li>
+            <li><a href="13Модули/import-export.html#import">Импорт *</a></li>
+            <li><a href="13Модули/import-export.html#how">Импорт «как»</a></li>
+            <li><a href="13Модули/import-export.html#exhow">Экспортировать «как»</a></li>
+            <li><a href="13Модули/import-export.html#default">Экспорт по умолчанию</a></li>
+            <li><a href="13Модули/import-export.html#reexp">Реэкспорт</a></li>
+            <li><a href="13Модули/import-export.html#total">Итого</a></li>
+        </ul>
+        <h2><a href="13Модули/modules-dynamic-imports.html#dinimp">Динамические импорты</a></h2>
+        <ul>
+            <li><a href="13Модули/modules-dynamic-imports.html#import">Выражение import()</a></li>
+        </ul>
+    </div>
+    <div class="contents" id="14">
+        <h1>Разное</h1>
+        <h2><a href="14Разное/proxy.html#ProxyReflect">Proxy и Reflect</a></h2>
+        <ul>
+            <li><a href="14Разное/proxy.html#defaultget">Значение по умолчанию с ловушкой «get»</a></li>
+            <li><a href="14Разное/proxy.html#validset">Валидация с ловушкой «set»</a></li>
+            <li><a href="14Разное/proxy.html#ownkeys">Перебор при помощи «ownKeys» и «getOwnPropertyDescriptor»</a></li>
+            <li><a href="14Разное/proxy.html#protect">Защищённые свойства с ловушкой «deleteProperty» и другими</a></li>
+            <li><a href="14Разное/proxy.html#into">«В диапазоне» с ловушкой «has»</a></li>
+            <li><a href="14Разное/proxy.html#apply">Оборачиваем функции: «apply»</a></li>
+            <li><a href="14Разное/proxy.html#Reflect">Reflect</a></li>
+            <li><a href="14Разное/proxy.html#restrictions">Ограничения прокси</a></li>
+            <li><a href="14Разное/proxy.html#off">Отключаемые прокси</a></li>
+            <li><a href="14Разное/proxy.html#links">Ссылки</a></li>
+            <li><a href="14Разное/proxy.html#total">Итого</a></li>
+            <li><a href="14Разное/proxy.html#tasks">Задачи</a></li>
+        </ul>
+        <h2><a href="14Разное/eval.html#eval">Eval: выполнение строки кода</a></h2>
+        <ul>
+            <li><a href="14Разное/eval.html#useeval">Использование «eval»</a></li>
+            <li><a href="14Разное/eval.html#total">Итого</a></li>
+            <li><a href="14Разное/eval.html#tasks">Задачи</a></li>
+        </ul>
+        <h2><a href="14Разное/currying-partials.html#curr">Каррирование</a></h2>
+        <ul>
+            <li><a href="14Разное/currying-partials.html#why">Каррирование? Зачем?</a></li>
+            <li><a href="14Разное/currying-partials.html#smart">Продвинутая реализация каррирования</a></li>
+            <li><a href="14Разное/currying-partials.html#total">Итого</a></li>
+        </ul>
+        <h2><a href="14Разное/reference-type.html#reftype">Ссылочный тип</a></h2>
+        <ul>
+            <li><a href="14Разное/reference-type.html#explain">Ссылочный тип: объяснение</a></li>
+            <li><a href="14Разное/reference-type.html#total">Итого</a></li>
+            <li><a href="14Разное/reference-type.html#tasks">Задачи</a></li>
+        </ul>
+        <h2><a href="14Разное/bitwise-operators.html#bit">Побитовые операторы</a></h2>
+        <p>Раздел пропущен.</p>
+        <h2><a href="14Разное/bigint.html#BigInt">BigInt</a></h2>
+        <ul>
+            <li><a href="14Разное/bigint.html#math">Математические операторы</a></li>
+            <li><a href="14Разное/bigint.html#bool1">Операции сравнения</a></li>
+            <li><a href="14Разное/bigint.html#bool2">Логические операции</a></li>
+            <li><a href="14Разное/bigint.html#polyfil">Полифилы</a></li>
+            <li><a href="14Разное/bigint.html#links">Ссылки</a></li>
+        </ul>
+        <h2><a href="14Разное/unicode.html#uni">Юникод, внутреннее устройство строк</a></h2>
+        <ul>
+            <li><a href="14Разное/unicode.html#sur">Суррогатные пары</a></li>
+            <li><a href="14Разное/unicode.html#dia">Диакритические знаки и нормализация</a></li>
+        </ul>
+        <h2><a href="14Разное/intl.html#intl">Intl: интернационализация в JavaScript</a></h2>
+        <ul>
+            <li><a href="14Разное/intl.html#basic">Основные объекты</a></li>
+            <li><a href="14Разное/intl.html#locale">Локаль</a></li>
+            <li><a href="14Разное/intl.html#str">Строки, Intl.Collator</a></li>
+            <li><a href="14Разное/intl.html#date">Даты, Intl.DateTimeFormat</a></li>
+            <li><a href="14Разное/intl.html#num">Числа, Intl.NumberFormat</a></li>
+            <li><a href="14Разное/intl.html#method">Методы в Date, String, Number</a></li>
+            <li><a href="14Разное/intl.html#oldie">Методы в Date, String, Number</a></li>
+            <li><a href="14Разное/intl.html#tasks">Задача</a></li>
+        </ul>
+        <h2>WeakRef и FinalizationRegistry - по рекомендации автора учебника скипнул</h2>
+    </div>
+
+    <div class="contents" id="no_decide">
+        <p>
+            Списочек задач у которых нет решения:
+        <ul>
+            <li>
+                <a href="5.Типы данных/type_of_data.html#tasks">5 задача не решена</a>. Начато 19.07.2025
+
+            </li>
+            <li><a href="5.Типы данных/map_and_set.html#task2">2 задача</a> не решена, начато 23.07.2025 Тогда же
+                посмотрел решение</li>
+            <li><a href="https://learn.javascript.ru/call-apply-decorators#dekorator-debounce">2 задания отложил</a>
+            </li>
+            <li><a href="11Промисы, async_await/promise-basics.html#task3">Не решил по причине отсуствия
+                    электричества.</a> Не открывало ссылку с теле2.</li>
+            <li><a href="11Промисы, async_await/async-await.html#task2">Забил, много страшного кода</a></li>
+            <li><a href="14Разное/proxy.html#tasks">Забил на 2 задачи</a></li>
+        </ul>
+        </p>
+
+    </div>
+</body>
+
+</html>

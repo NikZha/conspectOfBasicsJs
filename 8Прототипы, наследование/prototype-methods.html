@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Методы прототипов, объекты без свойства __proto__</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#method">Методы прототипов, объекты без свойства __proto__</a></h2>
+        <ul>
+            <li><a href="#short">Краткая история</a></li>
+            <li><a href="#simpl">"Простейший" объект</a></li>
+            <li><a href="#total">Итого</a></li>
+            <li><a href="#tasks">Задачи</a></li>
+        </ul>
+
+    </div>
+    <div class="topic" id="method">
+        <h2><a href="https://learn.javascript.ru/prototype-methods">Методы прототипов, объекты без свойства
+                __proto__</a></h2>
+        <p>Свойство <code>__proto__</code> является устаревшим, современные методы:
+        <ul>
+            <li>Object.create(proto[, descriptors]) – создаёт пустой объект со свойством [[Prototype]], указанным как
+                proto, и необязательными дескрипторами свойств descriptors.</li>
+            <li>Object.getPrototypeOf(obj) – возвращает свойство [[Prototype]] объекта obj.</li>
+            <li>Object.setPrototypeOf(obj, proto) – устанавливает свойство [[Prototype]] объекта obj как prot</li>
+        </ul>
+        <button onclick="exp1()">Тест примера</button>
+        <pre>
+    <code class="language-js">
+                let animal ={
+                    eat: true
+                }
+                const dog = Object.create(animal)
+                alert(`Dog eat: ${dog.eat}`)
+                alert(`Prototype dog is animal - ${Object.getPrototypeOf(dog) == animal}`)
+                Object.setPrototypeOf(dog, Object.prototype)
+                alert(dog.eat)        
+    </code>
+</pre>
+        </p>
+        <script>
+            function exp1() {
+                let animal = {
+                    eat: true
+                }
+                const dog = Object.create(animal)
+                alert(`Dog eat: ${dog.eat}`)
+                alert(`Prototype dog is animal - ${Object.getPrototypeOf(dog) == animal}`)
+                Object.setPrototypeOf(dog, Object.prototype)
+                alert(dog.eat)
+            }
+        </script>
+        <p>У <code>Object.create()</code> есть необязательные опции:
+        <pre>
+            <code class="language-js">
+let animal = {
+  eats: true
+};
+
+let rabbit = Object.create(animal, {
+  jumps: {
+    value: true
+  }
+});
+
+alert(rabbit.jumps); // true                
+            </code>
+        </pre>
+        На этом основании можно делать клоны объекта:
+        <pre>
+            <code class="language-js">
+// клон obj c тем же прототипом (с поверхностным копированием свойств)
+let clone = Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));                
+            </code>
+        </pre>
+        </p>
+    </div>
+    <div class="topic" id="short">
+        <h3>Краткая История</h3>
+        <p>Сначала был акксессор __proto__ потом добавили вышеизложенные методы.</p>
+    </div>
+    <div class="topic" id="simpl">
+        <h3>"Простейший" объект</h3>
+        <p>Свойство __proto__ можно создать только у объекта созданного с пустым прототипом:
+            <button onclick="exp2()">Тест примера</button>
+        <pre>
+    <code class="language-js">
+            const obj = Object.create(null)
+            const id = prompt("Make proto", "__proto__")
+            obj[id] = "Some shit"
+            alert(obj.__proto__)        
+    </code>
+</pre>
+        В противном случае включается акксессор который не даёт ничего добавить кроме объекта или нуля.
+        </p>
+        <p>Обратите внимание, что большинство методов, связанных с объектами, имеют вид Object.something(...). К
+            примеру, Object.keys(obj). Подобные методы не находятся в прототипе, так что они продолжат работать для
+            таких объектов:
+        <pre>
+            <code class="language-js">
+let chineseDictionary = Object.create(null);
+chineseDictionary.hello = "你好";
+chineseDictionary.bye = "再见";
+
+alert(Object.keys(chineseDictionary)); // hello,bye                
+            </code>
+        </pre>
+        </p>
+        <p>В оригиальном топике речь идёт об использовании объекта как map только зачем?</p>
+        <script>
+            function exp2(params) {
+                const obj = Object.create(null)
+                const id = prompt("Make proto", "__proto__")
+                obj[id] = "Some shit"
+                alert(obj.__proto__)
+            }
+        </script>
+    </div>
+    <div class="topic" id="total">
+        <h3>Итого</h3>
+        <p>Методы работы с объектами:
+        <ul>
+            <li>Object.create(proto[, descriptors]) – создаёт пустой объект со свойством [[Prototype]], указанным как
+                proto (может быть null), и необязательными дескрипторами свойств.</li>
+            <li>Object.getPrototypeOf(obj) – возвращает свойство [[Prototype]] объекта obj (то же самое, что и геттер
+                __proto__).</li>
+            <li>Object.setPrototypeOf(obj, proto) – устанавливает свойство [[Prototype]] объекта obj как proto (то же
+                самое, что и сеттер __proto__). </li>
+        </ul>
+        Встроенный геттер/сеттер __proto__ не безопасен, если мы хотим использовать созданные пользователями ключи в
+        объекте.
+        </p>
+        <p>Метод создания клона:
+        <pre>
+    <code class="language-js">
+let clone = Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));        
+    </code>
+</pre>
+        Мы можем создавать объекты без прототипов с помощью Object.create(null). Такие объекты можно использовать как
+        «чистые словари», у них нет проблем с использованием строки "__proto__" в качестве ключа.
+        </p>
+        <p>
+            Ещё методы:
+        <ul>
+            <li>Object.keys(obj) / Object.values(obj) / Object.entries(obj) – возвращают массив всех перечисляемых
+                собственных строковых ключей/значений/пар ключ-значение.</li>
+            <li>Object.getOwnPropertySymbols(obj) – возвращает массив всех собственных символьных ключей.</li>
+            <li>Object.getOwnPropertyNames(obj) – возвращает массив всех собственных строковых ключей.</li>
+            <li>Reflect.ownKeys(obj) – возвращает массив всех собственных ключей.</li>
+            <li>obj.hasOwnProperty(key): возвращает true, если у obj есть собственное (не унаследованное) свойство с
+                именем key. </li>
+        </ul>
+        Все методы, которые возвращают свойства объектов (такие как Object.keys и другие), возвращают «собственные»
+        свойства. Если мы хотим получить и унаследованные, можно воспользоваться циклом for..in.
+        </p>
+    </div>
+    <div class="topic" id="tasks">
+        <h3>Задачи</h3>
+        <div id="task1">
+            <h4>Задача 1</h4>
+            <p>Мой подход состоял в до конфигурации объекта после создания:
+            <pre>
+    <code class="language-js">
+let dictionary = Object.create(null);
+
+                    // ваш код, который добавляет метод dictionary.toString
+
+                    // добавляем немного данных
+                    dictionary.apple = "Apple";
+                    dictionary.__proto__ = "test"; // здесь __proto__ -- это обычный ключ
+                    dictionary.toString = function () {
+                        return Object.keys(this).join(',')
+                    }
+                    Object.defineProperty(dictionary, "toString", {
+                        writable: false,
+                        enumerable: false
+                    })
+                    // только apple и __proto__ выведены в цикле
+                    for (let key in dictionary) {
+                        alert(key); // "apple", затем "__proto__"
+                    }
+
+                    // ваш метод toString в действии
+                    alert(dictionary); // "apple,__proto__"        
+    </code>
+</pre>
+            Автор же предлагает конфигурировать на этапе создания:
+            <pre>
+    <code class="language-js">
+let dictionary = Object.create(null, {
+  toString: { // определяем свойство toString
+    value() { // значение -- это функция
+      return Object.keys(this).join();
+    }
+  }
+});        
+    </code>
+</pre>
+            Коментарий от автора: Когда мы создаём свойство с помощью дескриптора, все флаги по умолчанию имеют значение
+            false. Таким образом, в коде выше dictionary.toString – неперечисляемое свойство.
+            </p>
+            <script>
+                function task1(params) {
+                    let dictionary = Object.create(null);
+
+                    // ваш код, который добавляет метод dictionary.toString
+
+                    // добавляем немного данных
+                    dictionary.apple = "Apple";
+                    dictionary.__proto__ = "test"; // здесь __proto__ -- это обычный ключ
+                    dictionary.toString = function () {
+                        return Object.keys(this).join(',')
+                    }
+                    Object.defineProperty(dictionary, "toString", {
+                        writable: false,
+                        enumerable: false
+                    })
+                    // только apple и __proto__ выведены в цикле
+                    for (let key in dictionary) {
+                        alert(key); // "apple", затем "__proto__"
+                    }
+
+                    // ваш метод toString в действии
+                    alert(dictionary); // "apple,__proto__"
+                }
+            </script>
+            <p><button onclick="task1()">Test task1 code</button></p>
+        </div>
+        <div id="task2">
+            <h4>Задача 2</h4>
+            <p>Задача решена не правильно не увидел/понял this, комментарий автора:
+            <blockquote>
+                В первом вызове this == rabbit, во всех остальных this равен Rabbit.prototype, так как это объект перед
+                точкой.
+
+                Так что только первый вызов выведет Rabbit, а остальные – undefined:
+            </blockquote>
+            Мои предположения в виде  каментов к вызовам:
+            <pre>
+                <code class="language-js">
+                    function Rabbit(name) {
+                        this.name = name;
+                    }
+                    Rabbit.prototype.sayHi = function () {
+                        alert(this.name);
+                    };
+
+                    let rabbit = new Rabbit("Rabbit");
+
+                    rabbit.sayHi(); //вызываем метод объекта
+                    Rabbit.prototype.sayHi(); //Вызываем функцию из прототипа
+                    Object.getPrototypeOf(rabbit).sayHi(); //вызываем метод родителя
+                    rabbit.__proto__.sayHi();//вызываем метод родителя
+                </code>
+            </pre>
+            </p>
+            <script>
+                function task2(params) {
+                    function Rabbit(name) {
+                        this.name = name;
+                    }
+                    Rabbit.prototype.sayHi = function () {
+                        alert(this.name);
+                    };
+
+                    let rabbit = new Rabbit("Rabbit");
+
+                    rabbit.sayHi(); //вызываем метод объекта
+                    Rabbit.prototype.sayHi(); //Вызываем функцию из прототипа
+                    Object.getPrototypeOf(rabbit).sayHi(); //вызываем метод родителя
+                    rabbit.__proto__.sayHi();//вызываем метод родителя
+                }
+            </script>
+            <button onclick="task2()">Тест задачи 2</button>
+        </div>
+    </div>
+
+</body>
+
+</html>

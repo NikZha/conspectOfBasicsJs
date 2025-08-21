@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Микрозадачи</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#micro">Микрозадачи</a></h2>
+        <ul>
+            <li><a href="#queue">Очередь микрозадач</a></li>
+            <li><a href="#notcatch">Необработанные ошибки</a></li>
+            <li><a href="#total">Итого</a></li>
+        </ul>
+    </div>
+    <p>Вообще честно говоря не не понимаю зачем эта глава нужна, внутрення кухня языка.</p>
+
+    <div class="topic" id="micro">
+        <h2><a href="https://learn.javascript.ru/microtask-queue">Микрозадачи</a></h2>
+        <p>Обработчики промисов .then/.catch/.finally всегда асинхронны. Даже когда промис сразу же выполнен, код в
+            строках ниже .then/.catch/.finally будет запущен до этих обработчиков.
+        <pre>
+    <code class="language-js">
+let promise = Promise.resolve();
+
+promise.then(() => alert("промис выполнен"));
+
+alert("код выполнен"); // этот alert показывается первым        
+    </code>
+</pre>
+
+        </p>
+    </div>
+    <div class="topic" id="queue">
+        <h3>Очередь микрозадач</h3>
+        <p>Как сказано в спецификации:
+        <ul>
+            <li>Очередь определяется как первым-пришёл-первым-ушёл (FIFO): задачи, попавшие в очередь первыми,
+                выполняются тоже первыми.</li>
+            <li>Выполнение задачи происходит только в том случае, если ничего больше не запущено. </li>
+        </ul>
+        Таким образом внутренний порядок обработчиков имеет значение:
+        <pre>
+    <code class="language-js">
+Promise.resolve()
+  .then(() => alert("промис выполнен!"))
+  .then(() => alert("код выполнен"));        
+    </code>
+</pre>
+
+        </p>
+    </div>
+    <div class="topic" id="notcatch">
+        <h3>Необработанные ошибки</h3>
+        <p>…Но если мы забудем добавить .catch, то, когда очередь микрозадач опустеет, движок сгенерирует событие:
+        <pre>
+    <code class="language-js">
+let promise = Promise.reject(new Error("Ошибка в промисе!"));
+
+// Ошибка в промисе!
+window.addEventListener('unhandledrejection', event => alert(event.reason))        
+    </code>
+</pre>
+        А что, если мы поймаем ошибку, но позже? Вот так:
+        <pre>
+    <code class="language-js">
+let promise = Promise.reject(new Error("Ошибка в промисе!"));
+
+setTimeout(() => promise.catch(err => alert('поймана')), 1000);
+
+// Ошибка в промисе!
+window.addEventListener('unhandledrejection', event => alert(event.reason));        
+    </code>
+</pre>
+        </p>
+        <p>Теперь, при запуске, мы сначала увидим «Ошибка в промисе!», а затем «поймана».</p>
+
+        <p>Если бы мы не знали про очередь микрозадач, то могли бы удивиться: «Почему сработал обработчик
+            unhandledrejection? Мы же поймали ошибку!».</p>
+
+        <p>Но теперь мы понимаем, что событие unhandledrejection возникает, когда очередь микрозадач завершена: движок
+            проверяет все промисы и, если какой-либо из них в состоянии «rejected», то генерируется это событие.</p>
+
+        <p>В примере выше .catch, добавленный в setTimeout, также срабатывает, но позже, уже после возникновения
+            unhandledrejection, так что это ни на что не влияет. </p>
+    </div>
+    <div class="topic" id="total">
+        <h3>Итого</h3>
+        <p>Обработка промисов всегда асинхронная, т.к. все действия промисов проходят через внутреннюю очередь «promise
+            jobs», так называемую «очередь микрозадач (microtask queue)» (термин V8).</p>
+
+        <p>Таким образом, обработчики .then/catch/finally вызываются после выполнения текущего кода.</p>
+
+        <p>Если нам нужно гарантировать выполнение какого-то кода после .then/catch/finally, то лучше всего добавить его
+            вызов в цепочку .then.</p>
+
+        <p>В большинстве движков JavaScript, включая браузеры и Node.js, микрозадачи тесно связаны с так называемым
+            «событийным циклом» и «макрозадачами». Так как они не связаны напрямую с промисами, то рассматриваются в
+            другой части учебника, в главе Событийный цикл: микрозадачи и макрозадачи. </p>
+    </div>
+
+</body>
+</html>

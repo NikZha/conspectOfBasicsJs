@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Устаревшее ключевое слово "var"</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h1><a href="#elder">Устаревшее ключевое слово "var"</a></h1>
+        <h2>
+            <ul>
+                <li><a href="#block">Для «var» не существует блочной области видимости</a></li>
+                <li><a href="#second">«var» допускает повторное объявление</a></li>
+                <li><a href="#begin">«var» обрабатываются в начале запуска функции</a></li>
+                <li><a href="#IIFE">IIFE</a></li>
+                <li><a href="#total">Итого</a></li>
+            </ul>
+        </h2>
+    </div>
+<div class="topic" id="elder"><h1><a href="https://learn.javascript.ru/var">Устаревшее ключевое слово "var"</h1></a>
+<p>var - это устаревшее объявление переменной.</p>
+</div>
+<div class="topic" id="block">
+    <h2>Для «var» не существует блочной области видимости</h2>
+    <p>Видимость переменной объявленной при помощи var ограничена лишь функцией, во всех остальных вариантах, или почти во всех, var является  глобальной переменной:
+<pre>
+    <code class="language-js">
+function sayHi() {
+  var phrase = "Привет"; // локальная переменная, "var" вместо "let"
+
+  alert(phrase); // Привет
+}
+
+sayHi();
+
+alert(phrase); // Ошибка: phrase не определена        
+    </code>
+</pre>
+Но:
+<pre>
+    <code class="language-js">
+if (true) {
+  var test = true; // используем var вместо let
+}
+
+alert(test); // true, переменная существует вне блока if        
+    </code>
+</pre>
+То же самое касается циклов, блоков кода. 
+    </p>
+</div>
+<div class="topic" id="second">
+    <h2>«var» допускает повторное объявление</h2>
+    <p>
+        <pre>
+            <code class="language-js">
+var user = "Пётр";
+
+var user; // ничего не делает, переменная объявлена раньше
+// ...нет ошибки
+
+alert(user); // Пётр                
+            </code>
+        </pre>
+    </p>
+</div>
+<div class="topic" id="begin">
+    <h2>«var» обрабатываются в начале запуска функции</h2>
+    <p>
+<pre>
+    <code class="language-js">
+function sayHi() {
+  phrase = "Привет";
+
+  alert(phrase);
+
+  var phrase;
+}
+sayHi();        
+    </code>
+</pre>   
+Но тут будет ошибка:
+<pre>
+    <code class="language-js">
+function sayHi() {
+  var phrase; // объявление переменной срабатывает вначале...
+
+  alert(phrase); // undefined
+
+  phrase = "Привет"; // ...присвоение - в момент, когда исполнится данная строка кода.
+}
+
+sayHi();        
+    </code>
+</pre>     
+    </p>
+</div>
+<div class="topic" id="IIFE">
+    <h2>IIFE</h2>
+    <p>Расшифровывается как:  «Immediately-invoked function expressions» (сокращенно IIFE).</p>
+    <p>Способ как обойти глобальную видимость переменной объявленой var.</p>
+    <h4>Внимание: объявлять переменные и мужественно обходить такое объявление не надо. Скорее всего такое встретится тебе примерно никогда</h4>
+    <p>
+    В целом способ следующий:
+    <pre>
+        <code class="language-js">
+(function() {
+
+  var message = "Привет";
+
+  alert(message); // Привет
+
+})();            
+        </code>
+    </pre>
+По сути метод разбития кода на блоки, ничуть не лучше глобального var. Несколько способов потанцевать на граблях ещё:
+<pre>
+    <code class="language-js">
+// Способы создания IIFE
+
+(function() {
+  alert("Круглые скобки вокруг функции");
+})();
+
+(function() {
+  alert("Круглые скобки вокруг всего выражения");
+}());
+
+!function() {
+  alert("Выражение начинается с логического оператора НЕ");
+}();
+
++function() {
+  alert("Выражение начинается с унарного плюса");
+}();        
+    </code>
+</pre>    
+    </p>
+</div>
+<div class="topic" id="total">
+<h2>Итого - объявлять переменные var нахуй не надо - забудь.</h2>
+<p>Если надо (нет) прочтёшь <a href="https://learn.javascript.ru/var#itogo">тут</a></p>
+</div>
+</body>
+</html>

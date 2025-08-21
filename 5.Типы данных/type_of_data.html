@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конспект сайта learn.javascript.ru раздел Типы данных - Массивы</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <p>Ранее конспект велся в <a href="../Конспект Язык JavaScript Илья Кантор.odt">этом файле</a></p>
+        <h1>
+            <ul>
+                <span id="arrays">
+                    Массивы</span>
+                <li><a href="#push">Методы pop/push, shift/unshift</a></li>
+                <li><a href="#vnutrennee-ustroystvo-massiva">Внутреннее устройство массива</a></li>
+                <li><a href="#eff">Эффетивность</a></li>
+                <li><a href="#iter">Перебор элементов</a></li>
+                <li><a href="#length">Немного о «length»</a></li>
+                <li><a href="#new">new Array()</a></li>
+                <li><a href="#many">Многомерные массивы</a></li>
+                <li><a href="#tostring">toString</a></li>
+                <li><a href="#ne-sravnivayte-massivy-pri-pomoschi">Не сравнивайте массивы при помощи ==</a></li>
+                <li><a href="#itog">Итого</a></li>
+                <li><a href="#tasks">Решения задач</a></li>
+            </ul>
+        </h1>
+    </div>
+    <div>
+        <div class="topic" id="push">
+            <h1><a href="https://learn.javascript.ru/array#metody-pop-push-shift-unshift">Методы pop/push,
+                    shift/unshift</a>
+            </h1>
+            <p>Массивы в js реализуют очереди и стеки.
+                <br>Очередь реализуется методами:
+            <ul>
+                <li><code>push</code> добавляет элемент в конец</li>
+                <li><code>shift</code> извлекает элемент из начала. Именно удаляет элемент из массива.</li>
+            </ul>
+            <br>Стек реализуется методами ВНЕЗАПНО:
+            <ul>
+                <li><code>push</code> добавляет элемент в конец массива</li>
+                <li><code>pop</code> извлекает элемент из конца массива</li>
+            </ul>
+            <br>Так же есть метод <code>unshift</code> который добавляет в начало массива
+            <details>
+                <summary>Краткий пример (под катом):</summary>
+                <pre>
+        <code class="language-js">
+let arr = [];
+arr.push("яблоко")
+arr.push("груша")
+arr.push("авокадо")
+console.log(arr.shift())
+console.log(arr.pop())
+console.log(arr)
+/**
+ * яблоко
+ * авокадо
+ * (1) ['груша']
+ */
+        </code>
+    </pre>
+
+                <pre>
+        <code class="language-js">
+let fruits = ["Апельсин", "Груша"];
+
+fruits.unshift('Яблоко');
+
+alert( fruits ); // Яблоко, Апельсин, Груша            
+        </code>
+    </pre>
+            </details>
+            Сразу можно добавлять несколько элементов.
+            </p>
+        </div>
+        <div class="topic" id="vnutrennee-ustroystvo-massiva">
+            <h1><a href="https://learn.javascript.ru/array#vnutrennee-ustroystvo-massiva">Внутреннее устройство
+                    массива</a>
+            </h1>
+            <p>
+                Массив имеет свойство <code>length</code>.
+                Массив представляет собой объект с аналогичным поведением, представляет из себя ссылку и можно создавать
+                свойства:
+            <pre>
+<code class="language-js">
+let fruits = ["Банан"]
+
+let arr = fruits; // копируется по ссылке (две переменные ссылаются на один и тот же массив)
+
+alert( arr === fruits ); // true
+
+arr.push("Груша"); // массив меняется по ссылке
+
+alert( fruits ); // Банан, Груша - теперь два элемента
+fruits.age = 25; // создаём свойство с произвольным именем ТАК ДЕЛАТЬ НЕ НАДО.
+</code>    
+</pre>
+
+            </p>
+        </div>
+        <div class="topic" id="eff">
+            <h1><a href="https://learn.javascript.ru/array#effektivnost">Эффетивность</a></h1>
+            <p>
+                Методы <code>push/pop</code> выполняются быстро, а методы <code>shift/unshift</code> – медленно.
+            </p>
+        </div>
+        <div class="topic" id="iter">
+            <h1>
+                <a href="https://learn.javascript.ru/array#perebor-elementov">Перебор элементов</a>
+            </h1>
+            <p>
+                Варианты перебора:
+            <pre>
+    <code class="language-js">
+let arr = ["Яблоко", "Апельсин", "Груша"];
+
+for (let i = 0; i < arr.length; i++) {
+  alert( arr[i] );
+}
+// проходит по значениям
+for (let fruit of arr) {
+  alert( fruit );
+}
+for (let key in arr) {
+  alert( arr[key] ); // Яблоко, Апельсин, Груша
+}        
+    </code>
+</pre>
+            Последний вариант плохая идея:
+            <ol>
+                <li>
+                    Пербирает все свойства в том числе и <code>length</code> на некоторых <em>псевдомассивах</em>
+                </li>
+                <li><code>for...in</code> медленне ажно в 10 раз.</li>
+            </ol>
+            </p>
+        </div>
+        <div class="topic" id="length">
+            <h1><a href="https://learn.javascript.ru/array#nemnogo-o-length">Немного о «length»</a></h1>
+            <p>
+                <code>length</code> отражает полную длинну массива даже если там есть пустые элементы.
+                <br><code>lenght</code> можно перезаписать уменьшив длинну массива. Если увеличить ничего не произойдёт.
+            </p>
+        </div>
+        <div class="topic" id="new">
+            <h1><a href="https://learn.javascript.ru/array#new-array">new Array()</a></h1>
+            <p>Варианты создания массива:
+            <pre>
+    <code class="language-js">
+let arr = new Array("Яблоко", "Груша", "и тд"); //квадратные скобки обычно короче
+let arr = new Array(2); // создастся ли массив [2]?
+alert( arr[0] ); // undefined! нет элементов.
+alert( arr.length ); // length 2        
+    </code>
+</pre>
+
+            </p>
+        </div>
+        <div class="topic" id="many">
+            <h1><a href="https://learn.javascript.ru/array#mnogomernye-massivy">Многомерные массивы</a></h1>
+            <p>
+            <pre><code class="language-js">
+let matrix = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+];
+
+alert( matrix[1][1] ); // 5, центральный элемент            
+        </code></pre>
+            </p>
+        </div>
+        <div class="topic" id="tostring">
+            <h1><a href="https://learn.javascript.ru/array#tostring">toString</a></h1>
+            <p>
+                Массивы по-своему реализуют метод toString, который возвращает список элементов, разделённых запятыми.
+            <pre><code class="language-js">
+let arr = [1, 2, 3];
+
+alert( arr ); // 1,2,3
+alert( String(arr) === '1,2,3' ); // true
+alert( [] + 1 ); // "1"
+alert( [1] + 1 ); // "11"
+alert( [1,2] + 1 ); // "1,21"
+alert( "" + 1 ); // "1"
+alert( "1" + 1 ); // "11"
+alert( "1,2" + 1 ); // "1,21"            
+        </code></pre>
+            </p>
+        </div>
+
+    </div>
+    <div class="topic" id="ne-sravnivayte-massivy-pri-pomoschi">
+        <h1><a href="https://learn.javascript.ru/array#ne-sravnivayte-massivy-pri-pomoschi">Не сравнивайте массивы при
+                помощи ==</a></h1>
+        <p>В JavaScript, в отличие от некоторых других языков программирования, массивы не следует сравнивать при помощи
+            оператора ==.
+
+            У этого оператора нет специального подхода к массивам, он работает с ними, как и с любыми другими объектами.
+        </p>
+    </div>
+    <div class="topic" id="itog">
+        <h1><a href="https://learn.javascript.ru/array#itogo">Итого</a></h1>
+        <p>
+            Инициализация:
+        <pre>
+                <code class="language-js">
+// квадратные скобки (обычно)
+let arr = [item1, item2...];
+
+// new Array (очень редко)
+let arr = new Array(item1, item2...);                    
+                </code>
+            </pre>
+        Вызов new Array(number) создаёт массив с заданной длиной, но без элементов.
+        <ul>
+            <li>Свойство length отражает длину массива или, если точнее, его последний цифровой индекс плюс один. Длина
+                корректируется автоматически методами массива.
+            <li>Если мы уменьшаем length вручную, массив укорачивается.
+        </ul>
+        Получение элементов:
+        <ul>
+            <li>Мы можем получить элемент по его индексу, например arr[0].
+            <li>Также мы можем использовать метод at(i) для получения элементов с отрицательным индексом, для
+                отрицательных
+                значений i, он отступает от конца массива. В остальном он работает так же, как arr[i], если i >= 0.
+        </ul>
+
+        Мы можем использовать массив как двустороннюю очередь, используя следующие операции:
+        <ul>
+            <li>push(...items)добавляет items в конец массива.
+            <li>pop() удаляет элемент в конце массива и возвращает его.
+            <li>shift() удаляет элемент в начале массива и возвращает его.
+            <li>unshift(...items) добавляет items в начало массива.
+        </ul>
+        Чтобы пройтись по элементам массива:
+        <ul>
+            <li>for (let i=0; i&lt;arr.length; i++) – работает быстрее всего, совместим со старыми браузерами.
+            <li>for (let item of arr) – современный синтаксис только для значений элементов (к индексам нет доступа).
+            <li>for (let i in arr) – никогда не используйте для массивов!
+        </ul>
+        Мы вернёмся к массивам и изучим другие методы добавления, удаления, выделения элементов и сортировки
+        массивов в главе: Методы массивов.
+        </p>
+    </div>
+    <div class="topic" id="tasks">
+        <h1>Задачи</h1>
+        <p>Первая задача совсем простая, на то что переменная массива ссылка на объект.</p>
+        <p>Вторая задача: на добавление элементов.
+        <pre>
+                <code class="language-js">
+let styles = ["Джаз",  "Блюз",  "Кантри", "Металл"] //добавлены элементы чтобы проверить работает ли решение, отличается от того, что автором предложено
+styles.push("Рок-н-ролл")
+let len
+if(styles.length%2 == 0) len = styles.length/2
+else len = (styles.length-1)/2
+styles[len]="Классика"
+console.log(styles)
+console.log(styles.shift() + "___" + styles)
+styles.unshift("Рэп", "Регги")
+console.log(styles)                    
+                </code>
+            </pre>
+        <br>
+        </p>
+        <p>Третья задача автор спрашивает что произойдёт и почему:
+        <pre>
+                <code class="language-js">
+let arr = ["a", "b"];
+
+arr.push(function() {
+  console.log( this );
+});
+
+arr[2]();                    
+                </code>
+            </pre>
+        Произошёл вызов ф-ции, с выводом arr на консоль, потому что в объект можно запихать ф-цию, а вывод на консоль
+        массива произошёл потому что массив это объект.
+        </p>
+        <p><a href="4task.html">Четвертая задача</a></p>
+        <p><a href="5task.js">Пятая задача</a> в настоящий момент недоделана</p>
+    </div>
+</body>
+
+</html>

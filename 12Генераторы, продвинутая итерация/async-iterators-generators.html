@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Асинхронные итераторы и генераторы</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#async">Асинхронные итераторы и генераторы</a></h2>
+        <ul>
+            <li><a href="#asynciter">Асинхронные итераторы</a></li>
+            <li><a href="#asyncgen">Асинхронные генераторы</a></li>
+            <li><a href="#asyncobj">Асинхронно перебираемые объекты</a></li>
+            <li><a href="#example">Пример из реальной практики</a></li>
+            <li><a href="#total">Итого</a></li>
+        </ul>
+    </div>
+
+    <div class="topic" id="async">
+        <h2><a href="https://learn.javascript.ru/async-iterators-generators">Асинхронные итераторы и генераторы</a></h2>
+        <p>Асинхронные итераторы позволяют перебирать данные, поступающие асинхронно. Например, когда мы загружаем
+            что-то по частям по сети. Асинхронные генераторы делают такой перебор ещё удобнее.</p>
+    </div>
+    <div class="topic" id="asynciter">
+        <script>
+            function expl1(params) {
+                let range = {
+                    from: 1,
+                    to: 5,
+
+                    // for await..of вызывает этот метод один раз в самом начале
+                    [Symbol.asyncIterator]() { // (1)
+                        // ...возвращает объект-итератор:
+                        // далее for await..of работает только с этим объектом,
+                        // запрашивая у него следующие значения вызовом next()
+                        return {
+                            current: this.from,
+                            last: this.to,
+
+                            // next() вызывается на каждой итерации цикла for await..of
+                            async next() { // (2)
+                                // должен возвращать значение как объект {done:.., value :...}
+                                // (автоматически оборачивается в промис с помощью async)
+
+                                // можно использовать await внутри для асинхронности:
+                                await new Promise(resolve => setTimeout(resolve, 1000)); // (3)
+
+                                if (this.current <= this.last) {
+                                    return { done: false, value: this.current++ };
+                                } else {
+                                    return { done: true };
+                                }
+                            }
+                        };
+                    }
+                };
+
+                (async () => {
+
+                    for await (let value of range) { // (4)
+                        alert(value); // 1,2,3,4,5
+                    }
+
+                })()
+            }
+        </script>
+        <h3>Асинхронные итераторы</h3>
+        <p>
+        <pre><button onclick="expl1()">Тест асинхронного итератора</button>
+            <code class="language-js">
+let range = {
+  from: 1,
+  to: 5,
+
+  // for await..of вызывает этот метод один раз в самом начале
+  [Symbol.asyncIterator]() { // (1)
+    // ...возвращает объект-итератор:
+    // далее for await..of работает только с этим объектом,
+    // запрашивая у него следующие значения вызовом next()
+    return {
+      current: this.from,
+      last: this.to,
+
+      // next() вызывается на каждой итерации цикла for await..of
+      async next() { // (2)
+        // должен возвращать значение как объект {done:.., value :...}
+        // (автоматически оборачивается в промис с помощью async)
+
+        // можно использовать await внутри для асинхронности:
+        await new Promise(resolve => setTimeout(resolve, 1000)); // (3)
+
+        if (this.current <= this.last) {
+          return { done: false, value: this.current++ };
+        } else {
+          return { done: true };
+        }
+      }
+    };
+  }
+};
+
+(async () => {
+
+  for await (let value of range) { // (4)
+    alert(value); // 1,2,3,4,5
+  }
+
+})()                
+            </code>
+        </pre>
+        <ol>
+            <li>Чтобы сделать объект асинхронно итерируемым, он должен иметь метод Symbol.asyncIterator (1).</li>
+            <li>Этот метод должен возвращать объект с методом next(), который в свою очередь возвращает промис (2).</li>
+            <li>Метод next() не обязательно должен быть async, он может быть обычным методом, возвращающим промис, но
+                async позволяет использовать await, так что это удобно. Здесь мы просто делаем паузу на одну секунду
+                (3).</li>
+            <li>Для итерации мы используем for await (let value of range) (4), добавляя «await» после «for». Он вызовет
+                range[Symbol.asyncIterator]() один раз, а затем его метод next() для получения значений. </li>
+        </ol>
+        </p>
+        <p>Различия синхронного и асинхронного итераторов:
+        <table>
+            <tr>
+                <th> </th>
+                <th>Итераторы</th>
+                <th>Асинхронные итераторы</th>
+            </tr>
+            <tr>
+                <td> Метод для создания итерируемого объекта</td>
+                <td>Symbol.iterator</td>
+                <td>Symbol.asyncIterator</td>
+            </tr>
+            <tr>
+                <td>next() возвращает</td>
+                <td>любое значение</td>
+                <td>промис</td>
+            </tr>
+            <tr>
+                <td>для цикла используйте</td>
+                <td>for..of</td>
+                <td>for await..of</td>
+
+            </tr>
+        </table>
+        Создания массива путём остатков <code>...</code> невозможно:
+        <pre>
+    <code class="language-js">
+alert( [...range] ); // Ошибка, нет Symbol.iterator        
+    </code>
+</pre>
+        </p>
+    </div>
+    <div class="topic" id="asyncgen">
+        <h3>Асинхронные генераторы</h3>
+        <p>Напоминаю что такое генератор:
+        <pre>
+    <code class="language-js">
+function* generateSequence(start, end) {
+  for (let i = start; i <= end; i++) {
+    yield i;
+  }
+}
+
+for(let value of generateSequence(1, 5)) {
+  alert(value); // 1, потом 2, потом 3, потом 4, потом 5
+}        
+    </code>
+</pre>
+        Тогда как асинхронный генератор будет:
+        <script>
+            function expl2(params) {
+                async function* generateSequence(start, end) {
+
+                    for (let i = start; i <= end; i++) {
+
+                        // ура, можно использовать await!
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+
+                        yield i;
+                    }
+
+                }
+
+                (async () => {
+
+                    let generator = generateSequence(1, 5);
+                    for await (let value of generator) {
+                        alert(value); // 1, потом 2, потом 3, потом 4, потом 5
+                    }
+
+                })();
+            }
+        </script>
+        <pre><button onclick="expl2()">Тест генератора</button>
+     <code class="language-js">
+async function* generateSequence(start, end) {
+
+  for (let i = start; i <= end; i++) {
+
+    // ура, можно использовать await!
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    yield i;
+  }
+
+}
+
+(async () => {
+
+  let generator = generateSequence(1, 5);
+  for await (let value of generator) {
+    alert(value); // 1, потом 2, потом 3, потом 4, потом 5
+  }
+
+})();         
+     </code>
+ </pre>
+        Автор приводит откровенно плохой пример: промис ничего не делает, кроме как устанавливает задержку для работы
+        функции async.
+        Так же можно получать объект генератора:
+        <pre>
+     <code class="language-js">
+result = await generator.next(); // result = {value: ..., done: true/false}         
+     </code>
+ </pre>
+        </p>
+    </div>
+    <div class="topic" id="asyncobj">
+        <h3>Асинхронно перебираемые объекты</h3>
+        <p>Если хотим добавить асинхронные действия в генератор, нужно заменить Symbol.iterator на асинхронный Symbol.asyncIterator:
+<pre>
+    <code class="language-js">
+let range = {
+  from: 1,
+  to: 5,
+
+  async *[Symbol.asyncIterator]() { // то же, что и [Symbol.asyncIterator]: async function*()
+    for(let value = this.from; value <= this.to; value++) {
+
+      // пауза между значениями, ожидание
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      yield value;
+    }
+  }
+};
+
+(async () => {
+
+  for await (let value of range) {
+    alert(value); // 1, потом 2, потом 3, потом 4, потом 5
+  }
+
+})();        
+    </code>
+</pre>
+Насколько я понял, это надо добавить в объект, чтобы в нём появился ассинхронный итератор.
+        </p>
+    </div>
+    <div class="topic" id="example">
+        <h3>Пример из реальной практики</h3>
+        <p>В качестве реального примера он использует ассинхронный генератор который получает список коммитеров с гитхаба.</p>
+    </div>
+    <div class="topic" id="total">
+        <h3>Итого</h3>
+        <p>
+            Синтаксические различия между асинхронными и обычными итераторами:
+<table>
+<thead>
+    <tr>
+    <th> </th>   <th>Перебираемый объект</th>	<th>Асинхронно перебираемый</th>
+    </tr>
+</thead>
+<tbody>
+    <tr>
+        <td>Метод для получения итератора</td>	<td>Symbol.iterator</td>	<td>Symbol.asyncIterator</td>
+    </tr>
+    <tr>
+        <td>next() возвращает</td>	<td>{value:…, done: true/false}</td>	<td>промис, который завершается с {value:…, done: true/false}</td>
+    </tr>
+</tbody>
+
+</table></p>
+<p>
+Синтаксические различия между асинхронными и обычными генераторами:
+<table>
+    <thead>
+        <tr>
+        <th></th>    <th>Генераторы</th>	<th>Асинхронные генераторы</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Объявление</td>	<td>function*</td>	<td>async function*</td>
+        </tr>
+        <tr>
+            <td>generator.next() возвращает</td>	<td>{value:…, done: true/false}</td>	<td>промис, который завершается с {value:…, done: true/false}</td>
+        </tr>
+    </tbody>
+</table>
+Ассинхронные генераторы и итераторы могут использоваться там где получение  данных происходит с задержкой навроде сетевой.
+        </p>
+    </div>

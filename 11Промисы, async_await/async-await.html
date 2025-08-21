@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Async/await</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#Async/await">Async/await</a></h2>
+        <ul>
+            <li><a href="#async">Асинхронные функции (async)</a></li>
+            <li><a href="#Await">Await</a></li>
+            <li><a href="#throw">Обработка ошибок</a></li>
+            <li><a href="#total">Итого</a></li>
+            <li><a href="#tasks">Задачи</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="Async/await">
+        <h2><a href="https://learn.javascript.ru/async-await">Async/await</a></h2>
+        <p>
+            Существует специальный синтаксис для работы с промисами, который называется «async/await». Он удивительно
+            прост для понимания и использования.
+        </p>
+    </div>
+    <div class="topic" id="async">
+        <h3>Асинхронные функции</h3>
+        <p>Ключевое слово <code>async</code> ставиться перед функцией и означает что функция возвращает промис:
+        <pre>
+    <code class="language-js">
+async function f() {
+  return 1;
+}
+
+f().then(alert); // 1        
+    </code>
+</pre>
+        Тоже самое что и:
+        <pre>
+    <code class="language-js">
+async function f() {
+  return Promise.resolve(1);
+}
+
+f().then(alert); // 1        
+    </code>
+</pre>
+        </p>
+    </div>
+    <div class="topic" id="Await">
+        <h3>Await</h3>
+        <p>
+        <pre>
+        <code class="language-js">
+// работает только внутри async–функций
+let value = await promise;            
+        </code>
+    </pre>
+        <pre>
+    <code class="language-js">
+async function f() {
+
+  let promise = new Promise((resolve, reject) => {
+    setTimeout(() => resolve("готово!"), 1000)
+  });
+
+  let result = await promise; // будет ждать, пока промис не выполнится (*)
+
+  alert(result); // "готово!"
+}
+
+f();        
+    </code>
+</pre>
+        В данном примере выполнение функции остановится на строке (*) до тех пор, пока промис не выполнится.
+        Ряд замечаний:
+        <ul>
+            <li>await нельзя использовать в обычных функциях
+                <pre>
+    <code class="language-js">
+function f() {
+  let promise = Promise.resolve(1);
+  let result = await promise; // SyntaxError
+}        
+    </code>
+</pre>
+            </li>
+            <li>await нельзя использовать на верхнем уровне вложенности
+                <pre>
+    <code class="language-js">
+// SyntaxError на верхнем уровне вложенности
+let response = await fetch('/article/promise-chaining/user.json');
+let user = await response.json();        
+    </code>
+</pre>
+                Но можно обернуть в функцию:
+                <pre>
+    <code class="language-js">
+(async () => {
+  let response = await fetch('/article/promise-chaining/user.json');
+  let user = await response.json();
+  ...
+})();        
+    </code>
+</pre>
+            </li>
+            <li>await работает с «thenable»–объектами
+                <pre>
+    <code class="language-js">
+class Thenable {
+  constructor(num) {
+    this.num = num;
+  }
+  then(resolve, reject) {
+    alert(resolve);
+    // выполнить resolve со значением this.num * 2 через 1000мс
+    setTimeout(() => resolve(this.num * 2), 1000); // (*)
+  }
+};
+
+async function f() {
+  // код будет ждать 1 секунду,
+  // после чего значение result станет равным 2
+  let result = await new Thenable(1);
+  alert(result);
+}
+
+f();        
+    </code>
+</pre>
+            </li>
+            <li>
+                Асинхронные методы классов
+                <pre>
+        <code class="language-js">
+class Waiter {
+  async wait() {
+    return await Promise.resolve(1);
+  }
+}
+
+new Waiter()
+  .wait()
+  .then(alert); // 1            
+        </code>
+    </pre>
+            </li>
+
+        </ul>
+
+
+        </p>
+    </div>
+    <div class="topic" id="throw">
+        <h3>Обработка ошибок</h3>
+        <p>Ошибки можно ловить так:
+        <pre>
+    <code class="language-js">
+async function f() {
+
+  try {
+    let response = await fetch('/no-user-here');
+    let user = await response.json();
+  } catch(err) {
+    // перехватит любую ошибку в блоке try: и в fetch, и в response.json
+    alert(err);
+  }
+}
+
+f();        
+    </code>
+</pre>
+        Или так:
+        <pre>
+    <code class="language-js">
+async function f() {
+  let response = await fetch('http://no-such-url');
+}
+
+// f() вернёт промис в состоянии rejected
+f().catch(alert); // TypeError: failed to fetch // (*)        
+    </code>
+</pre>
+        </p>
+        <h4>async/await отлично работает с Promise.all</h4>
+        <pre>
+    <code class="language-js">
+// await будет ждать массив с результатами выполнения всех промисов
+let results = await Promise.all([
+  fetch(url1),
+  fetch(url2),
+  ...
+]);        
+    </code>
+</pre>
+    </div>
+    <div class="topic" id="total">
+        <h3>Итого</h3>
+        <p>Ключевое слово async перед объявлением функции:
+        <ul>
+            <li>Обязывает её всегда возвращать промис.</li>
+            <li>Позволяет использовать await в теле этой функции. </li>
+        </ul>
+        Ключевое слово await перед промисом заставит JavaScript дождаться его выполнения, после чего:
+        <ul>
+            <li>Если промис завершается с ошибкой, будет сгенерировано исключение, как если бы на этом месте находилось
+                throw.</li>
+            <li>Иначе вернётся результат промиса. </li>
+        </ul>
+        Хотя при работе с async/await можно обходиться без promise.then/catch, иногда всё-таки приходится использовать
+        эти методы (на верхнем уровне вложенности, например). Также await отлично работает в сочетании с Promise.all,
+        если необходимо выполнить несколько задач параллельно.
+        </p>
+
+
+    </div>
+    <div class="topic" id="tasks">
+        <h3>Задачи</h3>
+        <div id="task1">
+            <h4>Задача 1</h4>
+            <script id="until">
+                function task1Until(params) {
+                    function loadJson(url) {
+                        return fetch(url)
+                            .then(response => {
+                                if (response.status == 200) {
+                                    return response.json();
+                                } else {
+                                    throw new Error(response.status);
+                                }
+                            })
+                    }
+
+                    loadJson('https://2ch.hk') // (3)
+                        .catch(alert); // Error: 404    
+                }
+
+            </script>
+            <button onclick="task1Until()">Тест до</button>
+            <script id="after">
+                function task1After(params) {
+                    async function loadJson(url) {
+                        return await new Promise((resolve, reject) => {
+                            resolve => fetch(url)
+
+                        });
+
+                    }
+
+
+                    loadJson('https://2ch.hk') // (3)
+                        .catch(alert); // Error: 404
+                }
+            </script>
+            <button onclick="task1Until()">Тест после</button>
+            <p>Как решил я:
+            <pre>
+    <code class="language-js">
+  async function loadJson(url) {
+  return await new Promise((resolve, reject) =>{
+    resolve => fetch(url)
+
+  });
+   
+    }
+
+
+loadJson('https://2ch.hk') // (3)
+  .catch(alert); // Error: 404        
+    </code>
+</pre>
+            Как предлагает автор:
+            <pre>
+    <code class="language-js">
+async function loadJson(url) { // (1)
+  let response = await fetch(url); // (2)
+
+  if (response.status == 200) {
+    let json = await response.json(); // (3)
+    return json;
+  }
+
+  throw new Error(response.status);
+}
+
+loadJson('no-such-user.json')
+  .catch(alert); // Error: 404 (4)        
+    </code>
+</pre>
+            </p>
+        </div>
+        <div id="task2">
+            <h4>Задача 2</h4>
+            На <a href="https://learn.javascript.ru/async-await#perepishite-ispolzuya-async-await">это я забил. </a>
+        </div>
+        <div id="task3">
+            <h4>Задача 3</h4>
+            <script>
+                function task3(params) {
+                    async function wait() {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+
+                        return 10;
+                    }
+
+                    function f() {
+                        wait().then(alert);
+
+                    }
+                    f()
+                }
+            </script>
+            <button onclick="task3()">Тест</button> <p>Сделано как у автора
+<pre>
+    <code class="language-js">
+                    async function wait() {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+
+                        return 10;
+                    }
+
+                    function f() {
+                        wait().then(alert);
+
+                    }
+                    f()        
+    </code>
+</pre>
+
+            </p>
+        </div>
+    </div>
+
+</body>
+
+</html>

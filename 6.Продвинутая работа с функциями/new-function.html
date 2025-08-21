@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Синтаксис "new Function"</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h1><a href="#newf">Синтаксис "new Function"</a></h1>
+        <h2>
+            <ul>
+                <li><a href="#sintacsis">Синтаксис</a></li>
+                <li><a href="#closure">Замыкание</a></li>
+                <li><a href="#total">Итого</a></li>
+            </ul>
+        </h2>
+    </div>
+    <div class="topic" id="newf">
+        <h1><a href="https://learn.javascript.ru/new-function">Синтаксис "new Function"</a></h1>
+        <p>Ещё один способ объявления ф-ции</p>
+    </div>
+    <div class="topic" id="sintacsis">
+        <h2>
+            Синтаксис
+        </h2>
+        <p>
+        <pre>
+                <code class="language-js">
+let func = new Function([arg1, arg2, ...argN], functionBody);                    
+                </code>
+            </pre>
+        Пример:
+        <pre>
+                <code class="language-js">
+let sum = new Function('a', 'b', 'return a + b');                    
+                </code>
+            </pre>
+        Аргументы к ф-ции могут быть переданы в одной строке через запятую. Ф-ция может быть без аргументов.
+        Стратения применения может быть такая:
+        <pre>
+            <code class="language-js">
+let str = ... код, полученный с сервера динамически ...
+
+let func = new Function(str);
+func();                
+            </code>
+        </pre>
+        </p>
+    </div>
+    <div class="topic" id="closure">
+        <h2>Замыкание</h2>
+        <p>Важным отличием такого создания ф-ции является то, что доступ она имеет только к глобальному окружению, и не
+            имеет доступа к родительскому окружению. Так что если надо что-то передавать - в аргументах:
+        <pre>
+            <code class="language-js">
+function getFunc() {
+  let value = "test";
+
+  let func = new Function('alert(value)');
+
+  return func;
+}
+
+getFunc()(); // ошибка: value не определено                
+            </code>
+        </pre>
+        Проблема в том, что перед отправкой JavaScript-кода на реальные работающие проекты код сжимается с помощью
+        минификатора – специальной программы, которая уменьшает размер кода, удаляя комментарии, лишние пробелы, и, что
+        самое главное, локальным переменным даются укороченные имена.
+        <strong>Если бы new Function имела доступ к внешним переменным, при этом были бы проблемы с
+            минификаторами.</strong>
+        </p>
+    </div>
+    <div class="topic" id="total">
+        <h2>Итого</h2>
+        <p>
+            Синтаксис:
+        <pre>
+                <code class="language-js">
+let func = new Function ([arg1, arg2, ...argN], functionBody);                    
+                </code>
+            </pre>
+        Эти 3 объявления ниже эквивалентны:
+        <pre>
+                <code class="language-js">
+new Function('a', 'b', 'return a + b'); // стандартный синтаксис
+new Function('a,b', 'return a + b'); // через запятую в одной строке
+new Function('a , b', 'return a + b'); // через запятую с пробелами в одной строке                    
+                </code>
+            </pre>
+        Функции, объявленные через new Function, имеют [[Environment]], ссылающийся на глобальное лексическое окружение,
+        а не на родительское. Поэтому они не могут использовать внешние локальные переменные. Но это очень хорошо,
+        потому что страхует нас от ошибок. Переданные явно параметры – гораздо лучшее архитектурное решение, которое не
+        вызывает проблем у минификаторов.
+        </p>
+    </div>
+</body>
+</html>

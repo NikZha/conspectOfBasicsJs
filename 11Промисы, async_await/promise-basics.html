@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Промисы</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#promise">Промисы</a></h2>
+        <ul>
+            <li><a href="#consumers">Потребители: then, catch</a></li>
+            <li><a href="#finally">Очистка: finally</a></li>
+            <li><a href="#expampl">Пример: loadScript</a></li>
+            <li><a href="#tasks">Задачи (3)</a></li>
+        </ul>
+
+    </div>
+    <div class="topic" id="promise">
+        <h2><a href="https://learn.javascript.ru/promise-basics">Промисы</a></h2>
+        <p>
+            Синтаксис создания Promise:
+        <pre>
+                <code class="language-js">
+let promise = new Promise(function(resolve, reject) {
+  // функция-исполнитель (executor)
+  // "певец"
+});                    
+                </code>
+            </pre>
+        Где, callback'и:
+        <ul>
+            <li>resolve(value) — если работа завершилась успешно, с результатом value.</li>
+            <li>reject(error) — если произошла ошибка, error – объект ошибки. </li>
+        </ul>
+        <button onclick="expl1()">Тест</button>
+        <pre>
+    <code class="language-js">
+    let promise = new Promise(function(resolve, reject) {
+  // эта функция выполнится автоматически, при вызове new Promise
+
+  // через 1 секунду сигнализировать, что задача выполнена с результатом "done"
+  setTimeout(() => resolve("done"), 1000);
+});
+function resolve(params) {
+    alert(params)
+}
+promise.then(
+    result => resolve(result)
+)        
+    </code>
+</pre>
+        Я чуть забежал вперёд, но чтобы было очевидно, что промисы работают с последующим вызовом then, catch, finally.
+        А сам по себе объект или функция результат не возвращают.
+        Есть ещё такой момент что если какая-то функция выполнится сразу, то промис вернёт первый ответ и не станет
+        дожидаться оставщиеся.
+        </p>
+        <script>
+            function expl1(params) {
+                let promise = new Promise(function (resolve, reject) {
+                    // эта функция выполнится автоматически, при вызове new Promise
+
+                    // через 1 секунду сигнализировать, что задача выполнена с результатом "done"
+                    setTimeout(() => resolve("done"), 1000);
+                });
+                function resolve(params) {
+                    alert(params)
+                }
+                promise.then(
+                    result => resolve(result)
+                )
+            }    
+        </script>
+    </div>
+    <div class="topic" id="consumers">
+        <h3>Потребители: then, catch</h3>
+        <h4>then</h4>
+        <p>Синтаксис:
+        <pre>
+    <code class="language-js">
+promise.then(
+  function(result) { /* обработает успешное выполнение */ },
+  function(error) { /* обработает ошибку */ }
+);        
+    </code>
+</pre>
+        Более наглядный пример:
+        <pre>
+    <code class="language-js">
+let promise = new Promise(function(resolve, reject) {
+  setTimeout(() => resolve("done!"), 1000);
+});
+
+// resolve запустит первую функцию, переданную в .then
+promise.then(
+  result => alert(result), // выведет "done!" через одну секунду
+  error => alert(error) // не будет запущена
+);        
+    </code>
+</pre>
+        То есть в случае штатного завершения отработает result, в случае ошибки error.
+        </p>
+        <p>Если объект ошибки не важен, как и обработка ошибок, можно просто:
+        <pre>
+    <code class="language-js">
+let promise = new Promise(resolve => {
+  setTimeout(() => resolve("done!"), 1000);
+});
+
+promise.then(alert); // выведет "done!" спустя одну секунду        
+    </code>
+</pre>
+        </p>
+        <h4>catch</h4>
+        <p>Как и в случае с последним вариантом, можно обработать только ошибку:
+        <pre>
+    <code class="language-js">
+let promise = new Promise((resolve, reject) => {
+  setTimeout(() => reject(new Error("Ошибка!")), 1000);
+});
+
+// .catch(f) это то же самое, что promise.then(null, f)
+promise.catch(alert); // выведет "Error: Ошибка!" спустя одну секунду        
+    </code>
+</pre>
+
+        </p>
+    </div>
+    <div class="topic" id="finally">
+        <h3>Очистка: finally</h3>
+        <p>Как и в случае обработки ошибок выполнится finally всегда и вперёд возврата результата:
+            <script>
+                function expl2(params) {
+                    new Promise((resolve, reject) => {
+                        setTimeout(() => resolve("value"), 2000);
+                    })
+                        .finally(() => alert("Промис завершён")) // срабатывает первым
+                        .then(result => alert(result)); // <-- .then показывает "value"
+                }
+            </script>
+        <pre><button onclick="expl2()">Тест кода</button>
+    <code class="language-js">
+new Promise((resolve, reject) => {
+  setTimeout(() => resolve("value"), 2000);
+})
+  .finally(() => alert("Промис завершён")) // срабатывает первым
+  .then(result => alert(result)); // <-- .then показывает "value"        
+    </code>
+</pre>
+        Подведем итог:
+        <ul>
+            <li>Обработчик finally не получает результат предыдущего обработчика (у него нет аргументов). Вместо этого
+                этот результат передается следующему подходящему обработчику.</li>
+            <li>Если обработчик finally возвращает что-то, это игнорируется.</li>
+            <li>Когда finally выдает ошибку, выполнение переходит к ближайшему обработчику ошибок. </li>
+        </ul>
+        </p>
+    </div>
+    <div class="topic" id="expampl">
+        <h3>Пример: loadScript</h3>
+        <p>Как видно из этого примера, автор упустил один большой нюанс:
+            <script>
+                function expl3(params) {
+                    function loadScript(src) {
+                        return new Promise(function (resolve, reject) {
+                            let script = document.createElement('script');
+                            script.src = src;
+
+                            script.onload = () => resolve(script);
+                            script.onerror = () => reject(new Error(`Ошибка загрузки скрипта ${src}`));
+
+                            document.head.append(script);
+                        });
+                    }
+
+                    let promise = loadScript("https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.js");
+
+                    promise.then(
+                        script => alert(`${script.src} загружен!`),
+                        error => alert(`Ошибка: ${error.message}`)
+                    );
+
+                    promise.then(script => alert('Ещё один обработчик...'));
+                }
+            </script>
+        <pre><button onclick="expl3()">Тест кода</button>
+            <code class="language-js">
+function loadScript(src) {
+  return new Promise(function(resolve, reject) {
+    let script = document.createElement('script');
+    script.src = src;
+
+    script.onload = () => resolve(script);
+    script.onerror = () => reject(new Error(`Ошибка загрузки скрипта ${src}`));
+
+    document.head.append(script);
+  });
+}
+
+let promise = loadScript("https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.11/lodash.js");
+
+promise.then(
+  script => alert(`${script.src} загружен!`),
+  error => alert(`Ошибка: ${error.message}`)
+);
+
+promise.then(script => alert('Ещё один обработчик...'));                
+            </code>
+        </pre>
+        .then можно выполнять несколько раз передавая результат одной или разным функциям.
+
+        </p>
+        <p>Второй особенностью является то, что результат можно получить в любом месте программы.</p>
+    </div>
+    <div class="topic" id="tasks">
+        <h3>Задачи</h3>
+        <div id="task1">
+            <h4>Задача 1</h4>
+            <pre>
+            <code class="language-js">
+let promise = new Promise(function(resolve, reject) {
+  resolve(1);
+
+  setTimeout(() => resolve(2), 1000);
+});
+
+promise.then(alert);                
+            </code>
+        </pre>
+            <p>Код вернёт 1, а следующая строка проигнорируется</p>
+        </div>
+        <div id="task2">
+            <h4>Задача 2</h4>
+            <script>
+                function delay(ms) {
+                    return new Promise(function (resolve, reject) {
+                        setTimeout(() => resolve(), ms)
+                    })
+                }
+            </script>
+            <button onclick="delay(3000).then(() => alert('выполнилось через 3 секунды'))">Тест задача2</button>
+            <p>Я сделал так - работает:
+            <pre>
+                    <code class="language-js">
+function delay(ms) {
+return new Promise(function (resolve, reject) {
+setTimeout(()=> resolve(), ms)
+})
+}
+                    </code>
+                </pre>
+            Автор предлагает так:
+            <pre>
+                    <code class="language-js">
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+delay(3000).then(() => alert('выполнилось через 3 секунды'));                        
+                    </code>
+                </pre>
+            </p>
+        </div>
+        <div id="task3">
+            <h4>Задача 3</h4>
+            <p><a href="https://learn.javascript.ru/promise-basics#animatsiya-kruga-s-pomoschyu-promisa">Не решил по
+                    причине отсуствия электричества.</a></p>
+        </div>
+    </div>
+
+
+
+</body>
+
+</html>

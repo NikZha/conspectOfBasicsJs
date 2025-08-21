@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Примеси</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#mix">Примеси</a></h2>
+        <ul>
+            <li><a href="#example">Пример примеси</a></li>
+            <li><a href="#EventMixin">EventMixin</a></li>
+            <li><a href="#total">Итого</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="mix">
+        <h2><a href="https://learn.javascript.ru/mixins">Примеси</a></h2>
+        <p>Примеси это вариант множественного наследования, но через композицию, когда методы другого объекта
+            добавляются путём вызова <code>Object.assign()</code>в текущий объект и могут наследоваться от текущего
+            объекта.</p>
+        <p>Класс-примесь не используют напрямую, только, как донора методов.</p>
+    </div>
+    <div class="topic" id="example">
+        <h3>Пример примеси</h3>
+        <p>
+        <pre id="testMix"><button onclick="testMix()">Тест примесь</button>
+        <code class="language-js">
+            // примесь
+            let sayHiMixin = {
+                sayHi() {
+                    alert(`Привет, ${this.name}`);
+                },
+                sayBye() {
+                    alert(`Пока, ${this.name}`);
+                }
+            };
+
+            // использование:
+            class User {
+                constructor(name) {
+                    this.name = name;
+                }
+            }
+
+            // копируем методы
+            Object.assign(User.prototype, sayHiMixin);
+
+            // теперь User может сказать Привет
+            new User("Вася").sayHi(); // Привет, Вася!
+
+            class PowerUser extends User {
+                constructor(parameters) {
+                    super(parameters)
+                }
+            }
+            const admin = new PowerUser("Петя")
+            admin.sayBye()            
+        </code>
+    </pre>
+        Как видно из этого примера, из объекта добавляются методы и так же эти методы наследуются.
+        </p>
+        <p>Примеси могут собирать методы путём наследования:
+        <pre>
+    <code class="language-js">
+let sayMixin = {
+  say(phrase) {
+    alert(phrase);
+  }
+};
+
+let sayHiMixin = {
+  __proto__: sayMixin, // (или мы можем использовать Object.setPrototypeOf для задания прототипа)
+
+  sayHi() {
+    // вызываем метод родителя
+    super.say(`Привет, ${this.name}`); // (*)
+  },
+  sayBye() {
+    super.say(`Пока, ${this.name}`); // (*)
+  }
+};
+
+class User {
+  constructor(name) {
+    this.name = name;
+  }
+}
+
+// копируем методы
+Object.assign(User.prototype, sayHiMixin);
+
+// теперь User может сказать Привет        
+    </code>
+</pre>
+
+        </p>
+    </div>
+    <div class="topic" id="EventMixin">
+        <h3><a href="https://learn.javascript.ru/mixins#eventmixin">EventMixin</a></h3>
+        <p>В топике приводится конкретный пример примеси, на объект меню, как пример композиции объектов. Сама примесь
+            реализует шаблон наблюдатель. Но как по мне пример не очень удачный, в виду
+            слишком большой абстрактности из-за отстуствия конкретных деталей реалилзации. Оставля ссылку, но не думаю
+            что понадобится.</p>
+    </div>
+<div class="topic" id="total">
+    <h3>Итого</h3>
+    <p>
+Примесь – общий термин в объектно-ориентированном программировании: класс, который содержит в себе методы для других классов.
+
+<br>Некоторые другие языки допускают множественное наследование. JavaScript не поддерживает множественное наследование, но с помощью примесей мы можем реализовать нечто похожее, скопировав методы в прототип.
+
+<br>Мы можем использовать примеси для расширения функциональности классов, например, для обработки событий, как мы сделали это выше.
+
+<br>С примесями могут возникнуть конфликты, если они перезаписывают существующие методы класса. Стоит помнить об этом и быть внимательнее при выборе имён для методов примеси, чтобы их избежать.        
+    </p>
+</div>
+    <script>
+        function testMix(params) {
+            // примесь
+            let sayHiMixin = {
+                sayHi() {
+                    alert(`Привет, ${this.name}`);
+                },
+                sayBye() {
+                    alert(`Пока, ${this.name}`);
+                }
+            };
+
+            // использование:
+            class User {
+                constructor(name) {
+                    this.name = name;
+                }
+            }
+
+            // копируем методы
+            Object.assign(User.prototype, sayHiMixin);
+
+            // теперь User может сказать Привет
+            new User("Вася").sayHi(); // Привет, Вася!
+
+            class PowerUser extends User {
+                constructor(parameters) {
+                    super(parameters)
+                }
+            }
+            const admin = new PowerUser("Петя")
+            admin.sayBye()
+
+        }
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F.prototype</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#F.prototype">F.prototype</a></h2>
+        <ul>
+            <li><a href="#prototype">F.prototype по умолчанию, свойство constructor</a></li>
+            <li><a href="#total">Итого</a></li>
+           
+        </ul>
+    </div>
+
+    <div class="topic" id="F.prototype">
+        <h2><a href="https://learn.javascript.ru/function-prototype">F.prototype</a></h2>
+        <p>Ещё один способ установить наследование но для объекта который будет создаваться при помощи <code>new</code>.
+            Например:
+        <pre>
+            <code class="language-js">
+let animal = {
+  eats: true
+};
+
+function Rabbit(name) {
+  this.name = name;
+}
+
+Rabbit.prototype = animal;
+
+let rabbit = new Rabbit("White Rabbit"); //  rabbit.__proto__ == animal
+
+alert( rabbit.eats ); // true                
+            </code>
+        </pre>
+        То есть по сути мы тут указали родителя который будет проставляться в [[Prototype]] у создаваемых при помощи new
+        объектов.
+        Работает это только в момент создания объекта. Можно переназначить свойство <code>F.prototype</code> другому
+        объекту, но все уже созданные объекты остануться со старым родителем.
+        </p>
+    </div>
+    <div class="topic" id="prototype">
+        <h2>F.prototype по умолчанию, свойство constructor</h2>
+        <p>У каждой функции (за исключением стрелочных) по умолчанию уже есть свойство "prototype". По умолчанию
+            "prototype" – объект с единственным свойством constructor, которое ссылается на функцию-конструктор.
+        <pre>
+       <code class="language-js">
+function Rabbit(name) {
+  this.name = name;
+  alert(name);
+}
+
+let rabbit = new Rabbit("White Rabbit");
+
+let rabbit2 = new rabbit.constructor("Black Rabbit");           
+       </code>
+   </pre>
+        </p>
+        <p>Пожалуй, самое важное о свойстве "constructor" это то, что…
+
+            …JavaScript сам по себе не гарантирует правильное значение свойства "constructor".</p>
+        <p>мы можем заново создать свойство constructor:
+        <pre>
+    <code class="language-js">
+Rabbit.prototype = {
+  jumps: true,
+  constructor: Rabbit
+};
+
+// теперь свойство constructor снова корректное, так как мы добавили его        
+    </code>
+</pre>
+        Что хотел сказать автор?
+        </p>
+    </div>
+    <div class="topic" id="total">
+        <h2>Итого</h2>
+        <p>Всё достаточно просто. Выделим основные моменты:
+        <ul>
+            <li>Свойство F.prototype (не путать с [[Prototype]]) устанавливает [[Prototype]] для новых объектов при
+                вызове new F().</li>
+            <li>Значение F.prototype должно быть либо объектом, либо null. Другие значения не будут работать.</li>
+            <li>Свойство "prototype" является особым, только когда оно назначено функции-конструктору, которая
+                вызывается оператором new. </li>
+        </ul>
+В обычных объектах prototype не является чем-то особенным:
+<pre>
+    <code class="language-js">
+let user = {
+  name: "John",
+  prototype: "Bla-bla" // никакой магии нет - обычное свойство
+};        
+    </code>
+</pre>
+По умолчанию все функции имеют F.prototype = { constructor: F }, поэтому мы можем получить конструктор объекта через свойство "constructor".
+        </p>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Привязка контекста к функции</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#return_to_arrow_func">Повторяем стрелочные функции</a></h2>
+        <h3>
+            <ul>
+                <li><a href="#nothis">У стрелочных функций нет «this»</a></li>
+                <li><a href="#noarguments">Стрелочные функции не имеют «arguments»</a></li>
+                <li><a href="#total">Итого</a></li>
+            </ul>
+        </h3>
+    </div>
+    <div class="topic" id="return_to_arrow_func">
+        <h1><a href="https://learn.javascript.ru/arrow-functions">Повторяем стрелочные функции</a></h1>
+        <p>
+            При написании JavaScript-кода часто возникают ситуации, когда нам нужно написать небольшую функцию, которая
+            будет выполнена где-то ещё. Нампример setTimeout(func), arr.forEach(func) и так далее.
+        </p>
+
+    </div>
+    <div class="topic" id="nothis">
+        <h2>У стрелочных функций нет «this»</h2>
+        <p>ссылка на this берётся из окружения:
+        <pre>
+    <code class="language-js">
+let group = {
+  title: "Our Group",
+  students: ["John", "Pete", "Alice"],
+
+  showList() {
+    this.students.forEach(
+      student => alert(this.title + ': ' + student)
+    );
+  }
+};
+
+group.showList();        
+    </code>
+</pre>
+        Если бы мы использовали «обычную» функцию, была бы ошибка:
+        <pre>
+    <code class="language-js">
+let group = {
+  title: "Our Group",
+  students: ["John", "Pete", "Alice"],
+
+  showList() {
+    this.students.forEach(function(student) {
+      // Error: Cannot read property 'title' of undefined
+      alert(this.title + ': ' + student)
+    });
+  }
+};
+
+group.showList();        
+    </code>
+</pre>
+        <button onclick="testBrokenThis()">тест поломанного кода</button>
+        <br>Как автор и пишет this = undefined.
+        </p>
+        <h3>Несколько важных замечаний</h3>
+        <p>
+            Стрелочные функции нельзя использовать с new
+            <br>Из-за отстутствия this.
+        </p>
+        <h3>Стрелочные функции VS bind</h3>
+        <p>Существует тонкая разница между стрелочной функцией => и обычной функцией, вызванной с .bind(this):
+        <ul>
+            <li>.bind(this) создаёт «связанную версию» функции.</li>
+            <li>Стрелка => ничего не привязывает. У функции просто нет this. При получении значения this – оно, как
+                обычная переменная, берётся из внешнего лексического окружения. </li>
+        </ul>
+        </p>
+        <script>
+            'use sctict';
+            function testBrokenThis() {
+                let group = {
+                    title: "Our Group",
+                    students: ["John", "Pete", "Alice"],
+
+                    showList() {
+                        //this.title = "Автор хуй"
+                        this.students.forEach(function (student) {
+                            // Error: Cannot read property 'title' of undefined
+                            alert(this.title + ': ' + student)
+                        });
+                    }
+                };
+
+                group.showList();
+
+            }</script>
+    </div>
+    <div class="topic" id="noarguments">
+        <h2>Стрелочные функции не имеют «arguments»</h2>
+        <p> Это отлично подходит для декораторов, когда нам нужно пробросить вызов с текущими this и arguments.
+        <pre>
+        <code class="language-js">
+function defer(f, ms) {
+  return function() {
+    setTimeout(() => f.apply(this, arguments), ms)
+  };
+}
+
+function sayHi(who) {
+  alert('Hello, ' + who);
+}
+
+let sayHiDeferred = defer(sayHi, 2000);
+sayHiDeferred("John"); // выводит "Hello, John" через 2 секунды            
+        </code>
+    </pre>
+        </p>
+
+    </div>
+    <div class="topic" id="total">
+        <h2>Итого</h2>
+        <p>Стрелочные функции:
+        <ul>
+            <li>Не имеют this.</li>
+            <li>Не имеют arguments.</li>
+            <li>Не могут быть вызваны с new.</li>
+            <li>(У них также нет super, но мы про это не говорили. Про это будет в главе Наследование классов). </li>
+        </ul>
+        Всё это потому, что они предназначены для небольшого кода, который не имеет своего «контекста», выполняясь в
+        текущем. И они отлично справляются с этой задачей!
+        </p>
+    </div>
+</body>
+
+</html>

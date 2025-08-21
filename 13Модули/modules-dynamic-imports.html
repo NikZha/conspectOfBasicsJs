@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Динамические импорты</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#dinimp">Динамические импорты</a></h2>
+        <ul>
+            <li><a href="#import">Выражение import()</a></li>
+        </ul>
+    </div>
+<div class="topic" id="dinimp">
+    <h2><a href="https://learn.javascript.ru/modules-dynamic-imports">Динамические импорты</a></h2>
+    <p>
+        Запрещено импортировать модули из функции:
+<pre>
+    <code class="language-js">
+import ... from getModuleName(); // Ошибка, должна быть строка        
+    </code>
+</pre>
+Запрещено вставлять import в блок скобок { } или if:
+<pre>
+    <code class="language-js">
+if(...) {
+  import ...; // Ошибка, запрещено
+}
+
+{
+  import ...; // Ошибка, мы не можем ставить импорт в блок
+}        
+    </code>
+</pre>
+    </p>
+</div>
+<div class="topic" id="import">
+    <h3>Выражение import()</h3>
+    <p>Суть выражения импорт - получить string и загрузить его:
+<pre>
+    <code class="language-js">
+let modulePath = prompt("Какой модуль загружать?");
+
+import(modulePath)
+  .then(obj => (объект модуля))
+  .catch(err => (ошибка загрузки, например если нет такого модуля))        
+    </code>
+</pre>
+Как видно это ассинхронная функциия, так же:
+<pre>
+    <code class="language-js">
+// 📁 say.js
+export function hi() {
+  alert(`Привет`);
+}
+
+export function bye() {
+  alert(`Пока`);
+}        
+    </code>
+</pre>
+Импорт будет таким:
+<pre>
+    <code class="language-js">
+let {hi, bye} = await import('./say.js');
+
+hi();
+bye();        
+    </code>
+</pre>
+если указан export default, то:
+<pre>
+    <code class="language-js">
+// 📁 say.js
+export default function() {
+  alert("Module loaded (export default)!");
+}
+//Импорт в другом файле:
+let obj = await import('./say.js');
+let say = obj.default;
+// или, одной строкой: let {default: say} = await import('./say.js');
+
+say();        
+    </code>
+</pre>
+Так же динамический импорт можно использовать в ф-ции:
+<script>
+    async function load(params) {
+        let say = await import('./say.js')
+        say.sayHi('Test')
+        say.sayBye('Test')
+        say.default()
+    }
+</script>
+<pre><button onclick="load()">Тест ф-ции</button>
+    <code class="language-js">
+        //в блоке скрипт следующая ф-ция:
+    async function load(params) {
+        let say = await import('./say.js')
+        say.sayHi('Test')
+        say.sayBye('Test')
+        say.default()
+    }        
+    </code>
+</pre>
+<strong>Как видно все работает без указания в script свойства module</strong>.
+По мимо такой ф-ции, можно вызвать в блоках .then и .catch:
+<pre><button onclick="loadThen()">Tест then</button>
+    <code class="language-js">
+    async function loadThen(params) {
+        await import('./say.js').then(obj => {
+            obj.sayHi('Then');
+            obj.sayBye('Then');
+            obj.default()
+        }).catch(err => alert(err))
+    }        
+    </code>
+</pre>
+<script>
+    async function loadThen(params) {
+        await import('./say.js').then(obj => {
+            obj.sayHi('Then');
+            obj.sayBye('Then');
+            obj.default()
+        }).catch(err => alert(err))
+    }
+</script>
+
+    </p>
+</div>
+
+
+
+</body>
+
+</html>

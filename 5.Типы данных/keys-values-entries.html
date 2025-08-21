@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конспект сайта learn.javascript.ru раздел Типы данных - Object.keys, values, entries</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h1><a href="#Object.keys_values_entries">Object.keys, values, entries</a></h1>
+        <h3><a href="#trans">Трансформации объекта</a></h3>
+        <h1><a href="#tasks">Задачи</a></h1>
+    </div>
+    <div class="topic" id="Object.keys_values_entries">
+        <h1><a href="https://learn.javascript.ru/keys-values-entries#object-keys-values-entries">Object.keys, values,
+                entries</a></h1>
+
+        <p>Как и у <code>Map, Set, Srray</code> у объекта тоже есть эти методы, но они немного отличаются:
+        <ul>
+            <li><code>Object.keys(obj)</code> – возвращает массив ключей.</li>
+            <li><code>Object.values(obj)</code> – возвращает массив значений.</li>
+            <li><code>Object.entries(obj)</code> – возвращает массив пар [ключ, значение]. </li>
+        </ul>
+        Следует обратить внимание что синтаксис именно такой <code>Object.keys(obj)</code> потому что объект может сам
+        реализовывать методы с таким называнием.
+        <br>Перебор значений в цикле реализуется следующим образом:
+        <pre>
+            <code class="language-js">
+let user = {
+  name: "John",
+  age: 30
+};
+
+// перебор значений
+for (let value of Object.values(user)) {
+  alert(value); // John, затем 30
+}                
+            </code>
+        </pre>
+        Так же можно использовать цикл:
+        <pre>
+            <code class="language-js">
+for (let [key, value] of Object.entries(obj)) console.log(`key: ${key} value: ${value}`)                
+            </code>
+        </pre>
+        <a href="keys-values-entries-working/keys.js">Файл</a> с проработкой.
+        </p>
+        <h5>Object.keys/values/entries игнорируют символьные свойства</h5>
+    </div>
+    <div class="topic" id="trans">
+        <h3>Трансформации объекта</h3>
+        <p>У объектов нет множества методов, которые есть в массивах, например map, filter и других.
+
+            Если мы хотели бы их применить, то можно использовать Object.entries с последующим вызовом
+            Object.fromEntries:
+        <ol>
+            <li>Вызов Object.entries(obj) возвращает массив пар ключ/значение для obj.</li>
+            <li>На нём вызываем методы массива, например, map.</li>
+            <li>Используем Object.fromEntries(array) на результате, чтобы преобразовать его обратно в объект. </li>
+        </ol>
+        Наример, есть цены которые нужно удвоить:
+        <pre>
+            <code class="language-js">
+let prices = {
+  banana: 1,
+  orange: 2,
+  meat: 4,
+};
+
+let doublePrices = Object.fromEntries(
+  // преобразовать в массив, затем map, затем fromEntries (обратно в объект)
+  Object.entries(prices).map(([key, value]) => [key, value * 2])
+)                
+            </code>
+        </pre>
+        </p>
+    </div>
+    <div class="topic" id="tasks">
+        <h1>Задачи</h1>
+        <h3>Задача 1</h3>
+        <p><a href="keys-values-entries-working/task1.js">Первый вариант</a> это то как вообщем-то предлагает автор.
+            Второй вариант это трансформация объекта и захват переменной.</p>
+        <h3>Задача 2</h3>
+        <p><a href="keys-values-entries-working/task2.js">Решена</a>, но огород со счетчиком можно было не городить, а
+            просто запросить свойство .length:
+        <pre>
+            <code class="language-js">
+return Object.keys(obj).length;                
+            </code>
+        </pre>
+        </p>
+    </div>
+</body>
+
+</html>

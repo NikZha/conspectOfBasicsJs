@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ссылочный тип</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#reftype">Ссылочный тип</a></h2>
+        <ul>
+            <li><a href="#explain">Ссылочный тип: объяснение</a></li>
+            <li><a href="#total">Итого</a></li>
+            <li><a href="#tasks">Задачи</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="reftype">
+        <h2><a href="https://learn.javascript.ru/reference-type">Ссылочный тип</a></h2>
+        <p>
+        <pre>
+            <code class="language-js">
+let user = {
+  name: "Джон",
+  hi() { alert(this.name); },
+  bye() { alert("Пока"); }
+};
+
+user.hi(); // Джон (простой вызов метода работает хорошо)
+
+// теперь давайте попробуем вызывать user.hi или user.bye
+// в зависимости от имени пользователя user.name
+(user.name == "Джон" ? user.hi : user.bye)(); // Ошибка!                
+            </code>
+        </pre>
+        </p>
+    </div>
+    <div class="topic" id="explain">
+        <h3>Ссылочный тип: объяснение</h3>
+        <p>
+        <pre>
+            <code class="language-js">
+let user = {
+  name: "John",
+  hi() { alert(this.name); }
+};
+
+// разделим получение метода объекта и его вызов в разных строках
+let hi = user.hi;
+hi(); // Ошибка, потому что значением this является undefined                
+            </code>
+        </pre>
+        Для работы вызовов типа user.hi(), JavaScript использует трюк – точка '.' возвращает не саму функцию, а
+        специальное значение «ссылочного типа», называемого Reference Type.
+        </p>
+        <p>
+Значение ссылочного типа – это «триплет»: комбинация из трёх значений (base, name, strict), где:
+<ul>
+<li>base – это объект.</li>
+<li>name – это имя свойства объекта.</li>
+<li>strict – это режим исполнения. Является true, если действует строгий режим (use strict).    </li>
+</ul>
+
+        </p>
+<p>При любой другой операции, например, присваивании hi = user.hi, ссылочный тип заменяется на собственно значение user.hi (функцию), и дальше работа уже идёт только с ней. Поэтому дальнейший вызов происходит уже без this.</p>
+
+<p>Таким образом, значение this передаётся правильно, только если функция вызывается напрямую с использованием синтаксиса точки obj.method() или квадратных скобок obj['method']() (они делают то же самое). Существуют различные способы решения этой проблемы: одним из таких является func.bind().        </p>
+    </div>
+<div class="topic" id="total">
+    <h3>Итого</h3>
+<p>Ссылочный тип – это внутренний тип языка.</p>
+
+<p>Чтение свойства, например, с точкой . в obj.method() возвращает не точное значение свойства, а специальное значение «ссылочного типа», в котором хранится как значение свойства, так и объект, из которого оно было взято.</p>
+
+<p>Это нужно для последующего вызова метода (), чтобы получить объект и установить для него this.</p>
+
+<p>Для всех остальных операций ссылочный тип автоматически становится значением свойства (в нашем случае функцией).</p>
+
+<p>Вся механика скрыта от наших глаз. Это имеет значение только в особых случаях, например, когда метод динамически извлекается из объекта с использованием выражения.    </p>
+</div>
+<div class="topic" id="tasks">
+    <h3>Задачи</h3>
+    <div id="task1">
+        <h4>1:</h4>
+        <p>
+<pre><button onclick="task1()">Тест задача 1</button>
+    <code class="language-js">
+let user = {
+  name: "John",
+  go: function() { alert(this.name) }
+}
+(user.go)() //Должно быть корректное выполнение        
+    </code>
+</pre>            
+<script>
+    function task1(params) {
+let user = {
+  name: "John",
+  go: function() { alert(this.name) }
+}
+//user.go()
+(user.go)()        
+    }
+</script>
+Получилось, что нет, user в скобках не ассоциируется с объектом user и читается так:
+<pre>
+    <code class="language-js">
+let user = { go:... }(user.go)()        
+    </code>
+</pre>
+Получилось, что это объявление объекта с ошибкой:
+<pre>
+    <code class="language-js">
+let user = {
+  name: "John",
+  go: function() { alert(this.name) }
+};
+
+(user.go)() // John        
+    </code>
+</pre>
+Что тут скажешь - охуенная задача от мастера.
+        </p>
+    </div>
+    <div id="task2">
+        <h4>2:</h4>
+        <p>
+<pre>
+    <code class="language-js">
+let obj, method;
+
+obj = {
+  go: function() { alert(this); }
+};
+
+obj.go();               // (1) [object Object]
+
+(obj.go)();             // (2) [object Object]
+
+(method = obj.go)();    // (3) undefined у method нет прототипа
+
+(obj.go || obj.stop)(); // (4) undefined  А тут сравниваются методы и идёт потеря this.      
+    </code>
+</pre>            
+        </p>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>

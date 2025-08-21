@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Привязка контекста к функции</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#bind">Привязка контекста к функции</a></h2>
+        <h3>
+            <ul>
+                <li><a href="#lost_this">Потеря «this»</a></li>
+                <li><a href="#sol1">Решение 1: сделать функцию-обёртку</a></li>
+                <li><a href="#sol2">Решение 2: привязать контекст с помощью bind</a></li>
+                <li><a href="#part">Частичное применение</a></li>
+                <li><a href="#part2">Частичное применение без контекста</a></li>
+                <li><a href="#total">Итого</a></li>
+                <li><a href="#tasks">Задачи</a></li>
+            </ul>
+        </h3>
+    </div>
+    <div class="topic" id="bind">
+        <h2><a href="https://learn.javascript.ru/bind">Привязка контекста к функции</a></h2>
+        <p>При передаче методов объекта в качестве колбэков, например для setTimeout, возникает известная проблема –
+            потеря this.
+
+            В этой главе мы посмотрим, как её можно решить.</p>
+
+    </div>
+    <div class="topic" id="lost_this">
+        <h2>Потеря «this»</h2>
+        <p>
+            Суть проблемы:
+        <pre>
+        <code class="language-js">
+let user = {
+  firstName: "Вася",
+  sayHi() {
+    alert(`Привет, ${this.firstName}!`);
+  }
+};
+
+setTimeout(user.sayHi, 1000); // Привет, undefined!            
+        </code>
+    </pre>
+        </p>
+    </div>
+    <div class="topic" id="sol1">
+        <h2>Решение 1: сделать функцию-обёртку</h2>
+        <p>
+        <pre>
+            <code class="language-js">
+let user = {
+  firstName: "Вася",
+  sayHi() {
+    alert(`Привет, ${this.firstName}!`);
+  }
+};
+
+setTimeout(function() {
+  user.sayHi(); // Привет, Вася!
+}, 1000);                
+            </code>
+        </pre>
+        Или путём стрелочной ф-ции:
+        <pre>
+            <code class="language-js">
+setTimeout(() => user.sayHi(), 1000); // Привет, Вася!                
+            </code>
+        </pre>
+        И все вроде работает, но появляется проблема: если изменится в течении работый таймера <code>firstName</code>,
+        то и вывод тоже изменится:
+        <button onclick="testAnonFuct()">Тест кода</button>
+        <pre>
+    <code class="language-js">
+let user = {
+  firstName: "Вася",
+  sayHi() {
+    alert(`Привет, ${this.firstName}!`);
+  }
+};
+
+setTimeout(() => user.sayHi(), 1000);
+
+// ...в течение 1 секунды
+user = { sayHi() { alert("Другой пользователь в 'setTimeout'!"); } };
+
+// Другой пользователь в 'setTimeout'!        
+    </code>
+</pre>
+        </p>
+        <script>
+            function testAnonFuct() {
+                let user = {
+                    firstName: "Вася",
+                    sayHi() {
+                        alert(`Привет, ${this.firstName}!`);
+                    }
+                };
+
+                setTimeout(() => user.sayHi(), 1000);
+
+                // ...в течение 1 секунды
+                user = { sayHi() { alert("Другой пользователь в 'setTimeout'!"); } };
+
+                // Другой пользователь в 'setTimeout'!
+            }        
+        </script>
+    </div>
+    <div class="topic" id="sol2">
+        <h2>Решение 2: привязать контекст с помощью bind</h2>
+        <p>В современном JavaScript у функций есть встроенный метод bind, который позволяет зафиксировать this.
+            Синтаксис:
+        <pre>
+    <code class="language-js">
+// полный синтаксис будет представлен немного позже
+let boundFunc = func.bind(context);        
+    </code>
+</pre>
+        Например, здесь funcUser передаёт вызов в func, фиксируя this=user:
+        <pre>
+    <code class="language-js">
+let user = {
+  firstName: "Вася"
+};
+
+function func() {
+  alert(this.firstName);
+}
+
+let funcUser = func.bind(user);
+funcUser(); // Вася        
+    </code>
+</pre>
+        Все аргументы передаются исходному методу func как есть, например:
+        <pre>
+    <code class="language-js">
+let user = {
+  firstName: "Вася"
+};
+
+function func(phrase) {
+  alert(phrase + ', ' + this.firstName);
+}
+
+// привязка this к user
+let funcUser = func.bind(user);
+
+funcUser("Привет"); // Привет, Вася (аргумент "Привет" передан, при этом this = user)        
+    </code>
+</pre>
+        С setTimeout и методами объекта это тоже работает:
+        <pre>
+    <code class="language-js">
+let user = {
+  firstName: "Вася",
+  sayHi() {
+    alert(`Привет, ${this.firstName}!`);
+  }
+};
+
+let sayHi = user.sayHi.bind(user); // (*)
+
+sayHi(); // Привет, Вася!
+
+setTimeout(sayHi, 1000); // Привет, Вася!        
+    </code>
+</pre>
+        Все аргументы передаются в метод, <code>.bind</code> привязывает только <code>this</code>
+        </p>
+        <p>
+        <h3>Удобный метод: bindAll</h3>
+        <pre>
+    <code class="language-js">
+for (let key in user) {
+  if (typeof user[key] == 'function') {
+    user[key] = user[key].bind(user);
+  }
+}        
+    </code>
+</pre>
+        Некоторые JS-библиотеки предоставляют встроенные функции для удобной массовой привязки контекста, например
+        _.bindAll(obj) в lodash.
+        </p>
+
+    </div>
+    <div class="topic" id="part">
+        <h2>Частичное применение</h2>
+        <p>Мы можем привязать не только this, но и аргументы. Это делается редко, но иногда может быть полезно.
+
+            Полный синтаксис bind:
+        <pre>
+    <code class="language-js">
+let bound = func.bind(context, [arg1], [arg2], ...);        
+    </code>
+</pre>
+        Пример: <button onclick="testNull()">Тест ф-ции</button>
+        <pre>
+    <code class="language-js">
+function mul(a, b) {
+  return a * b;
+}
+
+let double = mul.bind(null, 2);
+
+alert( double(3) ); // = mul(2, 3) = 6
+alert( double(4) ); // = mul(2, 4) = 8
+alert( double(5) ); // = mul(2, 5) = 10        
+    </code>
+</pre>
+        Автор учебника не поясняет почему он передаёт <code>null</code>, а передаёт он его потому что контекст здесь не
+        используется, а биндит он только первый аргумент. Там могла бы быть например "какая-то хуйня" вместо null и
+        скрипт работал бы. (проверено см script с соотвествующей ф-цией)
+        </p>
+        <script>
+            function testNull() {
+                function mul(a, b) {
+                    return a * b;
+                }
+
+                let double = mul.bind("какая-то хуйня", 2);
+
+                alert(double(3)); // = mul(2, 3) = 6
+                alert(double(4)); // = mul(2, 4) = 8
+                alert(double(5)); // = mul(2, 5) = 10
+            }
+        </script>
+    </div>
+    <div class="topic" id="part2">
+        <h2>Частичное применение без контекста</h2>
+        <p>Что если мы хотим зафиксировать некоторые аргументы, но не контекст this? Например, для метода объекта.
+
+            Встроенный bind не позволяет этого. Мы не можем просто опустить контекст и перейти к аргументам.
+
+            К счастью, легко создать вспомогательную функцию partial, которая привязывает только аргументы.
+
+            Вот так:
+        <pre>
+            <code class="language-js">
+function partial(func, ...argsBound) {
+  return function(...args) { // (*)
+    return func.call(this, ...argsBound, ...args);
+  }
+}
+
+// использование:
+let user = {
+  firstName: "John",
+  say(time, phrase) {
+    alert(`[${time}] ${this.firstName}: ${phrase}!`);
+  }
+};
+
+// добавляем частично применённый метод с фиксированным временем
+user.sayNow = partial(user.say, new Date().getHours() + ':' + new Date().getMinutes());
+
+user.sayNow("Hello");                
+            </code>
+        </pre>
+        Да, смысл partial в этом примере — позволить this определяться динамически (например, из user), сохраняя
+        гибкость. Это мощный паттерн для каррирования методов без жёсткой привязки контекста.
+
+        Если нужно жёстко зафиксировать и this, и аргументы — используйте bind. Если нужна гибкость — partial.
+        </p>
+    </div>
+    <div class="topic" id="total">
+        <h2>Итого</h2>
+        <p>
+            Метод bind возвращает «привязанный вариант» функции func, фиксируя контекст this и первые аргументы arg1,
+            arg2…, если они заданы.
+
+            <br>Обычно bind применяется для фиксации this в методе объекта, чтобы передать его в качестве колбэка.
+            Например,
+            для setTimeout.
+
+            <br>Когда мы привязываем аргументы, такая функция называется «частично применённой» или «частичной».
+
+            <br>Частичное применение удобно, когда мы не хотим повторять один и тот же аргумент много раз. Например,
+            если у
+            нас есть функция send(from, to) и from всё время будет одинаков для нашей задачи, то мы можем создать
+            частично применённую функцию и дальше работать с ней.
+        </p>
+    </div>
+    <div class="topic" id="tasks">
+        <h1>Задачи</h1>
+        <div id="task1">
+            <h2>Задача 1</h2>
+            <p><button onclick="task1()">тест задачи</button> Автор утвержает и я так думал, что выведет null, но в
+                браузере вывело window, в ноде объект самой ф-ции, дипсик пояснил, что если установить
+                <code>'use strict';</code> то выведет null, а так происходит устаревшее поведение
+            </p>
+            <script id="task1">
+                function task1() {
+                    function f() {
+                        alert(this); // ?
+                    }
+
+                    let user = {
+                        g: f.bind(null)
+                    };
+
+                    user.g();
+                }
+            </script>
+        </div>
+        <div id="task2">
+            <h2>Задача 2</h2>
+            <p><button onclick="task2()">Тест ф-ции</button> Я ставил на Петю, а вылез Вася, автор поясняет:</p>
+            <p>Экзотический объект bound function, возвращаемый при первом вызове f.bind(...), запоминает контекст (и
+                аргументы, если они были переданы) только во время создания.
+
+                <br>Следующий вызов bind будет устанавливать контекст уже для этого объекта. Это ни на что не повлияет.
+
+                <br><strong>Можно сделать новую привязку, но нельзя изменить существующую.</strong>
+            </p>
+            <script>
+                function task2() {
+                    function f() {
+                        alert(this.name);
+                    }
+
+                    f = f.bind({ name: "Вася" }).bind({ name: "Петя" });
+
+                    f();
+                }
+            </script>
+        </div>
+        <div id="task3">
+            <h2>Задача 3</h2>
+            <p>Я думал 5, но нет - <code>undefined</code>, результатом bind является другой объект:
+            <pre>
+                    <code class="language-js">
+function sayHi() {
+  alert( this.name );
+}
+sayHi.test = 5;
+
+let bound = sayHi.bind({
+  name: "Вася"
+});
+
+alert( bound.test ); // что выведет? почему?                        
+                    </code>
+                </pre>
+            </p>
+        </div>
+        <div id="task4">
+            <h2>Задача 4</h2>
+            <p><button onclick="task4()">Кнопка текста</button> Решение:
+            <pre>
+                <code class="language-js">
+askPassword(user.loginOk.bind(user), user.loginFail.bind(user));                  
+                </code>
+            </pre>
+            Сама ф-ция в скрипте
+            </p>
+            <script>
+                function task4() {
+
+                    function askPassword(ok, fail) {
+                        let password = prompt("Password?", '');
+                        if (password == "rockstar") ok();
+                        else fail();
+                    }
+
+                    let user = {
+                        name: 'Вася',
+
+                        loginOk() {
+                            alert(`${this.name} logged in`);
+                        },
+
+                        loginFail() {
+                            alert(`${this.name} failed to log in`);
+                        },
+
+                    };
+
+                    askPassword(user.loginOk.bind(user), user.loginFail.bind(user));
+                }
+            </script>
+        </div>
+        <div id="task5">
+            <h2>Задача 5</h2>
+            <script>
+                function task5() {
+                    function askPassword(ok, fail) {
+                        let password = prompt("Password?", '');
+                        if (password == "rockstar") ok();
+                        else fail();
+                    }
+
+                    let user = {
+                        name: 'John',
+
+                        login(result) {
+                            alert(this.name + (result ? ' logged in' : ' failed to log in'));
+                        }
+                    };
+
+                    askPassword(()=>{user.login(true).bind(user)}, user.login.bind(user)); // ?
+                }
+            </script>
+            <p><button onclick="task5()">Тест ф-ции по задаче 5</button></p>
+<p>Я написал <pre>
+    <code class="language-js">
+askPassword(()=>{user.login(true).bind(user)}, user.login.bind(user));        
+    </code>
+</pre> Оно заработало , но я запросил дипсик:</p>
+            <p>Дипсик предложил правильный вариант:
+                <pre>
+                    <code class="language-js">
+askPassword(user.login.bind(user, true), user.login.bind(user, false));                        
+                    </code>
+                </pre>
+            </p>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,1 @@
+console.log(isWeekend(new Date("2025-01-01")));

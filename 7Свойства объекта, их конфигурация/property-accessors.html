@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Свойства - геттеры и сеттеры</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#propgetset">Свойства - геттеры и сеттеры</a></h2>
+        <ul>
+            <li><a href="#getset">Геттеры и сеттеры</a></li>
+            <li><a href="#decr">Дескрипторы свойств доступа</a></li>
+            <li><a href="#smart">Умные геттеры/сеттеры</a></li>
+            <li><a href="#compability">Использование для совместимости</a></li>
+
+        </ul>
+    </div>
+</body>
+
+</html>
+<div class="topic" id="propgetset">
+    <h2><a href="https://learn.javascript.ru/property-accessors">Свойства - геттеры и сеттеры</a></h2>
+    <p>Это свойства-аксессоры (accessor properties). По своей сути это функции, которые используются для присвоения и
+        получения значения, но во внешнем коде они выглядят как обычные свойства объекта.</p>
+    <p>Судя по всему в javascript это больше функции для обработки полей объекта чем методы инкапсуляции.</p>
+</div>
+<div class="topic" id="getset">
+    <h3>Геттеры и сеттеры</h3>
+    <p>Свойства-аксессоры представлены методами: «геттер» – для чтения и «сеттер» – для записи. При литеральном
+        объявлении объекта они обозначаются get и set:
+    <pre>
+            <code class="language-js">
+let obj = {
+  get propName() {
+    // геттер, срабатывает при чтении obj.propName
+  },
+
+  set propName(value) {
+    // сеттер, срабатывает при записи obj.propName = value
+  }
+};                
+            </code>
+        </pre>
+    Ещё один конструкт языка.
+    </p>
+    <p>Например:
+    <pre>
+    <code class="language-js">
+let user = {
+  name: "John",
+  surname: "Smith",
+
+  get fullName() {
+    return `${this.name} ${this.surname}`;
+  }
+};        
+    </code>
+</pre>
+    При этом его можно вызвать обычным способом <code>alert(user.fullName);</code> и для пользователя оно выглядит как
+    свойство объекта.
+    Однако если у нас есть только getter то это приведёт к ошибке:
+    <pre>
+    <code class="language-js">
+let user = {
+  get fullName() {
+    return `...`;
+  }
+};
+
+user.fullName = "Тест"; // Ошибка (у свойства есть только геттер)        
+    </code>
+</pre>
+    Что можно исправить задав setter:
+    <pre>
+    <code class="language-js">
+let user = {
+  name: "John",
+  surname: "Smith",
+
+  get fullName() {
+    return `${this.name} ${this.surname}`;
+  },
+
+  set fullName(value) {
+    [this.name, this.surname] = value.split(" ");
+  }
+};
+
+// set fullName запустится с данным значением
+user.fullName = "Alice Cooper";
+
+alert(user.name); // Alice
+alert(user.surname); // Cooper        
+    </code>
+</pre>
+    В итоге мы получили «виртуальное» свойство fullName. Его можно прочитать и изменить.
+    </p>
+</div>
+<div class="topic" id="decr">
+    <h3>Дескрипторы свойств доступа</h3>
+    <p>Дескриптор аксессора может иметь:
+    <ul>
+        <li>get – функция без аргументов, которая сработает при чтении свойства,</li>
+        <li>set – функция, принимающая один аргумент, вызываемая при присвоении свойства,</li>
+        <li>enumerable – то же самое, что и для свойств-данных,</li>
+        <li>configurable – то же самое, что и для свойств-данных.</li>
+    </ul>
+    </p>
+    <p>Задавать свойства дескрипторов можно так же Object.defineProperty():
+    <pre>
+    <code class="language-js">
+let user = {
+  name: "John",
+  surname: "Smith"
+};
+
+Object.defineProperty(user, 'fullName', {
+  get() {
+    return `${this.name} ${this.surname}`;
+  },
+
+  set(value) {
+    [this.name, this.surname] = value.split(" ");
+  }
+});        
+    </code>
+</pre>
+    При таком создании свойства enumerable и configurable будут в значении false. Но при этом можно будет задать
+    свойство, как обычно <code>user.surname = "Jo Baiden"</code>. При попытке указать и get, и value в одном дескрипторе
+    будет ошибка:
+    <pre>
+    <code class="language-js">
+// Error: Invalid property descriptor.
+Object.defineProperty({}, 'prop', {
+  get() {
+    return 1
+  },
+
+  value: 2
+});        
+    </code>
+</pre>
+
+    </p>
+    <button onclick="testAccesors()">Тест свойств дескриптора</button>
+    <script>
+        function testAccesors(params) {
+            "use strict";
+            let user = {
+                name: "John",
+                surname: "Smith"
+            };
+
+            Object.defineProperty(user, 'fullName', {
+                get() {
+                    return `${this.name} ${this.surname}`;
+                },
+
+                set(value) {
+                    [this.name, this.surname] = value.split(" ");
+                }
+            });
+            user.surname = "Jo Baiden"
+            let descr = Object.getOwnPropertyDescriptor(user, 'fullName')
+            alert(JSON.stringify(descr) + "\n" + user.surname)
+        }
+    </script>
+</div>
+<div class="topic" id="smart">
+    <h3>Умные геттеры/сеттеры</h3>
+    <p>Автор сообщает, что оказывается ВНЕЗАПНО геттеры и сеттеры можно использовать как обычные функции:
+    <pre>
+    <code class="language-js">
+let user = {
+  get name() {
+    return this._name;
+  },
+
+  set name(value) {
+    if (value.length < 4) {
+      alert("Имя слишком короткое, должно быть более 4 символов");
+      return;
+    }
+    this._name = value;
+  }
+};
+
+user.name = "Pete";
+alert(user.name); // Pete
+
+user.name = ""; // Имя слишком короткое...        
+    </code>
+</pre>
+    Так же автор нам неявно сообщает, что значения которые устанавливаются геттерами и сеттерами нужно начинать с
+    нижнего
+    поддчеркивания, как в предыдущем примере <code>_user</code>. И что существует соглашение не обращатся к таким
+    свойствам напрямую из-за пределов объекта.
+    </p>
+</div>
+<div class="topic" id="compability">
+    <h3>Использование для совместимости</h3>
+    <p>Привожу итоговый код:
+    <pre>
+    <code class="language-js">
+function User(name, birthday) {
+  this.name = name;
+  this.birthday = birthday;
+
+  // возраст рассчитывается из текущей даты и дня рождения
+  Object.defineProperty(this, "age", {
+    get() {
+      let todayYear = new Date().getFullYear();
+      return todayYear - this.birthday.getFullYear();
+    }
+  });
+}
+
+let john = new User("John", new Date(1992, 6, 1));
+
+alert( john.birthday ); // доступен как день рождения
+alert( john.age );      // ...так и возраст        
+    </code>
+</pre>
+    Ничего особенного в этом нет: использование геттера как функции с расчетом возраста на основе даты рождения. Причем
+    достаточно крироватого. Так как считаются полные годы.
+    </p>
+</div>

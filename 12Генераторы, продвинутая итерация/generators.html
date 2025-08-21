@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генераторы</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#gen">Генераторы</a></h2>
+        <ul>
+            <li><a href="#fun">Функция-генератор</a></li>
+            <li><a href="#iter">Перебор генераторов</a></li>
+            <li><a href="#use">Использование генераторов для перебираемых объектов</a></li>
+            <li><a href="#comp">Композиция генераторов</a></li>
+            <li><a href="#road">yield – дорога в обе стороны</a></li>
+            <li><a href="#throw">generator.throw</a></li>
+            <li><a href="#total">Итого</a></li>
+            <li><a href="#tasks">Задача</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="gen">
+        <h2><a href="https://learn.javascript.ru/generators">Генераторы</a></h2>
+        <p>Генераторы возвращают множество значений по мере запроса.</p>
+    </div>
+    <div class="topic" id="fun">
+        <h3>
+            Функция-генератор
+        </h3>
+        <p>
+            Синтаксис и пример:
+            <script>
+                function expl1(params) {
+                    function* generateSequence() {
+                        yield 1;
+                        yield 2;
+                        return 3;
+                    }
+
+                    // "функция-генератор" создаёт объект "генератор"
+                    let generator = generateSequence();
+                    alert(generator); // [object Generator]        
+                }
+            </script>
+        <pre><button onclick="expl1()">Тест функции</button>
+    <code class="language-js">
+function* generateSequence() {
+  yield 1;
+  yield 2;
+  return 3;
+}
+
+// "функция-генератор" создаёт объект "генератор"
+let generator = generateSequence();
+alert(generator); // [object Generator]        
+    </code>
+</pre>
+        Основной метод это next() который двигатеся до return, по достижении которого свойство done в объекте
+        устанавливается в true:
+        <script>
+            function expl2(params) {
+                function* generateSequence() {
+                    yield 1;
+                    yield 2;
+                    return 3;
+                }
+
+                let generator = generateSequence();
+
+                let one = generator.next();
+
+                alert(JSON.stringify(one)); // {value: 1, done: false}        
+            }
+        </script>
+        <pre onclick="expl2()">
+    <code class="language-js">
+        //Кликабельно
+function* generateSequence() {
+  yield 1;
+  yield 2;
+  return 3;
+}
+
+let generator = generateSequence();
+
+let one = generator.next();
+
+alert(JSON.stringify(one)); // {value: 1, done: false}        
+    </code>
+</pre>
+        По достижении done: true генератор будет возвращать один и тот же объект.
+        </p>
+        <h4>function* f(…) или function *f(…)?</h4>
+        <p>Без разницы как писать.</p>
+    </div>
+    <div class="topic" id="iter">
+        <h3>Перебор генераторов</h3>
+        <script>
+            function expl3(params) {
+                function* generateSequence() {
+                    yield 1;
+                    yield 2;
+                    return 3;
+                }
+
+                let generator = generateSequence();
+
+                for (let value of generator) {
+                    alert(value); // 1, затем 2
+                }
+            }
+        </script>
+        <p>
+        <pre onclick="expl3()">
+            <code class="language-js">
+//Кликабельно!!!                
+function* generateSequence() {
+  yield 1;
+  yield 2;
+  return 3;
+}
+
+let generator = generateSequence();
+
+for(let value of generator) {
+  alert(value); // 1, затем 2
+}                
+            </code>
+        </pre>
+        То есть это обычный итерируемый объект.
+        Так же этот объект можно использовать для генерации массивов:
+        <pre>
+            <code class="language-js">
+function* generateSequence() {
+  yield 1;
+  yield 2;
+  yield 3;
+}
+
+let sequence = [0, ...generateSequence()];
+
+alert(sequence); // 0, 1, 2, 3                
+            </code>
+        </pre>
+        </p>
+    </div>
+    <div class="topic" id="use">
+        <h3>Использование генераторов для перебираемых объектов</h3>
+        <p>Такую большую запись:
+        <pre>
+    <code class="language-js">
+let range = {
+  from: 1,
+  to: 5,
+
+  // for..of range вызывает этот метод один раз в самом начале
+  [Symbol.iterator]() {
+    // ...он возвращает перебираемый объект:
+    // далее for..of работает только с этим объектом, запрашивая следующие значения
+    return {
+      current: this.from,
+      last: this.to,
+
+      // next() вызывается при каждой итерации цикла for..of
+      next() {
+        // нужно вернуть значение как объект {done:.., value :...}
+        if (this.current <= this.last) {
+          return { done: false, value: this.current++ };
+        } else {
+          return { done: true };
+        }
+      }
+    };
+  }
+};
+
+// при переборе объекта range будут выведены числа от range.from до range.to
+alert([...range]); // 1,2,3,4,5        
+    </code>
+</pre>
+        Можно скоратить до:
+        <pre>
+    <code class="language-js">
+let range = {
+  from: 1,
+  to: 5,
+
+  *[Symbol.iterator]() { // краткая запись для [Symbol.iterator]: function*()
+    for(let value = this.from; value <= this.to; value++) {
+      yield value;
+    }
+  }
+};
+
+alert( [...range] ); // 1,2,3,4,5        
+    </code>
+</pre>
+        </p>
+    </div>
+    <div class="topic" id="comp">
+        <h3>Композиция генераторов</h3>
+        <p>Генератор может быть встроен в другой генератор:
+            <script>
+                function expl4(params) {
+                    function* generateSequence(start, end) {
+                        for (let i = start; i <= end; i++) yield i;
+                    }
+
+                    function* generatePasswordCodes() {
+
+                        // 0..9
+                        yield* generateSequence(48, 57);
+
+                        // A..Z
+                        yield* generateSequence(65, 90);
+
+                        // a..z
+                        yield* generateSequence(97, 122);
+
+                    }
+
+                    let str = '';
+
+                    for (let code of generatePasswordCodes()) {
+                        str += String.fromCharCode(code);
+                    }
+
+                    alert(str); // 0..9A..Za..z        
+                }
+            </script>
+        <pre><button onclick="expl4()">Тест генератора</button>
+    <code class="language-js">
+function* generateSequence(start, end) {
+  for (let i = start; i <= end; i++) yield i;
+}
+
+function* generatePasswordCodes() {
+
+  // 0..9
+  yield* generateSequence(48, 57);
+
+  // A..Z
+  yield* generateSequence(65, 90);
+
+  // a..z
+  yield* generateSequence(97, 122);
+
+}
+
+let str = '';
+
+for(let code of generatePasswordCodes()) {
+  str += String.fromCharCode(code);
+}
+
+alert(str); // 0..9A..Za..z        
+    </code>
+</pre>
+        Директива yield* делегирует выполнение другому генератору. Этот термин означает, что yield* gen перебирает
+        генератор gen и прозрачно направляет его вывод наружу. Как если бы значения были сгенерированы внешним
+        генератором.
+        </p>
+        <p>
+            Композиция генераторов – естественный способ вставлять вывод одного генератора в поток другого. Она не
+            использует дополнительную память для хранения промежуточных результатов
+        </p>
+    </div>
+    <div class="topic" id="road">
+        <h3>yield – дорога в обе стороны</h3>
+        <p>Можно передавать в next() какое-либо значение и оно станет значением yield
+            <script>
+                function expl5(params) {
+                    function* gen() {
+                        // Передаём вопрос во внешний код и ожидаем ответа
+                        let result = yield "2 + 2 = ?"; // (*)
+
+                        alert(result);
+                    }
+
+                    let generator = gen();
+
+                    let question = generator.next().value; // <-- yield возвращает значение
+
+                    generator.next(4); // --> передаём результат в генератор                
+                }
+            </script>
+        <pre><button onclick="expl5()">Тест генератора</button>
+    <code class="language-js">
+function* gen() {
+  // Передаём вопрос во внешний код и ожидаем ответа
+  let result = yield "2 + 2 = ?"; // (*)
+
+  alert(result);
+}
+
+let generator = gen();
+
+let question = generator.next().value; // <-- yield возвращает значение
+
+generator.next(4); // --> передаём результат в генератор        
+    </code>
+</pre>
+        Но переданное и возвращённое значение как бы добавляется к итерации:
+        <script>
+            function expl6(params) {
+                function* gen() {
+                    let ask1 = yield "2 + 2 = ?";
+
+                    alert(ask1); // 4
+
+                    let ask2 = yield "3 * 3 = ?"
+
+                    alert(ask2); // 9
+                }
+
+                let generator = gen();
+
+                alert(generator.next().value); // "2 + 2 = ?"
+
+                alert(generator.next(4).value); // "3 * 3 = ?"
+
+                alert(generator.next(9).done); // true        
+            }
+        </script>
+        <pre> <button onclick="expl6()">Тест итератора</button>
+    <code class="language-js">
+function* gen() {
+  let ask1 = yield "2 + 2 = ?";
+
+  alert(ask1); // 4
+
+  let ask2 = yield "3 * 3 = ?"
+
+  alert(ask2); // 9
+}
+
+let generator = gen();
+
+alert( generator.next().value ); // "2 + 2 = ?"
+
+alert( generator.next(4).value ); // "3 * 3 = ?"
+
+alert( generator.next(9).done ); // true        
+    </code>
+</pre>
+        Получается такой «пинг-понг»: каждый next(value) передаёт в генератор значение, которое становится результатом
+        текущего yield, возобновляет выполнение и получает выражение из следующего yield.
+        </p>
+    </div>
+    <div class="topic" id="throw">
+        <h3>generator.throw</h3>
+        <p>Если при помощи generator.throw закинуть ошибку в генератор, то он вернёт ошибку через yield:
+            <script>
+                function expl7(params) {
+                    function* gen() {
+                        try {
+                            let result = yield "2 + 2 = ?"; // (1)
+
+                            alert("Выполнение программы не дойдёт до этой строки, потому что выше возникнет исключение");
+                        } catch (e) {
+                            alert(e); // покажет ошибку
+                        }
+                    }
+
+                    let generator = gen();
+
+                    let question = generator.next().value;
+
+                    generator.throw(new Error("Ответ не найден в моей базе данных")); // (2)                
+                }
+            </script>
+        <pre><button onclick="expl7()">Тест ошибки</button>
+    <code class="language-js">
+function* gen() {
+  try {
+    let result = yield "2 + 2 = ?"; // (1)
+
+    alert("Выполнение программы не дойдёт до этой строки, потому что выше возникнет исключение");
+  } catch(e) {
+    alert(e); // покажет ошибку
+  }
+}
+
+let generator = gen();
+
+let question = generator.next().value;
+
+generator.throw(new Error("Ответ не найден в моей базе данных")); // (2)        
+    </code>
+</pre>
+        Ошибку можно ловить и в вызывающем коде:
+        <pre>
+    <code class="language-js">
+function* generate() {
+  let result = yield "2 + 2 = ?"; // Ошибка в этой строке
+}
+
+let generator = generate();
+
+let question = generator.next().value;
+
+try {
+  generator.throw(new Error("Ответ не найден в моей базе данных"));
+} catch(e) {
+  alert(e); // покажет ошибку
+}        
+    </code>
+</pre>
+        </p>
+    </div>
+    <div class="topic" id="total">
+        <h3>Итого</h3>
+        <p>
+        <ul>
+            <li>Генераторы создаются при помощи функций-генераторов function* f(…) {…}.</li>
+            <li>Внутри генераторов и только внутри них существует оператор yield.</li>
+            <li>Внешний код и генератор обмениваются промежуточными результатами посредством вызовов next/yield. </li>
+        </ul>
+        </p>
+        <p>В современном JavaScript генераторы используются редко. Но иногда они оказываются полезными, потому что
+            способность функции обмениваться данными с вызывающим кодом во время выполнения совершенно уникальна. И,
+            конечно, для создания перебираемых объектов.</p>
+
+        <p>Также, в следующей главе мы будем изучать асинхронные генераторы, которые используются, чтобы читать потоки
+            асинхронно сгенерированных данных (например, постранично загружаемые из сети) в цикле for await ... of.</p>
+
+        <p>В веб-программировании мы часто работаем с потоками данных, так что это ещё один важный случай использования.
+        </p>
+    </div>
+    <div class="topic" id="tasks">
+        <h3>Задача</h3>
+        <script>
+            function task1(params) {
+                function* pseudoRandom(seed) {
+                    while (true) {
+                         seed = seed * 16807 % 2147483647
+                      //  alert(result);
+                        yield seed
+                    }
+                }
+                let gen = pseudoRandom(1)
+                alert(gen.next().value)
+                alert(gen.next().value)
+            }
+        </script>
+    <button onclick="task1()">Тест код задачи</button>
+    <p>Мой код проходит его тесты:
+<pre>
+    <code class="language-js">
+                function* pseudoRandom(seed) {
+                    while (true) {
+                         seed = seed * 16807 % 2147483647
+                      //  alert(result);
+                        yield seed
+                    }
+                }        
+    </code>
+</pre>
+Но дипсик и дядя утверждают что правильнее:
+
+<pre>
+    <code class="language-js">
+function* pseudoRandom(seed) {
+  let value = seed;
+
+  while(true) {
+    value = value * 16807 % 2147483647
+    yield value;
+  }
+
+};
+
+let generator = pseudoRandom(1);
+
+alert(generator.next().value); // 16807
+alert(generator.next().value); // 282475249
+alert(generator.next().value); // 1622650073        
+    </code>
+</pre>
+    </p>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конспект сайта learn.javascript.ru раздел Типы данных - WeakMap и WeakSet</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h1><a href="#weakmap_set">WeakMap и WeakSet</a></h1>
+        <h2>
+            <ul>
+                <li><a href="#WeakMap">WeakMap</a></li>
+                <ul>
+                    <h3>
+                        <li><a href="#moredata">Пример: дополнительные данные</a></li>
+                        <li><a href="#cashe">Применение для кеширования</a></li>
+                    </h3>
+                </ul>
+                <li><a href="#WeakSet">WeakSet</a></li>
+                <li><a href="#tasks">Задачи</a></li>
+            </ul>
+        </h2>
+    </div>
+    <div class="topic" id="weakmap_set">
+        <h1>WeakMap и WeakSet</h1>
+        <p>Эти две структуры созданы для того, чтобы не увеличивать колличество ссылок которые подсчитывает сборщик
+            мусора. При удалении объекта объект из этих струтур так же пропадает. </p>
+    </div>
+    <div class="topic" id="WeakMap">
+        <h2><a href="https://learn.javascript.ru/weakmap-weakset#weakmap">WeakMap</a></h2>
+        <p>Ключи WeakMap должны быть объектами. Небольшая проработка <a href="weakmap-weakset-wokking/weakmap.js">дана
+                тут</a> в ходе неё было выяснено, что ссылка исчезает из этой струтуры очень быстро, буквально секунды.
+        <pre>
+                <code class="language-js">
+let john = { name: "John" };
+
+let weakMap = new WeakMap();
+weakMap.set(john, "...");
+
+john = null; /                    
+                </code>
+            </pre>
+        В WeakMap присутствуют только следующие методы:
+        <ul>
+            <li><code>weakMap.get(key)</code></li>
+            <li><code>weakMap.set(key, value)</code></li>
+            <li><code>weakMap.delete(key)</code></li>
+            <li><code>weakMap.has(key)</code></li>
+        </ul>
+        </p>
+        <div id="moredata">
+            <h3><a href="https://learn.javascript.ru/weakmap-weakset#primer-dopolnitelnye-dannye">Пример: дополнительные
+                    данные</a></h3>
+            <p>В этом разделе рассказано основное применение WeakMap - как средство организации слабого хранилица, из
+                которого пропадают объекты по мере их исчезновения где-то ещё.
+                Дипсик говорит что основное применение полуавтоматическое управление памяти, для того, чтобы избежать накопления мусора.
+            
+            </p>
+        </div>
+        <div id="cashe">
+            <h3>Применение для кеширования</h3>
+            <p>Применяется для кеширования каких-либо действий в виде:
+                <pre>
+                    <code class="language-js">
+// 📁 cache.js
+let cache = new WeakMap();
+
+// вычисляем и запоминаем результат
+function process(obj) {
+  if (!cache.has(obj)) {
+    let result = /* вычисляем результат для объекта */ obj;
+
+    cache.set(obj, result);
+  }
+
+  return cache.get(obj);
+}
+
+// 📁 main.js
+let obj = {/* какой-то объект */};
+
+let result1 = process(obj);
+let result2 = process(obj);
+
+// ...позже, когда объект больше не нужен:
+obj = null;
+
+// Нет возможности получить cache.size, так как это WeakMap,
+// но он равен 0 или скоро будет равен 0
+// Когда сборщик мусора удаляет obj, связанные с ним данные из кеша тоже удаляются                        
+                    </code>
+                </pre>
+                При использовании <code>Map</code> объект кеширования остался бы в памяти.
+            </p>
+        </div>
+    </div>
+    <div class="topic" id="WeakSet">
+        <h2>WeakSet</h2>
+        <p>Коллекция WeakSet ведёт себя похоже:
+<ul>
+<li>Она аналогична Set, но мы можем добавлять в WeakSet только объекты (не примитивные значения).</li>
+<li>Объект присутствует в множестве только до тех пор, пока доступен где-то ещё.</li>
+<li>Как и Set, она поддерживает add, has и delete, но не size, keys() и не является перебираемой.    </li>
+</ul>
+Нужна условно для того, чтобы определить было ли событие в текущей сессии. 
+</p>
+    </div>
+    <div class="topic" id="tasks">
+        <div id="task1">
+           <h3>Задача 1</h3> <p><a href="weakmap-weakset-wokking/task1.js">Решение задачи</a> то есть если удалить объект то из коллекции он тоже пропадает.</p> 
+        </div>
+        <div id="task2">
+            <h3>Задача 2</h3>
+            <p><a href="weakmap-weakset-wokking/task2.js">Предложил WeakMap</a> при удалении объекта он пропадает из коллекции. </p>
+        </div>
+    </div>
+</body>
+</html>

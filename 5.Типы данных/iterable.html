@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конспект сайта learn.javascript.ru раздел Типы данных - Перебираемые объекты</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h1>
+            <a href="#iterobj">Перебираемые объекты</a>
+        </h1>
+        <h3>
+            <ul>
+                <li><a href="#Symbol.iterator">Symbol.iterator</a></li>
+                <li><a href="#str_iter">Строка – перебираемый объект</a></li>
+                <li><a href="#visiable_iter">Явный вызов итератора</a></li>
+                <li><a href="#pseudoarrays">Итерируемые объекты и псевдомассивы</a></li>
+                <li><a href="#Array.from">Array.from</a></li>
+                <li><a href="#total">Итого</a></li>
+            </ul>
+        </h3>
+    </div>
+    <div class="topic" id="iterobj">
+        <h1>Перебираемые объекты</h1>
+        <p>Перебираемые (или итерируемые) объекты – это обобщение массивов. Концепция, которая позволяет использовать
+            любой объект в цикле for..of.
+
+            <br>Конечно же, сами массивы являются перебираемыми объектами. Но есть и много других встроенных
+            перебираемых
+            объектов, например, строки.
+
+            <br>Если объект не является массивом, но представляет собой коллекцию каких-то элементов (список, набор), то
+            удобно использовать цикл for..of для их перебора, так что давайте посмотрим, как это сделать.
+        </p>
+        <div id="Symbol.iterator">
+            <h3>Symbol.iterator</h3>
+            <p>Специальная функция которую можно определить для итерирования объектов, как отдельной ф-цией, так и
+                внутри объекта:
+            <pre>
+                    <code class="language-js">
+let range = {
+  from: 1,
+  to: 5
+};
+
+// 1. вызов for..of сначала вызывает эту функцию
+range[Symbol.iterator] = function() {
+
+  // ...она возвращает объект итератора:
+  // 2. Далее, for..of работает только с этим итератором,
+  // запрашивая у него новые значения
+  return {
+    current: this.from,
+    last: this.to,
+
+    // 3. next() вызывается на каждой итерации цикла for..of
+    next() {
+      // 4. он должен вернуть значение в виде объекта {done:.., value :...}
+      if (this.current <= this.last) {
+        return { done: false, value: this.current++ };
+      } else {
+        return { done: true };
+      }
+    }
+  };
+};
+
+// теперь работает!
+for (let num of range) {
+  alert(num); // 1, затем 2, 3, 4, 5
+}                        
+                    </code>
+                </pre>
+            А можно внутри объекта:
+            <pre>
+                    <code class="language-js">
+let range = {
+  from: 1,
+  to: 5,
+
+  [Symbol.iterator]() {
+    this.current = this.from;
+    return this;
+  },
+
+  next() {
+    if (this.current <= this.to) {
+      return { done: false, value: this.current++ };
+    } else {
+      return { done: true };
+    }
+  }
+};
+
+for (let num of range) {
+  alert(num); // 1, затем 2, 3, 4, 5
+}                        
+                    </code>
+                </pre>
+            У второго метода есть недостаток, нельзя использовать два и более циклов одноврменнно.
+            </p>
+        </div>
+        <div id="str_iter">
+            <h3>Строка – перебираемый объект</h3>
+            <p>Для string можно использовать цикл <code>for...of</code>. И он работает корректно даже с суррогатными
+                парами!
+            <pre>
+    <code class="language-js">
+let str = '𝒳😂';
+for (let char of str) {
+    alert( char ); // 𝒳, а затем 😂
+}        
+    </code>
+</pre>
+
+            </p>
+        </div>
+        <div id="visiable_iter">
+            <h3>Явный вызов итератора</h3>
+            <p>Можно вызвать явно итератор как функцию, я <a href="iterable-working/while.js">прорабатывал</a> этот
+                пример и там достаточно интересно с
+                отдельным чаром - это объект у которого несколько ключевых состояний
+            <pre>
+                <code class="language-js">
+let str = "Hello";
+
+// делает то же самое, что и
+// for (let char of str) alert(char);
+
+let iterator = str[Symbol.iterator]();
+
+while (true) {
+  let result = iterator.next();
+  if (result.done) break;
+  alert(result.value); // выводит символы один за другим
+}                    
+                </code>
+            </pre>
+            </p>
+        </div>
+        <div id="pseudoarrays">
+            <h3>Итерируемые объекты и псевдомассивы</h3>
+            <p>
+            <ul>
+                <li><em>Итерируемые объекты</em> – это объекты, которые реализуют метод <code>Symbol.iterator</code>,
+                    как было описано выше.</li>
+                <li><em>Псевдомассивы</em> – это объекты, у которых есть индексы и свойство <code>length</code>, то
+                    есть, они выглядят как массивы.</li>
+            </ul>
+            Причём такой объект можно создать самостоятельно:
+            <pre>
+                    <code class="language-js">
+let arrayLike = { // есть индексы и свойство length => псевдомассив
+  0: "Hello",
+  1: "World",
+  length: 2
+};                        
+                    </code>
+                </pre>
+            </p>
+        </div>
+        <div id="Array.from">
+            <h3>Array.from</h3>
+            <p>Есть универсальный метод Array.from, который принимает итерируемый объект или псевдомассив и делает из
+                него «настоящий» Array.
+            <pre>
+                <code class="language-js">
+let arrayLike = {
+  0: "Hello",
+  1: "World",
+  length: 2
+};
+
+let arr = Array.from(arrayLike); // (*)
+alert(arr.pop()); // World (метод работает)                    
+                </code>
+            </pre>
+            <pre>
+                <code class="language-js">
+// range взят из примера в начале статьи
+
+let arr = Array.from(range);
+alert(arr); // 1,2,3,4,5 (преобразование массива через toString работает)                    
+                </code>
+            </pre>
+            Полный синтаксис Array.from позволяет указать необязательную «трансформирующую» функцию:
+            <pre>
+                <code class="language-js">
+Array.from(obj[, mapFn, thisArg])                    
+                </code>
+            </pre>
+            Например:
+            <pre>
+                <code class="language-js">
+// range взят из примера в начале статьи
+
+// возводим каждое число в квадрат
+let arr = Array.from(range, num => num * num);
+
+alert(arr); // 1,4,9,16,25                    
+                </code>
+            </pre>
+            Так же этот метод позволяет превратить строки в массивы, это срабатывает лучше чем <code>slice</code> и
+            <code>split</code>:
+            <pre>
+                <code class="language-js">
+let str = '𝒳😂';
+
+// разбивает строку на массив её элементов
+let chars = Array.from(str);
+console.log(chars[0]); // 𝒳
+console.log(chars[1]); // 😂
+console.log(chars.length); // 2
+console.log(str.split('')) //(4) ['�', '�', '�', '�']                   
+                </code>
+            </pre>
+            Технически это то же самое, что и:
+            <pre>
+    <code class="language-js">
+let str = '𝒳😂';
+let chars = []; // Array.from внутри себя выполняет тот же цикл
+for (let char of str) {
+  chars.push(char);
+}        
+    </code>
+</pre>
+            Мы можем даже создать slice, который поддерживает суррогатные пары:
+            <pre>
+    <code class="language-js">
+function slice(str, start, end) {
+  return Array.from(str).slice(start, end).join('');
+}
+
+let str = '𝒳😂𩷶';
+
+alert( slice(str, 1, 3) ); // 😂𩷶
+
+// а вот встроенный метод не поддерживает суррогатные пары
+alert( str.slice(1, 3) ); // мусор (две части различных суррогатных пар)        
+    </code>
+</pre>
+
+            </p>
+
+        </div>
+        <div id="total">
+            <h3>Итого</h3>
+            <p>
+                Объекты, которые можно использовать в цикле for..of, называются итерируемыми.
+            <ul>
+                <li>Технически итерируемые объекты должны иметь метод Symbol.iterator.</li>
+                <ul>
+                    <li>Результат вызова obj[Symbol.iterator] называется итератором. Он управляет процессом итерации.
+                    </li>
+                    <li>Итератор должен иметь метод next(), который возвращает объект {done: Boolean, value: any}, где
+                        done:true</li>
+                    сигнализирует об окончании процесса итерации, в противном случае value – следующее значение.
+                </ul>
+                <li>Метод Symbol.iterator автоматически вызывается циклом for..of, но можно вызвать его и напрямую.</li>
+                <li>Встроенные итерируемые объекты, такие как строки или массивы, также реализуют метод Symbol.iterator.
+                </li>
+                <li>Строковый итератор знает про суррогатные пары.</li>
+
+            </ul>
+            </p>
+            <p>Объекты, имеющие индексированные свойства и length, называются псевдомассивами. Они также могут иметь
+                другие свойства и методы, но у них нет встроенных методов массивов.</p>
+
+            <p>Если мы заглянем в спецификацию, мы увидим, что большинство встроенных методов рассчитывают на то, что
+                они будут работать с итерируемыми объектами или псевдомассивами вместо «настоящих» массивов, потому что
+                эти объекты более абстрактны.</p>
+
+            <p>Array.from(obj[, mapFn, thisArg]) создаёт настоящий Array из итерируемого объекта или псевдомассива obj,
+                и затем мы можем применять к нему методы массивов. Необязательные аргументы mapFn и thisArg позволяют
+                применять функцию с задаваемым контекстом к каждому элементу.</p>
+        </div>
+
+    </div>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Наследование классов</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#inh">Наследование классов</a></h2>
+        <ul>
+            <li><a href="#extends">Ключевое слово «extends»</a></li>
+            <li><a href="#override">Переопределение методов</a></li>
+            <li><a href="#constr">Переопределение конструктора</a></li>
+            <li><a href="#skip">Устройство super, [[HomeObject]]</a></li>
+            <li><a href="#total">Итого</a></li>
+            <li><a href="#tasks">Задачи</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="inh">
+        <h2><a href="https://learn.javascript.ru/class-inheritance">Наследование классов</a></h2>
+        <p>Было бы глупо если классы были бы, а наследования не было. Интерфейсов в чистом js нет. Множественное
+            наследование не возможно.</p>
+    </div>
+    <div class="topic" id="extends">
+        <h3>Ключевое слово «extends»</h3>
+        <p>Как и в Java - наследование осуществляется при помощи слова <code>extends</code>. С тем отличие, что после
+            extends разрешены любые выражения:
+        <pre>
+        <code class="language-js">
+function f(phrase) {
+  return class {
+    sayHi() { alert(phrase); }
+  };
+}
+
+class User extends f("Привет") {}
+
+new User().sayHi(); // Привет            
+        </code>
+    </pre>
+        </p>
+    </div>
+    <div class="topic" id="override">
+        <h3>Переопределение методов</h3>
+        <p>Инструкции <code>@Override</code> в языке нет, есть в TS, но это другая история.</p>
+        <p>Методы переопределяются автоматически, вызывается метод потомка если это объект потомка.</p>
+        <p>Как и в Java есть ключевое слово <code>super</code>:
+        <ul>
+            <li><code>super.method()</code> вызывает родительский метод.</li>
+            <li><code>super()</code> вызывает родительский конструктор</li>
+        </ul>
+        У стрелочных функции нет родителя, а потому вызывается super внешнего контекста:
+        <pre>
+        <code class="language-js">
+class Rabbit extends Animal {
+  stop() {
+    setTimeout(() => super.stop(), 1000); // вызывает родительский stop после 1 секунды
+  }
+}            
+        </code>
+    </pre>
+        </p>
+    </div>
+    <div class="topic" id="constr">
+        <h3>Переопределение конструктора</h3>
+        <p>Если в объекте конструктора нет, то происходит автоматическая подстановка:
+        <pre>
+    <code class="language-js">
+class Rabbit extends Animal {
+  // генерируется для классов-потомков, у которых нет своего конструктора
+  constructor(...args) {
+    super(...args);
+  }
+}        
+    </code>
+</pre>
+        </p>
+        <p>Если он есть, то сначала надо явно вызвать конструктор родителя, а потом уже обращаться к this.
+        <pre>
+    <code class="language-js">
+class Animal {
+
+  constructor(name) {
+    this.speed = 0;
+    this.name = name;
+  }
+
+  // ...
+}
+
+class Rabbit extends Animal {
+
+  constructor(name, earLength) {
+    super(name);
+    this.earLength = earLength;
+  }
+
+  // ...
+}
+
+// теперь работает
+let rabbit = new Rabbit("Белый кролик", 10);
+alert(rabbit.name); // Белый кролик
+alert(rabbit.earLength); // 10        
+    </code>
+</pre>
+        <strong>По другому не сработает.</strong>
+        </p>
+        <p>Переопределение полей класса: тонкое замечание</p>
+        <p>
+        <pre>
+            <code class="language-js">
+class Animal {
+  name = 'animal';
+
+  constructor() {
+    alert(this.name); // (*)
+  }
+}
+
+class Rabbit extends Animal {
+  name = 'rabbit';
+}
+
+new Animal(); // animal
+new Rabbit(); // animal                
+            </code>
+        </pre>
+        Но вот методы класса всегда вызываются наследника, если оно у него есть.
+        </p>
+    </div>
+
+    <div class="topic" id="skip">
+        <h3><a href="https://learn.javascript.ru/class-inheritance#ustroystvo-super-homeobject">Устройство super,
+                [[HomeObject]]</a></h3>
+        <p>Скипаю этот раздел, по причине его ненужности для разработки, тут обсуждается внутренняя кухня языка</p>
+    </div>
+    <div class="topic" id="total">
+        <h3>Итого</h3>
+        <p>
+        <ol>
+            <li>Чтобы унаследовать от класса: class Child extends Parent:
+                <br>При этом Child.prototype.__proto__ будет равен Parent.prototype, так что методы будут унаследованы.
+            <li>При переопределении конструктора:
+                <br>Обязателен вызов конструктора родителя super() в конструкторе Child до обращения к this.
+            <li>При переопределении другого метода:
+                <br>Мы можем вызвать super.method() в методе Child для обращения к методу родителя Parent.
+            <li>Внутренние детали:
+                <br>Методы запоминают свой объект во внутреннем свойстве [[HomeObject]]. Благодаря этому работает super,
+                он в его прототипе ищет родительские методы.
+                <br>Поэтому копировать метод, использующий super, между разными объектами небезопасно.
+        </ol>
+        </p>
+        <p>У стрелочных функций нет своего this и super, поэтому они «прозрачно» встраиваются во внешний контекст.</p>
+    </div>
+    <div class="topic" id="tasks">
+        <h3>Задачи</h3>
+        <div id="task1">
+            <script>
+                function task1(params) {
+                    class Animal {
+
+                        constructor(name) {
+                            this.name = name;
+                        }
+
+                    }
+
+                    class Rabbit extends Animal {
+                        constructor(name) {
+                            super(name);
+                            this.created = Date.now();
+                        }
+                    }
+
+                    let rabbit = new Rabbit("Белый кролик"); // Error: this is not defined
+                    alert(rabbit.name);
+                }
+            </script>
+            <p><button onclick="task1()">Решение первой задачи</button></p>
+        </div>
+        <div id="task2">
+            <h4>Задача 2</h4>
+            <p>Задачу я не понял написал метод который устанавливает переодичность тиков и запускает тик, но то как у автора реализовано - полная хуйня.</p>
+            <script>
+                class Clock {
+                    constructor({ template }) {
+                        this.template = template;
+                    }
+
+                    render() {
+                        let date = new Date();
+
+                        let hours = date.getHours();
+                        if (hours < 10) hours = '0' + hours;
+
+                        let mins = date.getMinutes();
+                        if (mins < 10) mins = '0' + mins;
+
+                        let secs = date.getSeconds();
+                        if (secs < 10) secs = '0' + secs;
+
+                        let output = this.template
+                            .replace('h', hours)
+                            .replace('m', mins)
+                            .replace('s', secs);
+
+                        console.log(output);
+                    }
+
+                    stop() {
+                        clearInterval(this.timer);
+                    }
+
+                    start() {
+                        this.render();
+                        this.timer = setInterval(() => this.render(), 1000);
+                    }
+                }
+
+                class ExtendedClock extends Clock {
+                    start(ms) {
+                        this.render();
+                        this.timer = setInterval(() => this.render(), ms);
+                    }
+                    precision(ms) {
+                        this.start(ms)
+                    }
+                }
+            </script>
+        </div>
+    </div>
+
+</body>
+
+</html>

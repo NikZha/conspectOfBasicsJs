@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intl: интернационализация в JavaScript</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h2><a href="#intl">Intl: интернационализация в JavaScript</a></h2>
+        <ul>
+            <li><a href="#basic">Основные объекты</a></li>
+            <li><a href="#locale">Локаль</a></li>
+            <li><a href="#str">Строки, Intl.Collator</a></li>
+            <li><a href="#date">Даты, Intl.DateTimeFormat</a></li>
+            <li><a href="#num">Числа, Intl.NumberFormat</a></li>
+            <li><a href="#method">Методы в Date, String, Number</a></li>
+            <li><a href="#oldie">Методы в Date, String, Number</a></li>
+            <li><a href="#tasks">Задача</a></li>
+        </ul>
+    </div>
+    <div class="topic" id="intl">
+        <h2><a href="https://learn.javascript.ru/intl">Intl: интернационализация в JavaScript</a></h2>
+        <p>Для решения проблем со строками, датами и числами была создана эта реализация в javascript. Раздел я побегу
+            коротенько в виду редкой востребованности, точно не первостепенной.</p>
+    </div>
+    <div class="topic" id="basic">
+        <h3>Основные объекты</h3>
+<p><code>Intl.Collator</code> 
+Умеет правильно сравнивать и сортировать строки.</p>
+<p><code>Intl.DateTimeFormat</code> 
+Умеет форматировать дату и время в соответствии с нужным языком.</p>
+<p><code>Intl.NumberFormat</code> 
+Умеет форматировать числа в соответствии с нужным языком.        </p>
+    </div>
+    <div class="topic" id="locale">
+        <h3>Локаль</h3>
+        <p>Локаль описывается строкой из трёх компонентов, которые разделяются дефисом:
+<ol>
+<li>Код языка.</li>
+<li>Код способа записи.</li>
+<li>Код страны.    </li>
+</ol>
+например zh-Hans-CN – китайский язык (zh), записываемый упрощённой иероглифической письменностью (Hans), используемый в Китае.
+Если локаль не указана или undefined – берётся локаль по умолчанию, установленная в окружении (браузере).
+</p>
+<div id="turn">
+    <h4>Подбор локали</h4>
+    <p>localeMatcher – вспомогательная настройка, которую тоже можно везде указать, она определяет способ подбора локали, если желаемая недоступна. По умолчанию стоит "best fit".</p>
+</div>
+    </div>
+    <div class="topic" id="str">
+        <h3>Строки, Intl.Collator</h3>
+        <p>
+            <pre>
+                <code class="language-js">
+let collator = new Intl.Collator([locales, [options]])                    
+                </code>
+            </pre>
+Можно использовать для сортировки:
+<pre>
+    <code class="language-js">
+let result = collator.compare(str1, str2);
+//Например:
+let collator = new Intl.Collator();
+
+alert( "ёжик" > "яблоко" ); // true (ёжик больше, что неверно)
+alert( collator.compare("ёжик", "яблоко") ); // -1 (ёжик меньше, верно)        
+    </code>
+</pre>            
+        </p>
+    </div>
+    <div class="topic" id="date">
+        <h3>Даты, Intl.DateTimeFormat</h3>
+        <p>
+            <pre>
+                <code class="language-js">
+// создание
+let formatter = new Intl.DateTimeFormat([locales, [options]])                    
+                </code>
+            </pre>
+Например:
+<script>
+    function expl1(params) {
+let date = new Date(2014, 11, 31, 12, 30, 0);
+
+let formatter1 = new Intl.DateTimeFormat("ru");
+alert( formatter1.format(date) ); // 31.12.2014
+
+let formatter2 = new Intl.DateTimeFormat("en-US");
+alert( formatter2.format(date) ); // 12/31/2014        
+    }
+</script>
+<pre><button onclick="expl1()">Тест форматер</button>
+    <code class="language-js">
+let date = new Date(2014, 11, 31, 12, 30, 0);
+
+let formatter1 = new Intl.DateTimeFormat("ru");
+alert( formatter1.format(date) ); // 31.12.2014
+
+let formatter2 = new Intl.DateTimeFormat("en-US");
+alert( formatter2.format(date) ); // 12/31/2014        
+    </code>
+</pre>    
+Далее там ещё есть настройки на время, время и дату в национальном формате.        
+        </p>
+    </div>
+    <div class="topic" id="num">
+        <h3>Числа, Intl.NumberFormat</h3>
+        <p>
+            <pre>
+                <code class="language-js">
+let formatter = new Intl.NumberFormat([locales[, options]]);
+
+formatter.format(number); // форматирование                    
+                </code>
+            </pre>
+        С пару десятков различных настроек, просто приведу пару примеров:
+<pre>
+    <code class="language-js">
+let formatter = new Intl.NumberFormat("ru");
+alert( formatter.format(1234567890.123) ); // 1 234 567 890,123
+let formatter = new Intl.NumberFormat("ru", {
+  style: "currency",
+  currency: "GBP"
+});
+
+alert( formatter.format(1234.5) ); // 1 234,5 £        
+    </code>
+</pre>
+
+        </p>
+    </div>
+    <div class="topic" id="method">
+        <h3>Методы в Date, String, Number</h3>
+        <p>
+            <pre>
+                <code class="language-js">
+let str = "ёжик";
+
+alert( str.localeCompare("яблоко", "ru") ); // -1                    
+                </code>
+            </pre>
+Форматирует дату в соответствии с локалью, например:
+<pre>
+    <code class="language-js">
+let date = new Date(2014, 11, 31, 12, 0);
+
+alert( date.toLocaleString("ru", { year: 'numeric', month: 'long' }) ); // Декабрь 2014            
+    </code>
+</pre>
+И ещё ряд методов.
+        </p>
+    </div>
+    <div class="topic" id="oldie">
+        <h3>Старые IE</h3>
+        <p>Вероятность мне под них кодить мала, но на всякий случай:  https://github.com/andyearnshaw/Intl.js</p>
+    </div>
+    <div class="topic" id="tasks">
+        <h3>Задача</h3>
+        <script>
+            function task1(params) {
+let animals = ["тигр", "ёж", "енот", "ехидна", "АИСТ", "ЯК"];
+
+animals.sort((a, b) => a.localeCompare(b))
+
+alert( animals ); // АИСТ,ёж,енот,ехидна,тигр,ЯК                
+            }
+        </script>
+        <button onclick="task1()">Тест первой задачи</button>
+        <pre>
+            <code class="language-js">
+let animals = ["тигр", "ёж", "енот", "ехидна", "АИСТ", "ЯК"];
+
+animals.sort((a, b) => a.localeCompare(b))
+
+alert( animals ); // АИСТ,ёж,енот,ехидна,тигр,ЯК                 
+            </code>
+        </pre>
+        <p>Но автор предлагает по иному:
+<pre>
+    <code class="language-js">
+let collator = new Intl.Collator();
+animals.sort((a, b) => collator.compare(a, b));        
+    </code>
+</pre>
+Мой вариант работает и корректен 100%.
+        </p>
+    </div>

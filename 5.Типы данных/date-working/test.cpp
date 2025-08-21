@@ -1,0 +1,5 @@
+#incule <iostream>
+
+int main(){
+    
+}

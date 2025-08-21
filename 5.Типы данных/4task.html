@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4 задача в типах данных</title>
+    <script>
+        function sumInput() {
+            let arr = [];
+            let numb = Number.parseInt(prompt("Введите число:"));
+            while (!isNaN(numb)) {
+                arr.push(numb);
+                alert(`Длинна массива равна ${arr.length}`);
+                numb = Number.parseInt(prompt("Введите число:"));
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="topic" id="4task">
+        <p>
+            <button onclick="sumInput()">Кнопка</button>
+            такой вариант не проканал:
+        <pre>
+    <code class="">
+        function sumInput() {
+            let arr = [];
+            let numb = Number.parseInt(prompt("Введите число:"));
+            while (numb != NaN) {
+                arr.push(numb);
+                alert(`Длинна массива равна ${arr.length}`);
+                numb = Number.parseInt(prompt("Введите число:"));
+            }
+        }        
+    </code>
+</pre>
+        Дипсик сообщает:
+        <br>Проблема в вашем коде связана с проверкой numb != NaN. В JavaScript сравнение с NaN всегда возвращает false,
+        даже если вы сравниваете NaN с NaN. Это особенность языка.
+        </p>
+        <p>так же дипсик настаивал на возврате суммы итоговой, но куда мне её возвращать, короче лень, забил. Про эту
+            ёбаную проверку NaN надо бы запомнить.</p>
+    </div>
+</body>
+
+</html>

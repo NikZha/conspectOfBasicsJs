@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Планирование: setTimeout и setInterval</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+
+<body>
+    <div class="contents">
+        <h1><a href="#settime">Планирование: setTimeout и setInterval</a></h1>
+        <h2>
+            <ul>
+                <li><a href="#setTimeout">setTimeout</a>
+                    <br><a href="#canseltimeout">Отмена через clearTimeout</a>
+                </li>
+                <li><a href="#setInterval">setInterval</a></li>
+                <li><a href="#inerset">Вложенный setTimeout</a></li>
+                <li><a href="#nulldelay">setTimeout с нулевой задержкой</a></li>
+                <li><a href="#total">Итого</a></li>
+                <li><a href="#tasks">Задачи</a></li>
+            </ul>
+        </h2>
+    </div>
+    <div class="topic" id="settime">
+        <h1><a href="https://learn.javascript.ru/settimeout-setinterval">Планирование: setTimeout и setInterval</a></h1>
+        <p>Отложенное выполнение кода осуществляется с помощью 2 методов:
+        <ul>
+            <li>setTimeout позволяет вызвать функцию один раз через определённый интервал времени.</li>
+            <li>setInterval позволяет вызывать функцию регулярно, повторяя вызов через определённый интервал времени.
+            </li>
+        </ul>
+        Эти методы не являются частью спецификации JS, но присутствуют и в браузерах и в ноде. И малость отличаются.
+        </p>
+    </div>
+    <div class="topic" id="setTimeout">
+        <h2>setTimeout</h2>
+        <p>
+        <pre>
+        <code class="language-js">
+let timerId = setTimeout(func|code, [delay], [arg1], [arg2], ...);            
+        </code>
+    </pre>
+        <code>func</code> идёт как <code>func</code> без (), а аргументы передаются отдельно.
+        </p>
+        <p><code>delay</code> в миллисекундах</p>
+        <script>
+            function testSetTimeout() {
+                let num = setTimeout(function () {
+                    document.getElementById('testInterval').innerHTML = "ТЕСТОВОЕ СООБЩЕНИЕ ПОСЛЕ 3 СЕКУНД НАЖАТИЯ КНОПКИ"
+                }, 3000)
+            }
+        </script>
+        <p>Пример:</p> <button onclick="testSetTimeout()">Нажми и через 3 секунды появится надпись ниже:</button>
+        <p id="testInterval"></p>
+        </P>
+        <p> Код примера
+        <pre>
+        <code class="language-js">
+    function testSetTimeout(){
+        let num = setTimeout(function(){
+            document.getElementById('testInterval').innerHTML = "ТЕСТОВОЕ СООБЩЕНИЕ ПОСЛЕ 3 СЕКУНД НАЖАТИЯ КНОПКИ"
+        }, 3000)
+    }            
+        </code>
+    </pre>
+        Так же можно использовать строки, но делать это не рекомендуется:
+        <pre>
+        <code class="language-js">
+setTimeout("alert('Привет')", 1000);            
+        </code>
+    </pre>
+        Лучше использовать или объявление ф-ции или стрелочную функцию:
+        <pre>
+        <code class="language-js">
+setTimeout(() => alert('Привет'), 1000);            
+        </code>
+    </pre>
+        </p>
+        <div id="canseltimeout">
+            <h2><a href="https://learn.javascript.ru/settimeout-setinterval#otmena-cherez-cleartimeout">Отмена через
+                    clearTimeout</a></h2>
+            <script>
+                function testId() {
+                    let timerId = setTimeout(() => alert('Do nothing'), 4000)
+                    alert(`Возвращённый номер таймера: ${timerId}`);
+                    clearTimeout(timerId);
+
+                }
+            </script>
+            <p>Ф-ция setTimeout возвращет id по которому её можно отменить, прмимер ф-ция:
+            <pre>
+            <code class="language-js">
+        function testId(){
+            let timerId = setTimeout(() => alert('Do nothing'), 4000 )
+            alert(`Возвращённый номер таймера: ${timerId}`);
+            clearTimeout(timerId);
+        }                
+            </code>
+        </pre>
+            <button onclick="testId()">Затестить работу функции</button>
+            Нода передаёт вместо числа объект с дополнительными свойствами:
+            <pre>
+            <code class="language-js">
+Timeout {_idleTimeout: 4000, _idlePrev: TimersList, _idleNext: TimersList, _idleStart: 474, _onTimeout: ƒ, …}
+testID.js:3
+_destroyed = false
+_idleNext = TimersList {_idleNext: Timeout, _idlePrev: Timeout, expiry: 4474, id: -9007199254740991, msecs: 4000, …}
+_idlePrev = TimersList {_idleNext: Timeout, _idlePrev: Timeout, expiry: 4474, id: -9007199254740991, msecs: 4000, …}
+_idleStart = 474
+_idleTimeout = 4000
+_onTimeout = () => alert('Do nothing')
+_repeat = null
+_timerArgs = undefined
+Symbol(asyncId) = 5
+Symbol(kHasPrimitive) = true
+Symbol(refed) = true
+Symbol(triggerId) = 1
+[[Prototype]] = Object                
+            </code>
+        </pre>
+            Но по умолчанию возвращет тоже какое-то число.
+            </p>
+        </div>
+    </div>
+    <div class="topic" id="setInterval">
+        <h2>setInterval</h2>
+        <p>
+        <pre>
+        <code class="language-js">
+let timerId = setInterval(func|code, [delay], [arg1], [arg2], ...);            
+        </code>
+    </pre>
+        Как видно синтаксис такой же, но выполнение ф-ции происходит через <code>delay</code>. Так же присуствует метод
+        <code>clearInterval</code> во возвращённому значению:
+        <script>
+            function testInterval() {
+                let intervalID = setInterval(() => alert("Tick"), 200)
+                setTimeout(() => { clearInterval(intervalID); alert("Stop Interval") }, 6000)
+            }
+        </script>
+        <br><button onclick="testInterval()">Тест интервального срабатывания</button><br>Ф-ция из скрипта:
+        <pre>
+    <code class="language-js">
+    function testInterval(){
+        let intervalID = setInterval(()=>alert("Tick"), 200)
+        setTimeout(() => {clearInterval(intervalID); alert("Stop Interval")}, 6000)
+    }        
+    </code>
+</pre>
+        Ещё разок обратить внимание на то, что в эти ф-ции надо передавать ф-ции, а не <code>fucn(param)</code>
+        </p>
+    </div>
+    <div class="topic" id="inerset">
+        <h2>Вложенный setTimeout</h2>
+        <p>Сама идея вложенного setTimeout:
+        <pre>
+    <code class="language-js">
+let timerId = setTimeout(function tick() {
+  alert('tick');
+  timerId = setTimeout(tick, 2000); // (*)
+}, 2000);        
+    </code>
+</pre>
+        Из-за необходимости увеличивать или уменьшать задержку в каких-то случаях по результату выполнения программы:
+        <pre>
+    <code class="language-js">
+let delay = 5000;
+
+let timerId = setTimeout(function request() {
+  ...отправить запрос...
+
+  if (ошибка запроса из-за перегрузки сервера) {
+    // увеличить интервал для следующего запроса
+    delay *= 2;
+  }
+
+  timerId = setTimeout(request, delay);
+
+}, delay);        
+    </code>
+</pre>
+        А так же потому что в ряде случаев необходим точный интервал между запусками функции, а с setInterval такое не
+        получается:
+        <br><img src="settimeout-setinterval/setinterval.jpeg" alt="Работа ф-ции">
+
+        <br>То есть между выполнением ф-ции будет не 100 mc
+        </p>
+        <p>Для избегания этого и используют вложенный <code>setTimeout</code></p>
+        <pre>
+    <code class="language-js">
+let i = 1;
+setTimeout(function run() {
+  func(i);
+  setTimeout(run, 100);
+}, 100);        
+    </code>
+</pre>
+        <p>Так же автор сообщает, что в целях освобождения памяти, лучше сразу очищать id полученный из функции
+            интервала или таймаута.</p>
+    </div>
+    <div class="topic" id="nulldelay">
+        <h2>setTimeout с нулевой задержкой</h2>
+        <script>
+            function testNullDelay() {
+                let timerId = setTimeout(() => alert("МИР"))
+                for (let index = 0; index < 100500; index++) {
+                    console.log("test") //иммитация бурной деятельности
+
+                }
+                alert("Привет")
+            }
+        </script>
+        <p><button onclick="testNullDelay()">Тест нулевой задержки</button>
+        <pre>
+        <code class="language-js">
+        function testNullDelay() {
+            let timerId = setTimeout(()=>alert("МИР"))
+            for (let index = 0; index < 100500; index++) {
+                console.log("test") //иммитация бурной деятельности
+                
+            }
+            alert("Привет")
+        }            
+        </code>
+    </pre>
+        Рассматривая код, становится понятно, что в целом задержка нулевая, но вот запуск происходит после отработки
+        всего кода. То же самое происходит и в <a href="settimeout-setinterval/testNullDelay.js">ноде</a>.
+        </p>
+        <p>Далее сообщается что по спецификации HTML5, что после пятого вызова минимальная задержка начинает составлять
+            4 mc и далее так и увеличивается в браузерах. С нодой все обстоит иначе.</p>
+    </div>
+    <div class="topic" id="total">
+        <h2>Итого</h2>
+        <p>
+        <ul>
+            <li>Методы setInterval(func, delay, ...args) и setTimeout(func, delay, ...args) позволяют выполнять func
+                регулярно или только один раз после задержки delay, заданной в мс.</li>
+            <li>Для отмены выполнения необходимо вызвать clearInterval/clearTimeout со значением, которое возвращают
+                методы setInterval/setTimeout.</li>
+            <li>Вложенный вызов setTimeout является более гибкой альтернативой setInterval. Также он позволяет более
+                точно задать интервал между выполнениями.</li>
+            <li>Планирование с нулевой задержкой setTimeout(func,0) или, что то же самое, setTimeout(func) используется
+                для вызовов, которые должны быть исполнены как можно скорее, после завершения исполнения текущего кода.
+            </li>
+            <li>Браузер ограничивает 4-мя мс минимальную задержку между пятью и более вложенными вызовами setTimeout, а
+                также для setInterval, начиная с 5-го вызова. </li>
+        </ul>
+        Точность задержки не гарантируется, она может изменяться в зависимости от загруженности системы или приоритета
+        работы программы.
+        </p>
+    </div>
+    <div class="topic" id="tasks">
+        <h2>Задачи</h2>
+        <div id="task1">
+            <h3>Задача 1</h3>
+            <p><a href="settimeout-setinterval/tasks.js">Короче я автора не понял</a> и сделал так будто отсчет идёт с
+                нуля и до to и мне надо вывести секунды от from до to включительно</p>
+            <p>а автор хотел просто числа раз в секунду от from до to не с нулевой секунды.</p>
+        </div>
+        <div id="task2">
+            <h3>Задача 2</h3>
+            <p><a href="settimeout-setinterval/tasks.js"> Я правильно понял, что отложенный вызов выполнится после цикла
+                    и покажет максимальное число цикла.</a></p>
+        </div>
+
+    </div>
+</body>
+
+</html>
