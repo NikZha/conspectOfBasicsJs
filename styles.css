@@ -40,3 +40,8 @@ background-color: #eeeeee;
   font-weight: bold;
   color: rgb(3, 138, 93);
 }
+blockquote{
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin: 20px 0;
+}
