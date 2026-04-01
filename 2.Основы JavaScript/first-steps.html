@@ -91,6 +91,27 @@
             <li>Скрипт во внешнем файле можно вставить с помощью &lt;script src="path/to/script.js">&lt;/script>. </li>
         </ul>
     </div>
+    <div class="topic" id="tasks">
+        <h3>Задачи</h3>
+        <div id="task1">
+            <h4>Задача 1</h4>
+            <p>По сути выполнена в топике Тег «script».</p>
+        </div>
+        <div id="task2">
+            <h4>Задача 2. Покажите сообщение с помощью внешнего скрипта</h4>
+            <input type="button" value="Запустить скрипт" onclick="task2()">
+            <script>
+                function task2() {
+                    let task2script = document.getElementById('task2script')
+                    if (task2script) task2script.remove()
+                    let script = document.createElement('script')
+                    script.src = './task2-first-steps/script.js'
+                    script.id = 'task2script'
+                    document.body.append(script)
+                }
+            </script>
+        </div>
+    </div>
 
 
 </body>
