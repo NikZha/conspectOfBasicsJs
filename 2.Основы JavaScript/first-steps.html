@@ -27,6 +27,44 @@
         <h2><a href="Привет, мир!">Привет, мир!</a></h2>
         <p>Основные команды общения с миром, а так же браузер-специфичные вещи.</p>
     </div>
+    <div class="topic" id="tag">
+        <h3>Тег «script»</h3>
+        <p>Тег <code>script</code> может быть вставлен в любое место документа. Все функции которые "запущены" в скрипте
+            будут выполнены при его загрузке. Загрузка осуществляется по мере загрузки документа.</p>
+        <input type="button" value="Запуск примера" id="exmpl1" onclick="exmpl1()">
+        <pre><code class="language-html">
+&lt;!DOCTYPE HTML>
+&lt;html>
+
+&lt;body>
+
+  &lt;p>Перед скриптом...&lt;/p>
+
+  &lt;script>
+    alert( 'Привет, мир!' );
+  &lt;/script>
+
+  &lt;p>...После скрипта.&lt;/p>
+
+&lt;/body>
+
+&lt;/html>                
+            </code></pre>
+        <script>
+            function exmpl1() {
+                let frame1 = document.getElementById('frame1')
+                if (frame1) {
+                    frame1.remove();
+                }
+                let exmpl = document.getElementById('exmpl1')
+                let frame = document.createElement('iframe')
+                frame.id = 'frame1'
+                frame.src = "./expml1-first-steps/hello.html";
+                exmpl.after(frame)
+            }
+        </script>
+
+    </div>
 
 
 </body>
