@@ -1,47 +1,58 @@
-BODY {
+BODY {}
 
-}
-.topic{
-    color: #0a0a0a;
-    background: #fffbfb;
-    line-height: 1.3;
-    font-size: 20;
-}
-.contents{
-    color: #0a0a0a;
-    background: #fffbfb;
-    line-height: 1.3;
-    font-size: 20;
+.topic {
+  color: #0a0a0a;
+  background: #fffbfb;
+  line-height: 1.3;
+  font-size: 20;
 }
 
-.language-csharp{
-border: #0a0a0a;
+.contents {
+  color: #0a0a0a;
+  background: #fffbfb;
+  line-height: 1.3;
+  font-size: 20;
 }
-.language-js{
-  border: #0a0a0a;  
+
+.language-csharp {
+  border: #0a0a0a;
 }
-table{
-background-color: white;
-border: thin solid black;    
+
+.language-js {
+  border: #0a0a0a;
 }
-td, th {
-border: thin dotted gray;
-padding: 5px;
+
+table {
+  background-color: white;
+  border: thin solid black;
 }
+
+td,
+th {
+  border: thin dotted gray;
+  padding: 5px;
+}
+
 caption {
-font-style: italic;
-padding-top: 8px;
+  font-style: italic;
+  padding-top: 8px;
 }
 
 th {
-background-color: #eeeeee;
-} 
-.yes{
+  background-color: #eeeeee;
+}
+
+.yes {
   font-weight: bold;
   color: rgb(3, 138, 93);
 }
-blockquote{
+
+blockquote {
   border: 1px solid #ccc;
   padding: 15px;
   margin: 20px 0;
+}
+
+.startbutton {
+  cursor: pointer;
 }

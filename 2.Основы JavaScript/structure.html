@@ -33,7 +33,27 @@ alert('Привет');
 alert('Мир');            
         </code></pre>
     </div>
+    <div class="topic" id="ampers">
+        <h3>Точка с запятой</h3>
+        <p>Можно не ставить, но возникают такие ситации, когда лучше ставить:</p>
+        <pre><code class="language-js startbutton" ondblclick="exmpl1()">
+alert('Hello')
 
+[1, 2].forEach(alert);            
+        </code></pre>
+        <p>Код вываливается с ошибкой, потому что js считает это за одну строку.</p>
+        <script>
+            function exmpl1() {
+                try {
+                    alert('Hello')
+
+                    [1, 2].forEach(alert);
+                } catch (error) {
+                    alert(error)
+                }
+            }
+        </script>
+    </div>
 </body>
 
 </html>
