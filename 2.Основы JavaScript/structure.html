@@ -54,6 +54,26 @@ alert('Hello')
             }
         </script>
     </div>
+    <div class="topic" id="comments">
+        <h3>Комментарии</h3>
+        <p>Однострочные комментарии:</p>
+        <pre><code class="language-js">
+//Однострочный комментарий            
+        </code></pre>
+        <p>Многострочные комментарии:</p>
+        <pre><code class="language-js">
+/*
+Многострочный
+комментарий
+*/
+        </code></pre>
+        <p>Вложенные многострочные комментариии приводят к ошибке:</p>
+        <pre><code class="language-js">
+/*
+  /* вложенный комментарий ?!? */
+*/            
+        </code></pre>
+    </div>
 </body>
 
 </html>
