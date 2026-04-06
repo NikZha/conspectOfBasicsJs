@@ -29,6 +29,50 @@
         <h2><a href="https://learn.javascript.ru/variables">Переменные</a></h2>
         <p>Переменные нужны для хранения информации.</p>
     </div>
+    <div class="topic" id="variable">
+        <h3>Переменная</h3>
+        <p>Переменная это именнованное хранилище данных. Может инициализироваться сразу или отложенно, так же можно
+            объявить несколько переменных в одной строке, только это плохая практика.</p>
+        <pre><code class="language-js">
+let message;
+
+message = 'Hello';
+
+let message2 = 'Hello!';      
+//Плохая практика:
+let user = 'John', age = 25, message = 'Hello';
+            </code></pre>
+        <p>Переменная может быть объявлена при помощи ключевого слова <code class="language-js">var</code>.
+            <strong>Важно понимать:</strong>
+        <ul>
+            <li>Если объявить <code>var</code> вне любой функции — переменная станет <strong>глобальной</strong>.</li>
+            <li>Если объявить внутри функции — она будет доступна <strong>только внутри этой функции</strong>.</li>
+            <li>В отличие от <code>let/const</code>, <code>var</code> <strong>игнорирует блочную область
+                    видимости</strong> (if, for, while).</li>
+        </ul>
+        </p>
+        <pre><code class="language-js">
+// 1. Глобальная var
+var global = "я глобальная";
+console.log(window.global); // "я глобальная"
+
+// 2. Функциональная var
+function example() {
+    var local = "я локальная";
+    console.log(local); // "я локальная"
+}
+example();
+console.log(local); // ❌ Ошибка!
+
+// 3. var игнорирует блоки
+if (true) {
+    var blockVar = "я видна снаружи!";
+}
+console.log(blockVar); // "я видна снаружи!"            
+        </code></pre>
+        <p>В принципе лучше просто так var не пользоваться. Это пережиток прошлого существующий только из-за
+            необходимости обратной совместимости.</p>
+    </div>
 
 </body>
 
