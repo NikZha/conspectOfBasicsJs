@@ -33,6 +33,36 @@
         <p>JS - динамически типизированный язык, что означает что одна и та же переменная может попеременно представлять
             строки, числа, объекты и т.д. Что бывает весьма удобно.</p>
     </div>
+    <div class="topic" id="int">
+        <h3>Число</h3>
+        <p>Тип данных для числа по умолчанию <code>Number</code> можно приводить другие типы чисел нему как
+            <code>Number(x)</code>. Скорее является <code>double64</code>. То есть это и целочисленные операции и с
+            плавающей точкой сразу:
+        </p>
+        <input type="button" value="Наглядный тест чисел путём деления" onclick="exmpl1()">
+        <pre><code class="language-js">
+                let a = 2
+                let b = 4
+                let c = 5
+                alert(b / a)
+                alert(c / a)            
+        </code></pre>
+        <script>
+            function exmpl1() {
+                let a = 2
+                let b = 4
+                let c = 5
+                alert(b / a)
+                alert(c / a)
+            }
+        </script>
+        <p>Существует ряд специальных значений:</p>
+        <ul>
+            <li><code>Infinity</code> - бесконечность. Может быть <code>-Infinity</code>.</li>
+            <li><code>NaN</code> - не число, обозначает ошибку. Вернуть обратно к числу нельзя, проверяют при помощи
+                ф-ции <code>isNaN</code> в блоках типа <code>if</code>.</li>
+        </ul>
+    </div>
 
 
 
