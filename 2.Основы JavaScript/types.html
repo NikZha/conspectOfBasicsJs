@@ -111,6 +111,22 @@ alert( `результат: ${1 + 2}` ); // результат: 3
         <p>Похоже на <code>null</code> - но с тем отличием, что это значение является значением по умолчанию для
             неприсвоенных переменных.</p>
     </div>
+    <div class="topic" id="objs">
+        <h3>Объекты и символы</h3>
+        <p>Все что не примитивный тип - все объект, исторически <code>null</code> тоже объект.</p>
+        <input type="button" value="typeof(null)" onclick="exmpl1()">
+        <script>
+            function exmpl1() {
+                let a = null
+                try {
+                    alert(typeof a)
+                } catch (error) {
+                    alert(error)
+                }
+            }
+        </script>
+        <p>Причём внутренне устройство языка очень сложно и состоит из объектов.</p>
+    </div>
 
 
 </body>
