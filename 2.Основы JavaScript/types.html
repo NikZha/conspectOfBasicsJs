@@ -127,6 +127,36 @@ alert( `результат: ${1 + 2}` ); // результат: 3
         </script>
         <p>Причём внутренне устройство языка очень сложно и состоит из объектов.</p>
     </div>
+    <div class="topic" id="typeof">
+        <h3>Оператор typeof</h3>
+        <pre><code class="language-js">
+// Обычный синтаксис
+typeof 5 // Выведет "number"
+// Синтаксис, напоминающий вызов функции (встречается реже)
+typeof(5) // Также выведет "number"
+
+typeof 50 + " Квартир"; // Выведет "number Квартир"
+typeof (50 + " Квартир"); // Выведет "string"
+
+typeof undefined // "undefined"
+
+typeof 0 // "number"
+
+typeof 10n // "bigint"
+
+typeof true // "boolean"
+
+typeof "foo" // "string"
+
+typeof Symbol("id") // "symbol"
+
+typeof Math // "object"  
+
+typeof null // "object" 
+
+typeof alert // "function"  //Пиздёшь - объект
+        </code></pre>
+    </div>
 
 
 </body>
