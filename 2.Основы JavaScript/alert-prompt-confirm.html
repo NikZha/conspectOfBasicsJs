@@ -49,9 +49,19 @@ result = prompt(title, [default]);
 result = confirm(question);            
         </code></pre>
         <p>Окошко с сообщением <code>question</code>. И двумя кнопками Ок и Отмена. Возвращает соотвественно
-            <code>true</code> или <code>false</code></p>
+            <code>true</code> или <code>false</code>
+        </p>
     </div>
-
+    <div class="topic" id="tasks">
+        <h3>Задача</h3>
+        <input type="button" value="Запросить и вывести имя" onclick="task1()">
+        <script>
+            function task1() {
+                let name = prompt("Введите имя", "Вася")
+                alert(`Введённое имя - ${name}`)
+            }
+        </script>
+    </div>
 
 
 
