@@ -37,7 +37,51 @@ let str = String(value)
         <p>Ф-ции по типу <code>alert</code> автоматически преобразуют входящие значения в <code>String</code> и выводят
             их на экран.</p>
     </div>
+    <div class="topic" id="num">
+        <h3>Численное преобразование</h3>
+        <p>Тут мы впервые можем натолкнуться на грабли неочевидного поведения по типу:</p>
+        <pre><code class="language-js">
+alert( "6" / "2" ); // 3, строки преобразуются в числа
+        </code></pre>
+        <p>Само же приведения действует по типу:</p>
+        <pre><code class="language-js">
+let str = "123";
+alert(typeof str); // string
 
+let num = Number(str); // становится числом 123
+
+alert(typeof num); // numbe            
+        </code></pre>
+        <p>Правила преобразования:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Значение</th>
+                    <th>Преобразуется в…</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>undefined</code></td>
+                    <td><code>NaN</code></td>
+                </tr>
+                <tr>
+                    <td><code>null</code></td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td><code>true</code> / <code>false</code></td>
+                    <td>1 / 0</td>
+                </tr>
+                <tr>
+                    <td><code>string</code></td>
+                    <td> Пробельные символы (пробелы, знаки табуляции \t, знаки новой строки \n и т. п.) по краям
+                        обрезаются. Далее, если остаётся пустая строка, то получаем 0, иначе из непустой строки
+                        «считывается» число. При ошибке результат NaN.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
 
 </body>
