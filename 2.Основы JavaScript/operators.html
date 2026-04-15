@@ -69,7 +69,21 @@ alert( 6 - '2' ); // 4, '2' приводится к числу
 alert( '6' / '2' ); // 3, оба операнда приводятся к числам
         </code></pre>
     </div>
+    <div class="topic" id="tonumber">
+        <h3>Приведение к числу, унарный +</h3>
+        <p>Используется для приведения к числу, например:</p>
+        <pre><code class="language-js">
+let apples = "2";
+let oranges = "3";
 
+// оба операнда предварительно преобразованы в числа
+alert( +apples + +oranges ); // 5            
+        </code></pre>
+        <p>Более читаемый вариант:</p>
+        <pre><code class="language-js">
+// alert( Number(apples) + Number(oranges) ); // 5            
+        </code></pre>
+    </div>
 
 
 
