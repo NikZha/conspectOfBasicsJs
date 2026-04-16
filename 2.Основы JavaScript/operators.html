@@ -126,7 +126,34 @@ testVar ??= 1  // нулевое присваивание (ES2021)
         </code></pre>
         <p>Арифметические используются достаточно часто, все остальное редко.</p>
     </div>
+    <div class="topic" id="incr">
+        <h3>Инкремент/декремент</h3>
+        <p>Существенные различия:</p>
+        <ul>
+            <li>Когда оператор идёт после переменной — это «постфиксная форма»: counter++.</li>
+            <li>«Префиксная форма» — это когда оператор идёт перед переменной: ++counter. </li>
+        </ul>
+        <p>Почему это важно:</p>
+        <pre><code class="language-js startbutton" ondblclick="exmpl1()">
+let testVar = 2;
+function test(x) {
+    alert(x)
+}
+test(testVar++) //Тут 2 потому что сначала значение передаётся в ф-цию, потом инкремент значения.
+test(++testVar) //А тут сначала инкремент, потом передача значения в ф-цию.
+        </code></pre>
+        <script>
+            function exmpl1() {
+                let testVar = 2;
+                function test(x) {
+                    alert(x)
+                }
+                test(testVar++)
 
+                test(++testVar)
+            }
+        </script>
+    </div>
 
 
 
