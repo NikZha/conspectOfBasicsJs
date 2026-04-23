@@ -52,6 +52,28 @@
         <p>Чтобы определить, что одна строка больше другой, JavaScript использует «алфавитный» или «лексикографический»
             порядок.</p>
     </div>
+    <div class="topic" id="comparetype">
+        <h3>Сравнение разных типов</h3>
+        <p>При сравнении разных типов js пытается привести типы к одному знаменателю:</p>
+        <pre><code class="language-js">
+alert( '2' > 1 ); // true, строка '2' становится числом 2
+alert( '01' == 1 ); // true, строка '01' становится числом 1
+
+alert( true == 1 ); // true
+alert( false == 0 ); // true
+        </code></pre>
+        <p>В связи с этим могут возникать разные казусы:</p>
+        <pre><code class="language-js">
+let a = 0;
+alert( Boolean(a) ); // false
+
+let b = "0";
+alert( Boolean(b) ); // true
+
+alert(a == b); // true!            
+        </code></pre>
+        <p>Чтобы этого избежать используется строгое сравнение.</p>
+    </div>
 
 
 </body>
