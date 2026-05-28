@@ -85,7 +85,16 @@ let message = (age &lt; 3) ? 'Здравствуй, малыш!' :
 alert( message );
         </code></pre>
     </div>
+    <div class="topic" id="notortodocs">
+        <h3>Нетрадиционное использование „?“</h3>
+        <p>Иногда оператор «вопросительный знак» ? используется в качестве замены if:</p>
+        <pre><code class="language-js">
+let company = prompt('Какая компания создала JavaScript?', '');
 
+(company == 'Netscape') ?
+   alert('Верно!') : alert('Неправильно.');
+        </code></pre>
+    </div>
 
 </body>
 
