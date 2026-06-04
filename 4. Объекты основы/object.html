@@ -92,6 +92,80 @@ alert(user.name); // Pete
         </pre>
         <p><code>const</code> тут служит для того, чтобы переменная не переопределялась.</p>
     </div>
+    <div class="topic" id="quad">
+        <h3>Квадратные скобки</h3>
+        <p>По аналогии с массивом можно использовать квадратные скобки для доступа к свойствам объекта. Это более
+            универсальный способ:</p>
+        <pre>
+                <code class="language-javascript">
+let user = {};
+user["likes birds"] = true;
+alert(user["likes birds"]); // true
+
+let key = "likes birds";
+// то же самое, что и user["likes birds"] = true;
+user[key] = true;
+                </code>
+            </pre>
+        <p>Так же в квадратных скобках можно использовать переменные:</p>
+        <pre>
+                <code class="language-javascript">
+let user = {
+  name: "John",
+  age: 30
+};
+let key = prompt("Что вы хотите узнать о пользователе?", "name");
+// доступ к свойству через переменную
+alert( user[key] ); // John (если ввели "name")
+//Но:
+let key = "name";
+alert( user.key ); // undefined
+                </code>
+            </pre>
+        <h3>Вычисляемые свойства</h3>
+        <p>Мы можем использовать квадратные скобки в литеральной нотации для создания вычисляемого свойства:</p>
+
+        <pre><input type="button" value="Тест создания свойства" onclick="expml1()">
+            <code class="language-javascript">
+let fruit = prompt("Какой фрукт купить?", "apple");
+
+let bag = {
+    [fruit]: 5,
+};
+for (key in bag){
+    alert(`Свойство объекта bag ${key} имеет значение: ${bag[key]}`)
+}                
+            </code>
+        </pre>
+        <script>
+            function expml1() {
+                let fruit = prompt("Какой фрукт купить?", "apple");
+
+                let bag = {
+                    [fruit]: 5,
+                };
+                for (key in bag) {
+                    alert(`Свойство объекта bag ${key} имеет значение: ${bag[key]}`)
+                }
+            }
+        </script>
+        <p>А можно прямо напрямую:</p>
+        <pre>
+            <code class="language-javascript">
+let fruit = prompt("Какой фрукт купить?", "apple");
+let bag = {};
+
+// имя свойства будет взято из переменной fruit
+bag[fruit] = 5;    
+
+let fruit = 'apple';
+let bag = {
+  [fruit + 'Computers']: 5 // bag.appleComputers = 5
+};
+            </code>
+        </pre>
+        <p>Таким образом квадратные скобки дают больше возможностей по манипулированию свойствами.</p>
+    </div>
 
 </body>
 
