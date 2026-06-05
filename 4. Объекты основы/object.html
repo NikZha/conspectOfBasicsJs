@@ -233,6 +233,41 @@ let user = {
             }
         </script>
     </div>
+    <div class="topic" id="forbid">
+        <h3>Ограничения на имена свойств</h3>
+        <p>Ограничения на имена свойств объектов не связаны с ограничения на именна переменных js:</p>
+        <pre><input type="button" value="Тест значений obj" onclick="exmpl4()">
+            <code class="language-javascript">
+let obj = {
+  for: 1,
+  let: 2,
+  return: 3,
+  0: 4,
+};                
+            </code>
+        </pre>
+        <script>
+            function exmpl4() {
+                let obj = {
+                    for: 1,
+                    let: 2,
+                    return: 3,
+                    0: 4,
+                };
+                for (key in obj) {
+                    alert(`Name of key: ${key}\n Value of obj[${key}]: ${obj[key]}`)
+                }
+            }
+        </script>
+        <p>Однако есть такие свойства объекта которые невозможно изменить:</p>
+        <pre>
+            <code class="language-javascript">
+let obj = {};
+obj.__proto__ = 5; // присвоим число
+alert(obj.__proto__); // [object Object], значение - это объект, т.е. не то, что мы ожидали                
+            </code>
+        </pre>
+    </div>
 
 </body>
 
