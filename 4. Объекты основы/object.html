@@ -166,6 +166,73 @@ let bag = {
         </pre>
         <p>Таким образом квадратные скобки дают больше возможностей по манипулированию свойствами.</p>
     </div>
+    <div class="topic" id="prop">
+        <h3>Свойство из переменной</h3>
+        <p>Можно создавать свойство объекта из переменной:</p>
+        <pre>
+            <code class="language-javascript">
+function makeUser(name, age) {
+  return {
+    name: name,
+    age: age
+    // ...другие свойства
+  };
+}
+
+let user = makeUser("John", 30);
+alert(user.name); // John                
+            </code>
+        </pre>
+        <p>Так же все это можно осуществить проще:</p>
+        <pre><input type="button" value="Тест создания пользователя" onclick="exmpl2()">
+            <code class="language-javascript">
+function makeUser(name, age) {
+    return {
+        name,
+        age,
+    };
+}
+let user = makeUser('John', 35)
+for(key in user){
+    alert(`Название свойства: ${key} значение свойства ${user[key]}`)
+}                
+            </code>
+        </pre>
+        <script>
+            function exmpl2() {
+                function makeUser(name, age) {
+                    return {
+                        name,
+                        age,
+                    };
+                }
+                let user = makeUser('John', 35)
+                for (key in user) {
+                    alert(`Название свойства: ${key} значение свойства ${user[key]}`)
+                }
+            }
+        </script>
+        <p>Таким образом свойством становиться переменная, а её значением значение переменной.</p>
+        <pre><input type="button" value="Тест значений объекта user" onclick="exmpl3()">
+            <code class="language-javascript">
+let user = {
+  name,  // тоже самое, что и name:name
+  age: 30
+};                
+            </code>
+        </pre>
+        <script>
+            function exmpl3() {
+                let user = {
+                    name,
+                    age: 30
+                };
+                for (key in user) {
+                    alert(`Название свойства: ${key} значение свойства ${user[key]}`)
+                }
+            }
+        </script>
+    </div>
 
 </body>
 
