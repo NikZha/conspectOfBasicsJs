@@ -295,6 +295,67 @@ alert( "blabla" in user ); // false, user.blabla не существует
         <p>Само собой можно проверять переменные вида <code>let key = "age"</code>. <br>Tак же оператор <code>in</code>
             подходит для проверки свойств которые могут содержать <code>undefined</code>.</p>
     </div>
+    <div class="topic" id="cicle">
+        <h3>Цикл "for..in"</h3>
+        <p>Синтаксис:</p>
+        <pre>
+            <code class="language-javascript">
+for (key in object) {
+  // тело цикла выполняется для каждого свойства объекта
+}                
+            </code>
+        </pre>
+        <h3>Упорядочение свойств объекта</h3>
+        <p>Свойства могут упорядочиваться в данном случае от большего к меньшему:</p>
+        <pre><input type="button" value="Тест упорадоченных свойств" onclick="testCicle1()">
+            <code class="language-javascript">
+let codes = {
+  "49": "Германия",
+  "41": "Швейцария",
+  "44": "Великобритания",
+  // ..,
+  "1": "США"
+};
+
+for (let code in codes) {
+  alert(code); // 1, 41, 44, 49
+}                
+            </code>
+            <script>
+                function testCicle1() {
+                    let codes = {
+                        "49": "Германия",
+                        "41": "Швейцария",
+                        "44": "Великобритания",
+                        // ..,
+                        "1": "США"
+                    };
+
+                    for (let code in codes) {
+                        alert(code); // 1, 41, 44, 49
+                    }
+                }
+            </script>
+        </pre>
+        <p>Так происходит потому что свойства являются <code>Number</code>, в обычном случае свойства перечисляются
+            согласно порядка создания. Чтобы избежать этого автор учебника предлагает добавлять <code>"+"</code> при
+            создании, например:</p>
+            <pre>
+                <code class="language-javascript">
+let codes = {
+  "+49": "Германия",
+  "+41": "Швейцария",
+  "+44": "Великобритания",
+  // ..,
+  "+1": "США"
+};
+
+for (let code in codes) {
+  alert( +code ); // 49, 41, 44, 1
+}                    
+                </code>
+            </pre>
+    </div>
 
 </body>
 
