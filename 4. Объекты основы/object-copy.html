@@ -30,9 +30,35 @@
     <div class="topic" id="compare">
         <h3>Сравнение по ссылке</h3>
         <p>При сравнении объектов сравнивается не значение объекта, а ссылка. Если она одна и та же то
-            <code>true</code>, если разная то <code>false</code>.</p>
+            <code>true</code>, если разная то <code>false</code>.
+        </p>
     </div>
+    <div class="topic" id="clone">
+        <h3>Клонирование и объединение, Object.assign</h3>
+        <p>Помимо очевидной самописной фукнции клонировать и объединять объекты призвана библиотечная ф-ция: </p>
+        <p><code class="language-js">Object.assign(dest, [src1, src2, src3...])</code> где:</p>
+        <ul>
+            <li>dest - объект в который копируют.</li>
+            <li>scr1 ... scrN - объекты которые копируются в dest</li>
+        </ul>
+        <p>Так же эта встроенная статическая ф-ция возвращает dest, что позволяет сделать так:</p>
+        <pre>
+            <code class="language-javascript">
+let user = {
+  name: "John",
+  age: 30
+};
 
+let clone = Object.assign({}, user);                
+            </code>
+        </pre>
+        <p>Ещё одна встроенная возможность клонирования объекта:</p>
+        <pre>
+            <code class="language-javascript">
+clone = {...user}                
+            </code>
+        </pre>
+    </div>
 
 </body>
 
