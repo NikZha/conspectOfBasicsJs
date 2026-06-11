@@ -29,6 +29,43 @@
         <p>Чтобы соотвествовать предметной области у объекта есть методы, которые могут совершать действия над
             внутренним содержанием объекта.</p>
     </div>
+    <div class="topic" id="samples">
+        <h3>Примеры методов</h3>
+        <p>В учебнике слишком беззубый пример, я предлагаю свой, основанный на фабричном методе создания объекта и
+            методов в нём и сразу на ES6:</p>
+        <script>
+            function examplSamples1() {
+                function makeSquare(x) {
+                    let obj = {
+                        x,
+                        sqrt() { return this.x * this.x },
+                        cube() { return this.x * this.x * this.x },
+                    }
+                    return obj
+                }
+                let two = makeSquare(2)
+                alert(two.sqrt())
+                alert(two.cube())
+            }
+        </script>
+        <input type="button" value="Тест создания объекта с методами" onclick="examplSamples1()">
+        <pre>
+            <code class="language-javascript">
+function makeSquare(x) {
+let obj = {
+        x,
+        sqrt() { return this.x * this.x },
+        cube() { return this.x * this.x * this.x },
+    }
+    return obj
+}
+let two = makeSquare(2)
+alert(two.sqrt())
+alert(two.cube())                
+            </code>
+        </pre>
+        <p>Хоть автор и будет рассматривать this. позже, но я сделаю пример таким каким писал бы его в реальном коде.</p>
+    </div>
 
 
 
