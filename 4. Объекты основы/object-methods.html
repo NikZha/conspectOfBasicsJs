@@ -85,6 +85,59 @@ alert(two.cube())
             Это удобно для колбэков, но делает стрелочные функции непригодными
             для методов объекта или конструкторов.</p>
     </div>
+    <div class="topic" id="tasks">
+        <h3>Задачи</h3>
+        <div id="task3">
+            <h3>Задача 3 Цепь вызовов</h3>
+            <p>Чтобы работала цепочка вызовов:</p>
+            <pre>
+                <code class="language-javascript">
+ladder.up().up().down().showStep().down().showStep(); // показывает 1 затем 0                    
+                </code>
+            </pre>
+            <p>Я изменил объект таким способом:</p>
+            <pre><input type="button" value="Тест 3 задачи" onclick="task3()">
+                <code class="language-javascript">
+let ladder = {
+    step: 0,
+    up() {
+        this.step++;
+        return this
+    },
+    down() {
+        this.step--;
+        return this
+    },
+    showStep: function () { // показывает текущую ступеньку
+        alert(this.step);
+        return this
+    }
+};                    
+                </code>
+            </pre>
+            <p>Ключевое тут <code>return this</code>.</p>
+            <script>
+                let ladder = {
+                    step: 0,
+                    up() {
+                        this.step++;
+                        return this
+                    },
+                    down() {
+                        this.step--;
+                        return this
+                    },
+                    showStep: function () { // показывает текущую ступеньку
+                        alert(this.step);
+                        return this
+                    }
+                };
+                function task3() {
+                    ladder.up().up().down().showStep().down().showStep(); // показывает 1 затем 0                  
+                }
+            </script>
+        </div>
+    </div>
 
 </body>
 
