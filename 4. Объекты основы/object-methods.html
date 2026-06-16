@@ -87,6 +87,53 @@ alert(two.cube())
     </div>
     <div class="topic" id="tasks">
         <h3>Задачи</h3>
+        <div id="task2">
+            <h3>Задача 2 Создайте калькулятор</h3>
+            <details>
+                <summary class="startbutton">Код объекта калькулятора по задаче</summary>
+                <pre> <input type="button" value="Тест задачи 2" onclick="task2()">
+                <code class="language-javascript">
+let calculator = {
+    x: 0,
+    y: 0,
+    read() {
+        this.x = Number(prompt('Enter x:'))
+        this.y = Number(prompt('Enter y:'))
+    },
+    sum() {
+        return this.x + this.y;
+    },
+    mul() {
+        return this.x * this.y
+    }
+};                    
+                </code>
+            </pre>
+                <p>Дипсик сообщает, что инициация x и y в объекте не требуется. Переменные внутри объекта создаст
+                    <code>read()</code>. Естественно надо будет делать проверку на ошибки в других методах объекта.
+                </p>
+            </details>
+
+            <script>
+                let calculator = {
+                    read() {
+                        this.x = Number(prompt('Enter x:'))
+                        this.y = Number(prompt('Enter y:'))
+                    },
+                    sum() {
+                        return this.x + this.y;
+                    },
+                    mul() {
+                        return this.x * this.y
+                    }
+                };
+                function task2() {
+                    calculator.read();
+                    alert(calculator.sum());
+                    alert(calculator.mul());
+                }
+            </script>
+        </div>
         <div id="task3">
             <h3>Задача 3 Цепь вызовов</h3>
             <p>Чтобы работала цепочка вызовов:</p>
