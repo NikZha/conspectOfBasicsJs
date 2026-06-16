@@ -52,7 +52,28 @@ function User(name) {
             </code>
         </pre>
     </div>
+    <div class="topic" id="chec">
+        <h3>Проверка на вызов в режиме конструктора: new.target</h3>
+        <p>Это проверка и запрет вызова ф-ции без new:</p>
+        <pre>
+            <code class="language-javascript">
+function User(name) {
+  if (!new.target) { // в случае, если вы вызвали меня без оператора new
+    return new User(name); // ...я добавлю new за вас
+  }
 
+  this.name = name;
+}
+
+let john = User("John"); // переадресовывает вызов на new User
+alert(john.name); // John                
+            </code>
+        </pre>
+        <p>Но в целом зачем и кому это понадобится остаётся вопросом - надо или использовать слово <code>class</code>
+            или фабрику объектов, на мой взгляд. Основная проблема многого что изложено в учебнике - нет разграничения
+            что из ES6, а что легаси возможности. На мой взгляд лучше пользоваться ES6.
+        </p>
+    </div>
 
 
 </body>
