@@ -28,7 +28,30 @@
         <h2><a href="https://learn.javascript.ru/constructor-new">Конструктор, оператор "new"</a></h2>
         <p>Этот оператор позволяет создават объект.</p>
     </div>
+    <div class="topic" id="func">
+        <h3>Функция-конструктор</h3>
+        <p>Есть ряд соглашений по конструированию объектов функциями:</p>
+        <ul>
+            <li>Имя функции-конструктора должно начинаться с большой буквы.</li>
+            <li>Функция-конструктор должна выполняться только с помощью оператора "new". </li>
+        </ul>
+        <p>Происходит примерно следующее:</p>
+        <pre>
+            <code class="language-javascript">
+let user = new User("Jack");
 
+function User(name) {
+  // this = {};  (неявно)
+
+  // добавляет свойства к this
+  this.name = name;
+  this.isAdmin = false;
+
+  // return this;  (неявно)
+}
+            </code>
+        </pre>
+    </div>
 
 
 
