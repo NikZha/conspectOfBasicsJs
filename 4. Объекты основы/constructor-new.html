@@ -74,6 +74,36 @@ alert(john.name); // John
             что из ES6, а что легаси возможности. На мой взгляд лучше пользоваться ES6.
         </p>
     </div>
+    <div class="topic" id="return">
+        <h3>Возврат значения из конструктора, return</h3>
+        <p>Обычно то что называет автор констукторами - не требуют <code>return</code>, но если оно там есть то
+            применяются следующие правила:</p>
+        <ul>
+            <li>При вызове <code>return</code> с объектом, вместо <code>this</code> вернётся объект.</li>
+            <li>При вызове <code>return</code> с примитивным значением, оно проигнорируется. </li>
+        </ul>
+        <p>Другими словами, return с объектом возвращает этот объект, во всех остальных случаях возвращается this.
+            Например:
+        </p>
+        <pre>
+            <code class="language-javascript">
+function BigUser() {
+
+  this.name = "John";
+
+  return { name: "Godzilla" };  // &gt;-- возвращает этот объект
+}                
+            </code>
+        </pre>
+        <p>Ещё один момент, скобки желательны, но не требуюся:</p>
+        <pre>
+            <code class="language-javascript">
+let user = new User; // &gt;-- без скобок
+// то же, что и
+let user = new User();                
+            </code>
+        </pre>
+    </div>
 
 
 </body>
