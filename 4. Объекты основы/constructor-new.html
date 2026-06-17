@@ -104,6 +104,73 @@ let user = new User();
             </code>
         </pre>
     </div>
+    <div class="topic" id="make">
+        <h3>Создание методов в конструкторе</h3>
+        <p>В целом, то что автор говорит о констукторах какая-то дичь, непонятно зачем и где это нужно, проще сделать
+            фабрику создания объектов:</p>
+        <input type="button" value="Тест фабрики объектов" onclick="makeTest1()">
+        <pre>
+            <code class="language-javascript">
+function makeUser(name, age, isAdmin) {
+    return {
+        name,
+        age,
+        isAdmin,
+        greet() {
+            return `Hi ${name}! You age is ${age}. You are admin is ${isAdmin}!`
+        }
+    }
+}
+let john = makeUser('John', 35, false)
+alert(john.greet())                
+            </code>
+        </pre>
+        <script>
+            function makeTest1() {
+                function makeUser(name, age, isAdmin) {
+                    return {
+                        name,
+                        age,
+                        isAdmin,
+                        greet() {
+                            return `Hi ${name}! You age is ${age}. You are admin is ${isAdmin}!`
+                        }
+                    }
+                }
+                let john = makeUser('John', 35, false)
+                alert(john.greet())
+            }
+        </script>
+        <p>И как мне кажется что это сильно проще, чем писать нечто подобное:</p>
+        <pre>
+            <code class="language-javascript">
+function User(name) {
+  this.name = name;
+
+  this.sayHi = function() {
+    alert( "Меня зовут: " + this.name );
+  };
+}                
+            </code>
+        </pre>
+        <p>Потому что это многословнее, это вносит путаницу этим <code>this.sayHi = function() {...}</code> потому что
+            отличается от нотации JSON. А для сложных объектов есть ключевое слово <code>class</code>.</p>
+        <p>Показал конспект deepseek, он отметил пару возможностей: </p>
+        <pre>
+                <code class="language-javascript">
+function User(name) {
+  this.name = name;
+}
+// Метод добавляется в прототип и будет общим для всех объектов
+User.prototype.greet = function() {
+  return `Hi ${this.name}!`;
+};                    
+                </code>
+            </pre>
+        <p>В случае <code>prototype</code> эта фукнция будет разделяться между объектами. Что может быть критично если
+            экземляров объектов много.</p>
+        <p>Вторая возможность это проверка <code>instanceof</code> на то является ли объект экземляром данной ф-ции.</p>
+    </div>
 
 
 </body>
