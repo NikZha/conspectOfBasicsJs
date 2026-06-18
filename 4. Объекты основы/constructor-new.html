@@ -218,6 +218,35 @@ Calculator.prototype.mul = function () {
                 }
             </script>
         </div>
+        <div id="task3">
+            <h3>Задача 3. Создайте new Accumulator</h3>
+            <input type="button" value="Тест задачи 3" onclick="task3()">
+            <pre>
+                <code class="language-javascript">
+function Accumulator(startingValue) {
+    this.value = startingValue;
+    Accumulator.prototype.read = function () {
+        this.value += Number(prompt('Enter number'))
+    }
+}                    
+                </code>
+            </pre>
+            <p>Естественно это все без каких бы то нибыло проверок на ошибки.</p>
+            <script>
+                function Accumulator(startingValue) {
+                    this.value = startingValue;
+                    Accumulator.prototype.read = function () {
+                        this.value += Number(prompt('Enter number'))
+                    }
+                }
+                function task3() {
+                    let accum = new Accumulator(1);
+                    accum.read()
+                    accum.read()
+                    alert(accum.value)
+                }
+            </script>
+        </div>
     </div>
 
 
