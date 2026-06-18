@@ -176,6 +176,49 @@ User.prototype.greet = function() {
         <p>Ф-ция конструктор нужна в очень ограниченном числе случаев - по каким-то причинам class избыточен, но при
             этом самих объекто можно быть много. Во всех остальных случаях - фабрики и class.</p>
     </div>
+    <div class="topic" id="tasks">
+        <h3>Задачи</h3>
+        <div id="task2">
+            <h3>Задача 2. <br>Создайте калькулятор при помощи конструктора, new Calculator</h3>
+            <input type="button" value="Тест задачи 2" onclick="task2()">
+            <pre>
+                <code class="language-javascript">
+Calculator.prototype.read = function () {
+    this.x = Number(prompt('Enter x:'))
+    this.y = Number(prompt('Enter y:'))
+}
+Calculator.prototype.sum = function () {
+    return this.x + this.y
+}
+Calculator.prototype.mul = function () {
+    return this.x * this.y
+}                    
+                </code>
+            </pre>
+            <p>Как было написано выше - использовал <code>Calculator.prototype</code> чтобы у разных объектов была одна
+                и та же функция для экономиии памяти. Тут это вообще некритично, а сделано в учебных целях.</p>
+            <script>
+                function Calculator() {
+                    Calculator.prototype.read = function () {
+                        this.x = Number(prompt('Enter x:'))
+                        this.y = Number(prompt('Enter y:'))
+                    }
+                    Calculator.prototype.sum = function () {
+                        return this.x + this.y
+                    }
+                    Calculator.prototype.mul = function () {
+                        return this.x * this.y
+                    }
+                }
+                function task2() {
+                    let calc = new Calculator()
+                    calc.read()
+                    alert("Sum=" + calc.sum());
+                    alert("Mul=" + calc.mul());
+                }
+            </script>
+        </div>
+    </div>
 
 
 </body>
