@@ -29,7 +29,20 @@
         <p>Опциональная цепочка <code>?</code> — это безопасный способ доступа к свойствам вложенных объектов, даже если
             какое-либо из промежуточных свойств не существует.</p>
     </div>
+    <div class="topic" id="prolem">
+        <h3>Проблема «несуществующего свойства»</h3>
+        <p>Суть проблемы:</p>
+        <pre>
+            <code class="language-javascript">
+let user = {}; // пользователь без свойства "address"
 
+alert(user.address.street); // Ошибка!
+
+/ document.querySelector('.elem') равен null, если элемента нет
+let html = document.querySelector('.elem').innerHTML; // ошибка, если он равен null
+            </code>
+        </pre>
+    </div>
 
 
 
