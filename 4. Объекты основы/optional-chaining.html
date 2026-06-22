@@ -43,7 +43,28 @@ let html = document.querySelector('.elem').innerHTML; // ошибка, если 
             </code>
         </pre>
     </div>
+    <div class="topic" id="optionchain">
+        <h3>Опциональная цепочка</h3>
+        <p>Решение проблемы:</p>
+        <pre>
+            <code class="language-javascript">
+let user = {}; // пользователь без адреса
 
+alert( user?.address?.street ); // undefined (без ошибки)
+
+let html = document.querySelector('.elem')?.innerHTML; // будет undefined, если элемента нет
+            </code>
+        </pre>
+        <p>И даже так:</p>
+        <pre>
+            <code class="language-javascript">
+let user = null;
+
+alert( user?.address ); // undefined
+alert( user?.address.street ); // undefined                
+            </code>
+        </pre>
+    </div>
 
 
 
