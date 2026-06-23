@@ -65,6 +65,19 @@ alert( user?.address.street ); // undefined
             </code>
         </pre>
     </div>
+    <div class="topic" id="short">
+        <h3>Сокращённое вычисление</h3>
+        <pre>
+            <code class="language-javascript">
+let user = null;
+let x = 0;
+
+user?.sayHi(x++); // нет "user", поэтому выполнение не достигает вызова sayHi и x++
+
+alert(x); // 0, значение не увеличилось                
+            </code>
+        </pre>
+    </div>
 
 
 
