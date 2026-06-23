@@ -78,8 +78,42 @@ alert(x); // 0, значение не увеличилось
             </code>
         </pre>
     </div>
+    <div class="topic" id="other">
+        <h3>Другие варианты применения: ?.(), ?.[]</h3>
+        <pre>
+            <code class="language-javascript">
+let userAdmin = {
+  admin() {
+    alert("Я админ");
+  }
+};
 
+let userGuest = {};
 
+userAdmin.admin?.(); // Я админ
+
+userGuest.admin?.(); // ничего не произойдет (такого метода нет)                
+            </code>
+        </pre>
+        <pre>
+            <code class="language-javascript">
+let key = "firstName";
+
+let user1 = {
+  firstName: "John"
+};
+
+let user2 = null;
+
+alert( user1?.[key] ); // John
+alert( user2?.[key] ); // undefined                
+            </code>
+        </pre>
+    </div>
+    <div class="topic" id="total">
+        <h3>Итого</h3>
+        <p>Урок и так сжат, потому без "Итого".</p>
+    </div>
 
 
 
