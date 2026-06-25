@@ -61,7 +61,7 @@ alert(id.description); // id
         <h3>«Скрытые» свойства</h3>
         <p>Смысл в том, что класс <code>Symbol</code> позволяет создавать уникальный идентификатор и только по этому
             идентификатору, можно обратиться к свойству объекта:</p>
-            <pre>
+        <pre>
                 <code class="language-javascript">
 let user = {
   name: "Вася"
@@ -74,6 +74,78 @@ user[id] = 1;
 alert( user[id] ); // мы можем получить доступ к данным по ключу-символу                    
                 </code>
             </pre>
+    </div>
+    <div class="topic" id="hide">
+        <h3>Символы в литеральном объекте</h3>
+        <p>Объявление символьного объекта в литеральном объекте:</p>
+        <pre>
+            <code class="language-javascript">
+let id = Symbol("id");
+
+let user = {
+  name: "Вася",
+  [id]: 123 // просто "id: 123" не сработает
+};                
+            </code>
+        </pre>
+        <h3>Символы игнорируются циклом for…in</h3>
+        <pre><input type="button" value="Тест for in" onclick="hideExmpl1()">
+            <code class="language-javascript">
+let id = Symbol("id");
+let user = {
+  name: "Вася",
+  age: 30,
+  [id]: 123
+};
+
+for (let key in user) alert(key);    
+            </code>
+        </pre>
+        <script>
+            let id = Symbol("id");
+            let user = {
+                name: "Вася",
+                age: 30,
+                [id]: 123
+            };
+
+            function hideExmpl1() {
+                console.log(user)
+                for (let key in user) alert(key);
+            }
+        </script>
+        <p>Это – часть общего принципа «сокрытия символьных свойств». А вот Object.assign, в отличие от цикла for..in,
+            копирует и строковые, и символьные свойства:
+        </p>
+        <pre>
+            <code class="language-javascript">
+let id = Symbol("id");
+let user = {
+  [id]: 123
+};
+
+let clone = Object.assign({}, user);
+
+alert( clone[id] ); // 123                
+            </code>
+        </pre>
+        <p>Однако получить доступ из цикла ко всем ключам возможно:</p>
+        <pre><input type="button" value="Тест доступа из цикла ко всем свойствам" onclick="hideExmpl2()">
+    <code class="language-javascript">
+const allKeys = Reflect.ownKeys(user);
+for (let key of allKeys) {
+    console.log(key, user[key]); 
+}        
+    </code>
+</pre>
+        <script>
+            function hideExmpl2() {
+                const allKeys = Reflect.ownKeys(user);
+                for (let key of allKeys) {
+                    console.log(key, user[key]);
+                }
+            }
+        </script>
     </div>
 
 </body>
