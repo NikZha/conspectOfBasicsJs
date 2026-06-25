@@ -57,6 +57,24 @@ alert(id.description); // id
             </code>
         </pre>
     </div>
+    <div class="topic" id="hide">
+        <h3>«Скрытые» свойства</h3>
+        <p>Смысл в том, что класс <code>Symbol</code> позволяет создавать уникальный идентификатор и только по этому
+            идентификатору, можно обратиться к свойству объекта:</p>
+            <pre>
+                <code class="language-javascript">
+let user = {
+  name: "Вася"
+};
+
+let id = Symbol("id");
+
+user[id] = 1;
+
+alert( user[id] ); // мы можем получить доступ к данным по ключу-символу                    
+                </code>
+            </pre>
+    </div>
 
 </body>
 
