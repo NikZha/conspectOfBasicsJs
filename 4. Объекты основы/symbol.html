@@ -147,6 +147,38 @@ for (let key of allKeys) {
             }
         </script>
     </div>
+    <div class="topic" id="global">
+        <h3>Глобальные символы</h3>
+        <pre>
+            <code class="language-javascript">
+// читаем символ из глобального реестра и записываем его в переменную
+let id = Symbol.for("id"); // если символа не существует, он будет создан
+
+// читаем его снова и записываем в другую переменную (возможно, из другого места кода)
+let idAgain = Symbol.for("id");
+
+// проверяем -- это один и тот же символ
+alert( id === idAgain ); // true                
+            </code>
+        </pre>
+        <p>Несмотря на то, что не нужно иметь доступа к непосредственно объекту <code>Symbol</code> создавшему ключ
+            объекта, доступа из цикла <code>for...in</code> нет.</p>
+        <p>Цикл <code>for...in</code> перебирает только строковые ключи. Чтобы получить доступ к свойствам-символам,
+            используйте специальные методы: <code>Object.getOwnPropertySymbols()</code> или
+            <code>Reflect.ownKeys()</code>.
+        </p>
+        <h3>Symbol.keyFor</h3>
+        <p>Этот статический метод возвращает строковое значение по которому создан глобальный <code>Symbol</code>.</p>
+        <pre>
+            <code class="language-javascript">
+// получаем символ по имени
+let sym = Symbol.for("name");
+
+alert( Symbol.keyFor(sym) ); // name
+            </code>
+        </pre>
+        <p>Для <strong>не</strong> глобального символа получить значение не получится будет <code>undefined</code>.</p>
+    </div>
 
 </body>
 
