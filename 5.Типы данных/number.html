@@ -38,7 +38,46 @@
         </ol>
         <p>Тут будет рассмотрено только первое.</p>
     </div>
-
+    <div class="topic" id="ways">
+        <h3>Способы записи числа</h3>
+        <p>Способы записи числа:</p>
+        <ul>
+            <li>Самый очевидный:
+                <pre>
+    <code class="language-javascript">
+let billion = 1000000000;        
+    </code>
+</pre>
+            </li>
+            <li>
+                Метод с синтаксическим сахаром:
+                <pre>
+                    <code class="language-javascript">
+let billion = 1_000_000_000                        
+                    </code>
+                </pre>
+                <p>Разделяя разряды для понимания.</p>
+            </li>
+            <li>
+                Сокращённая запись <code>eX</code>:
+                <pre>
+    <code class="language-javascript">
+let billion = 1e9;  // 1 миллиард, буквально: 1 и 9 нулей
+1e3 === 1 * 1000 // e3 означает *1000
+1.23e6 === 1.23 * 1000000 // e6 означает *1000000        
+    </code>
+</pre>
+            </li>
+            <li>
+                Тоже самое но разряды от запятой:
+                <pre>
+                    <code class="language-javascript">
+let ms = 1e-6; // шесть нулей слева от 1 тоже самое что и 0.000001                        
+                    </code>
+                </pre>
+            </li>
+        </ul>
+    </div>
 
 
 
