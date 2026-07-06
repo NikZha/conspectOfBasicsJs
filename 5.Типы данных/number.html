@@ -154,6 +154,40 @@ lert( +sum.toFixed(2) ); // 0.3
                 </code>
             </pre>
     </div>
+    <div class="topic" id="check">
+        <h3>Проверка: isFinite и isNaN</h3>
+        <ul>
+            <li><code>NaN</code> - ошибка.</li>
+            <li><code>Infinity</code> и <code>-Infinity</code> бесконечность.</li>
+        </ul>
+        <p>Для проверки <code>NaN</code> используют:</p>
+        <pre>
+            <code class="language-javascript">
+alert( isNaN(NaN) ); // true
+alert( isNaN("str") ); // true
+alert( NaN === NaN ); // false то есть в прямую проверить нельзя. Только ф-цией.             
+            </code>
+        </pre>
+        <p>Тоже самое касается и проверки <code>isFinite()</code>: Она возвращает <code>true</code> если это обычное
+            число и <code>false</code> если это не число или бесконечность:</p>
+        <pre>
+                <code class="language-javascript">
+alert( isFinite("15") ); // true
+alert( isFinite("str") ); // false, потому что специальное значение: NaN
+alert( isFinite(Infinity) ); // false, потому что специальное значение: Infinity                    
+                </code>
+            </pre>
+        <p>Так же есть отдельно методы <code>Number.isNaN</code> и <code>Number.isFinite</code> они более строгие и
+            работают чуть по другому.</p>
+        <p>Так же для проверки равенства двух значений существует метод <code>Object.is</code> он работает: </p>
+        <ul>
+            <li>с NaN: Object.is(NaN, NaN) === true, здесь он хорош.</li>
+            <li>Значения 0 и -0 разные: Object.is(0, -0) === false, это редко используется, но технически эти значения
+                разные.</li>
+        </ul>
+        <p>Во всех других случаях Object.is(a, b) идентичен a === b.</p>
+    </div>
+
 
 </body>
 
