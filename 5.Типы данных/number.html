@@ -123,7 +123,37 @@ alert( num.toString(2) );   // 11111111
             </li>
         </ul>
     </div>
-
+    <div class="topic" id="inaccurate">
+        <h3>Неточные вычисления</h3>
+        <p>В силу того, что <code>Number</code> это <code>double</code> и его целая часть хранится отдельно от
+            десятичной происходит для проблем:</p>
+        <ul>
+            <li>Бесконечности (переполнения)
+                <pre>
+                        <code class="language-javascript">
+alert( 1e500 ); // Infinity                            
+                        </code>
+                    </pre>
+            </li>
+            <li>Потери точности:
+                <pre>
+                        <code class="language-javascript">
+alert( 0.1 + 0.2 == 0.3 ); // false
+alert( 0.1 + 0.2 ); // 0.30000000000000004
+alert( 0.1.toFixed(20) ); // 0.10000000000000000555                            
+                        </code>
+                    </pre>
+            </li>
+        </ul>
+        <p>Предлагаемое автором учебника решение использовать:</p>
+        <pre>
+                <code class="language-javascript">
+let sum = 0.1 + 0.2;
+alert( sum.toFixed(2) ); // "0.30"
+lert( +sum.toFixed(2) ); // 0.3                    
+                </code>
+            </pre>
+    </div>
 
 </body>
 
