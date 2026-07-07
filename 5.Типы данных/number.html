@@ -276,6 +276,28 @@ Math.round(x * 10) / 10
                 }
             </script>
         </div>
+        <div id="four">
+            <h4>Задача 4. Бесконечный цикл по ошибке</h4>
+            <pre><input type="button" value="Тест 4 задачи" onclick="task4()">
+    <code class="language-javascript">
+let i = 0;
+while (i != 10) {
+  i += 0.2;
+}        
+    </code>
+</pre>
+            <p>Потому что точно никогда не будет равно 10 в силу неточности исчислений, надо использовать меньше &lt;
+                если тут цель дойти до 10 и остановится.</p>
+            <script>
+                function task4() {
+                    let i = 0;
+                    while (i < 10) {
+                        i += 0.2;
+                        console.log(i)
+                    }
+                }
+            </script>
+        </div>
     </div>
 
 
