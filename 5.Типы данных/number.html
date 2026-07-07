@@ -298,6 +298,54 @@ while (i != 10) {
                 }
             </script>
         </div>
+        <div id="five">
+            <h4>Задача 5. Случайное число от min до max</h4>
+            <p>Мною решено как:</p>
+            <pre><input type="button" value="Тест 5 задачи" onclick="task5()">
+                <code class="language-javascript">
+function random(x, y) {
+    let randX = Math.random()
+    let returnedRandom = randX * y
+    while (x > returnedRandom || returnedRandom > y) {
+        if (x > returnedRandom) returnedRandom += randX
+        if (returnedRandom > y) returnedRandom -= randX
+    }
+    return returnedRandom
+}                    
+                </code>
+            </pre>
+            <p>Не смотря на то, что эта срань работает, но распределение там далеко от равномерного. Дипсик предлагает
+                следующее:</p>
+            <pre>
+                <code class="language-javascript">
+function random(min, max) {
+    return Math.random() * (max - min) + min;
+}                    
+                </code>
+            </pre>
+            <p>Вроде за границы не выходит.</p>
+            <script>
+                function task5() {
+                    let x = Number(prompt('Enter x', 1))
+                    let y = Number(prompt('Enter y', 5))
+                    for (let i = 0; i < y; i++) {
+                        console.log(random(x, y))
+                    }
+                }
+                // function random(x, y) {
+                //     let randX = Math.random()
+                //     let returnedRandom = randX * y
+                //     while (x > returnedRandom || returnedRandom > y) {
+                //         if (x > returnedRandom) returnedRandom += randX
+                //         if (returnedRandom > y) returnedRandom -= randX
+                //     }
+                //     return returnedRandom
+                // }
+                function random(min, max) {
+                    return Math.random() * (max - min) + min;
+                }
+            </script>
+        </div>
     </div>
 
 
