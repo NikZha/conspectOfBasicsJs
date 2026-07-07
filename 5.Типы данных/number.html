@@ -227,6 +227,21 @@ alert( parseInt('2n9c', 36) ); // 123456
         <h3>Итого</h3>
         <p>Конспект краткий, этот пункт пропускаю.</p>
     </div>
+    <div class="topic" id="tasks">
+        <h3>Задачи</h3>
+        <div id="one">
+            <h4>Задача 1. Сумма пользовательских чисел</h4>
+            <p>Задача решена путём преобразования строки которую даёт промпт путём засовывания её в Number().</p>
+            <input type="button" value="тест задачи 1" onclick="task1()">
+            <script>
+                function task1() {
+                    let a = Number(prompt('Enter number a', 0))
+                    let b = Number(prompt('Enter number b', 1))
+                    alert((a + b).toFixed(3))
+                }
+            </script>
+        </div>
+    </div>
 
 
 </body>
