@@ -241,6 +241,23 @@ alert( parseInt('2n9c', 36) ); // 123456
                 }
             </script>
         </div>
+        <div id="two">
+            <h4>Задача 2. Почему 6.35.toFixed(1) == 6.3?</h4>
+            <input type="button" value="тест задачи 2" onclick="task2()">
+            <p>Округление 6.35 в 6.3 происходит потому что 6.35 на самом деле в JS 6.34999999999999964473 и для того
+                чтобы его округлить надо использовать:</p>
+<pre>
+    <code class="language-javascript">
+Math.round(x * 10) / 10        
+    </code>
+</pre>                
+            <script>
+                function task2() {
+                    let x = 6.35
+                    alert(Math.round(x * 10) / 10)
+                }
+            </script>
+        </div>
     </div>
 
 
