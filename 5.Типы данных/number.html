@@ -301,7 +301,7 @@ while (i != 10) {
         <div id="five">
             <h4>Задача 5. Случайное число от min до max</h4>
             <p>Мною решено как:</p>
-            <pre><input type="button" value="Тест 5 задачи" onclick="task5()">
+            <pre><input type="button" value="Тест 5 задачи" onclick="task5(random)">
                 <code class="language-javascript">
 function random(x, y) {
     let randX = Math.random()
@@ -325,11 +325,11 @@ function random(min, max) {
             </pre>
             <p>Вроде за границы не выходит.</p>
             <script>
-                function task5() {
+                function task5(randomFunc) {
                     let x = Number(prompt('Enter x', 1))
                     let y = Number(prompt('Enter y', 5))
                     for (let i = 0; i < y; i++) {
-                        console.log(random(x, y))
+                        console.log(randomFunc(x, y))
                     }
                 }
                 // function random(x, y) {
@@ -343,6 +343,18 @@ function random(min, max) {
                 // }
                 function random(min, max) {
                     return Math.random() * (max - min) + min;
+                }
+            </script>
+        </div>
+        <div id="six">
+            <h4>Задача 6. Случайное целое число от min до max</h4>
+            <input type="button" value="Тест 6 задачи" onclick="task5(randomInteger)">
+            <p>Решена по аналогии, но что с <code>Math.round</code> что с <code>Math.floor</code> никакой одинаковой
+                вероятности как хочет автор нет и в помине при 1...5 при 5 попытках. В целом сомневаюсь, что это вообще
+                реально, это все-таки псевдорандом.</p>
+            <script>
+                function randomInteger(min, max) {
+                    return Math.floor(Math.random() * (max - min) + min);
                 }
             </script>
         </div>
