@@ -45,7 +45,49 @@
             </li>
         </ul>
     </div>
-
+    <div class="topic" id="spec">
+        <h3>Спецсимволы</h3>
+        <p>Это символы которые невидимы на строке, такие как первод каретки, табуляция. Или кавычки. Список:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Символ</th>
+                    <th>Описание</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>\n</code></td>
+                    <td>Перевод строки</td>
+                </tr>
+                <tr>
+                    <td><code>\r</code></td>
+                    <td>В текстовых файлах Windows для перевода строки используется комбинация символов
+                        <code>\r\n</code>, а на
+                        других ОС это просто <code>\n</code>. Это так по историческим причинам, ПО под Windows обычно
+                        понимает и
+                        просто <code>\n</code>.</td>
+                </tr>
+                <tr>
+                    <td><code>\', \", \`</code></td>
+                    <td>Кавычки</td>
+                </tr>
+                <tr>
+                    <td><code>\\</code></td>
+                    <td>Обратный слеш</td>
+                </tr>
+                <tr>
+                    <td><code>\t</code></td>
+                    <td>Знак табуляции</td>
+                </tr>
+                <tr>
+                    <td><code>\b, \f, \v</code></td>
+                    <td>Backspace, Form Feed и Vertical Tab — оставлены для обратной совместимости, сейчас не
+                        используются.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
 
 
