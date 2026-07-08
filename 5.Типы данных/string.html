@@ -66,7 +66,8 @@
                         <code>\r\n</code>, а на
                         других ОС это просто <code>\n</code>. Это так по историческим причинам, ПО под Windows обычно
                         понимает и
-                        просто <code>\n</code>.</td>
+                        просто <code>\n</code>.
+                    </td>
                 </tr>
                 <tr>
                     <td><code>\', \", \`</code></td>
@@ -88,7 +89,21 @@
             </tbody>
         </table>
     </div>
-
+    <div class="topic" id="len">
+        <h3>Длина строки</h3>
+        <p>Строки имеют свойство <code>length</code> это именно свойство к которому обращаются напрямую как к свойству.
+            Например (на двойной клик по коду):</p>
+        <pre>
+            <code class="language-javascript startbutton" ondblclick="exmplLen()">
+alert( `My\n`.length ); // 3                
+            </code>
+        </pre>
+        <script>
+            function exmplLen() {
+                alert(`My\n`.length);
+            }
+        </script>
+    </div>
 
 
 </body>
