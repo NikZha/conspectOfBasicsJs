@@ -108,6 +108,21 @@ alert( `My\n`.length ); // 3
         <h3>Доступ к символам</h3>
         <p>Делается или в стиле массива в <code>[]</code> квадратных скобках или при помощи функции <code>.at()</code>
             в скобках указывают номер символа с нуля до length-1 соотвественно с первого до последнего символа.</p>
+        <p>Так же доступ к символам возможен в цикле <code>for...of</code>:</p>
+        <pre>
+            <code class="language-javascript startbutton" ondblclick="exmplAccess()">
+for (let char of "Hola") {
+    alert(char); 
+}
+            </code>
+        </pre>
+        <script>
+            function exmplAccess() {
+                for (let char of "Hola") {
+                    alert(char);
+                }
+            }
+        </script>
     </div>
 
 </body>
