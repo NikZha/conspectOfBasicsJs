@@ -128,6 +128,29 @@ for (let char of "Hola") {
         <h3>Строки неизменяемы</h3>
         <p>Впрямую строку изменить нельзя.</p>
     </div>
+    <div class="topic" id="registr">
+        <h3>Изменение регистра</h3>
+        <p>Методы toLowerCase() и toUpperCase() меняют регистр символов. Так же это можно провернуть и с отдельным
+            символом. Но надо понимать, что строки неизменяемы, то что возвращается этой функцией - это отдельная
+            другая строка.</p>
+        <pre><input type="button" value="Запуск скрипта" onclick="exmplRegistr()">
+                <code class="language-javascript">
+let str = 'Hola'
+alert(str.toUpperCase())
+alert(str[0].toLowerCase())
+alert(str)                    
+                </code>
+            </pre>
+        <p>Как мы видим исходная строка не изменилась.</p>
+        <script>
+            function exmplRegistr() {
+                let str = 'Hola'
+                alert(str.toUpperCase())
+                alert(str[0].toLowerCase())
+                alert(str)
+            }
+        </script>
+    </div>
 
 </body>
 
