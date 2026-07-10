@@ -162,6 +162,24 @@ alert(str)
         <p>Методы str.startsWith и str.endsWith проверяют, соответственно, начинается ли и заканчивается ли строка
             определённой строкой.</p>
     </div>
+    <div class="topic" id="get">
+        <h3>Получение подстроки</h3>
+        <p>В JavaScript есть 3 метода для получения подстроки: <code>substring</code>, <code>substr</code> и
+            <code>slice</code>.
+        </p>
+        <p><code>str.slice(start [, end])</code>
+            <br>Возвращает часть строки от start до (не включая) end.
+        </p>
+        <p><code>str.substring(start [, end])</code>
+            <br>Возвращает часть строки между start и end (не включая) end.
+            <br>Это — почти то же, что и slice, но можно задавать start больше end.
+            <br>Если start больше end, то метод substring сработает так, как если бы аргументы были поменяны местами.
+        </p>
+        <p><code>str.substr(start [, length])</code>
+            <br>Возвращает часть строки от start длины length.
+            <br>В противоположность предыдущим методам, этот позволяет указать длину вместо конечной позиции:
+        </p>
+    </div>
 
 </body>
 
