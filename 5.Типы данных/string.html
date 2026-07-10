@@ -222,6 +222,25 @@ alert( 'a' > 'Z' ); // true
                 }
             </script>
         </div>
+        <div id="task2">
+            <h3>Задача 2. Проверка на спам</h3>
+            <p>Чтобы не писать повторяющегося кода использую форму выше.</p>
+            <input type="button" value="Тест задачи 2" onclick="task2()">
+            <script>
+                function checkSpam(str) {
+                    let spamList = ['viagra', 'xxx']
+                    str = str.toLowerCase()
+                    for (let spamWord of spamList) {
+                        if (str.includes(spamWord)) return true
+                    }
+                    return false
+                }
+                function task2() {
+                    let str = document.getElementById('bigRune').value
+                    alert(checkSpam(str))
+                }
+            </script>
+        </div>
     </div>
 
 </body>
