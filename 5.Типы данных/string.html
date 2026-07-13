@@ -272,6 +272,25 @@ function truncate(str, len) {
                 }
             </script>
         </div>
+        <div id="task4">
+            <h4>Задача 4 Выделить число</h4>
+            <p>
+                <label for="currency">Введите число с валютой, так чтобы знак валюты был впереди</label>
+                <input type="text" name="currency" id="currency">
+                <input type="button" value="Тест задачи 4" onclick="task4()">
+            </p>
+            <p>В целом оно конечно решено, но опять без проверок. Предложенный вариант диписком по удалению всех не
+                цифровых симоволом и точки тут подошёл бы больше.</p>
+            <script>
+                function task4() {
+                    let curr = document.getElementById('currency').value
+                    alert(extractCurrencyValue(curr))
+                }
+                function extractCurrencyValue(str) {
+                    return parseInt(str.substr(1, str.length - 1))
+                }
+            </script>
+        </div>
     </div>
 
 </body>
