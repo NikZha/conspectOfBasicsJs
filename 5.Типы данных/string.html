@@ -241,6 +241,37 @@ alert( 'a' > 'Z' ); // true
                 }
             </script>
         </div>
+        <div id="task3">
+            <h4>Задача 3 Усечение строки</h4>
+            <p>
+                <label for="strTask3">Введите строку и длинну для обрезки строки</label>
+                <input type="text" name="strTask3" id="strTask3">
+                <input type="text" name="lenTask3" id="lenTask3">
+                <input type="button" value="Обработка строки" onclick="task3()">
+            </p>
+            <p>Само решение:</p>
+            <pre>
+                <code class="language-javascript">
+function truncate(str, len) {
+    if (str.length &lt; len) return str;
+    return str.substr(0, len-1) + '…';
+}                    
+                </code>
+            </pre>
+            <p>Из предложенного дипсиком взял многоточие одним символом. Так же надо мутить проверку на введённые строку
+                и число, но это оверкил для учебного кода.</p>
+            <script>
+                function task3() {
+                    let str = document.getElementById('strTask3').value
+                    let len = parseInt(document.getElementById('lenTask3').value)
+                    alert(truncate(str, len))
+                }
+                function truncate(str, len) {
+                    if (str.length < len) return str;
+                    return str.substr(0, len - 1) + '…';
+                }
+            </script>
+        </div>
     </div>
 
 </body>
